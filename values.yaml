@@ -1,4 +1,4 @@
-image: ghcr.io/openalcoholics/horoscopebot:${GITHUB_SHA}
+image: ghcr.io/preparingforexams/horoscopebot:${GITHUB_SHA}
 telegram:
   apiKey: ${TELEGRAM_TOKEN}
 sentry:

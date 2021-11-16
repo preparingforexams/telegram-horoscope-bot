@@ -1,0 +1,5 @@
+image: ghcr.io/openalcoholics/horoscopebot:${GITHUB_SHA}
+telegram:
+  apiKey: ${TELEGRAM_TOKEN}
+sentry:
+  dsn: ${SENTRY_DSN}

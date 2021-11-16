@@ -1,0 +1,33 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: telegram-bots
+  name: horoscope-update-handler
+  labels:
+    app: horoscope-update-handler
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: horoscope-update-handler
+  template:
+    metadata:
+      labels:
+        app: horoscope-update-handler
+    spec:
+      containers:
+        - name: app
+          image: {{ .Values.image }}
+          resources:
+            limits:
+              cpu: 50m
+            requests:
+              cpu: 10m
+              memory: 32Mi
+          envFrom:
+            - secretRef:
+                name: horoscope-secrets

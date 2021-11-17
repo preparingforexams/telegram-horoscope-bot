@@ -100,7 +100,7 @@ _HOROSCOPE_BY_SLOT = {
     }, 2: {
         Slot.SEVEN: "Veränder die Welt.",
         Slot.BAR: "Mach was draus.",
-        Slot.GRAPE: "Quäl dich durch den Tag.",
+        Slot.GRAPE: "Quäl dich durch.",
         Slot.LEMON: "Bleib lieber liegen.",
     },
 }

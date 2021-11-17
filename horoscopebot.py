@@ -132,9 +132,12 @@ def _send_message(chat_id: int, text: str, reply_to_message_id: Optional[int]) -
 
 def _build_horoscope(value: int) -> str:
     slots = _SLOT_MACHINE_VALUES[value]
+
+    def _get_horoscope(slot: int):
+        return _HOROSCOPE_BY_SLOT[slot][slots[slot]]
+
     horoscope = (
-        f"{_HOROSCOPE_BY_SLOT[0][slots[0]]} {_HOROSCOPE_BY_SLOT[1][slots[1]]}."
-        f" {_HOROSCOPE_BY_SLOT[2][slots[2]]}"
+        f"{_get_horoscope(0)} {_get_horoscope(1)}. {_get_horoscope(2)}"
     )
     return f"Dein Tag wird {horoscope}"
 

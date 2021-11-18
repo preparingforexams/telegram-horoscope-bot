@@ -91,7 +91,7 @@ _HOROSCOPE_BY_SLOT = {
         Slot.SEVEN: "wahnsinnig",
         Slot.BAR: "erschreckend",
         Slot.GRAPE: "moderat",
-        Slot.LEMON: "kaum",
+        Slot.LEMON: "fast",
     }, 1: {
         Slot.SEVEN: "geil",
         Slot.BAR: "besoffen",

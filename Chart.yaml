@@ -1,6 +1,5 @@
 apiVersion: v2
-name: regular-dicers-bot
-description: "Regular Dicers Bot 2: Electric Boogaloo"
+name: horoscope
 
 type: application
 

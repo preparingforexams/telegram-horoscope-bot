@@ -1,8 +1,10 @@
 import logging
 import os
 import sys
+from datetime import datetime
 from enum import Enum, auto
 from typing import Callable, Optional, List, Tuple, Dict
+from zoneinfo import ZoneInfo
 
 import requests
 import sentry_sdk
@@ -130,6 +132,13 @@ def _send_message(chat_id: int, text: str, reply_to_message_id: Optional[int]) -
     ))
 
 
+def _is_new_years_day() -> bool:
+    utc_date = datetime.now()
+    zone = ZoneInfo("Europe/Berlin")
+    date = utc_date.astimezone(zone)
+    return date.month == 1 and date.day == 1
+
+
 def _build_horoscope(value: int) -> str:
     slots = _SLOT_MACHINE_VALUES[value]
 
@@ -139,7 +148,10 @@ def _build_horoscope(value: int) -> str:
     horoscope = (
         f"{_get_horoscope(0)} {_get_horoscope(1)}. {_get_horoscope(2)}"
     )
-    return f"Dein Tag wird {horoscope}"
+
+    scope = "Jahr" if _is_new_years_day() else "Tag"
+
+    return f"Dein {scope} wird {horoscope}"
 
 
 def _handle_update(update: dict):

@@ -1,11 +1,13 @@
 import random
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Optional, List, Dict
 
 import openai
 
 from horoscopebot.config import OpenAiConfig
 from .horoscope import Horoscope, SLOT_MACHINE_VALUES, Slot
+from ..rate_limit import RateLimiter
 
 _BASE_PROMPT = r'Write a creative and witty horoscope for the day without mentioning a specific zodiac sign.' \
                r' The horoscope must be written in German. The horoscope should consist of two short sentences.' \
@@ -131,15 +133,22 @@ class OpenAiHoroscope(Horoscope):
         self._config = config
         openai.api_key = config.token
 
+        self._rate_limiter = RateLimiter()
+
     def provide_horoscope(self, dice: int, context_id: int, user_id: int) -> Optional[str]:
         slots = SLOT_MACHINE_VALUES[dice]
         if slots == (Slot.LEMON, Slot.LEMON, Slot.LEMON):
             return None
 
+        if not self._rate_limiter.can_use(user_id, datetime.now()):
+            return "Du warst heute schon dran."
+
         avenue = _AVENUE_BY_FIRST_SLOT[slots[0]]
         prompt = avenue.build_prompt()
-        print(prompt)
         completion = self._create_completion(user_id, prompt)
+
+        self._rate_limiter.add_usage(user_id, datetime.now())
+
         return completion
 
     def _create_completion(self, user_id: int, prompt: str) -> str:

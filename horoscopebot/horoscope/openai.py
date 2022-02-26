@@ -140,14 +140,14 @@ class OpenAiHoroscope(Horoscope):
         if slots == (Slot.LEMON, Slot.LEMON, Slot.LEMON):
             return None
 
-        if not self._rate_limiter.can_use(user_id, datetime.now()):
+        if not self._rate_limiter.can_use(context_id=context_id, user_id=user_id, at_time=datetime.now()):
             return "Du warst heute schon dran."
 
         avenue = _AVENUE_BY_FIRST_SLOT[slots[0]]
         prompt = avenue.build_prompt()
         completion = self._create_completion(user_id, prompt)
 
-        self._rate_limiter.add_usage(user_id, datetime.now())
+        self._rate_limiter.add_usage(context_id=context_id, user_id=user_id, time=datetime.now())
 
         return completion
 

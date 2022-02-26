@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import Enum
 from typing import List, Dict, Tuple, Optional, Union
 
 from dotenv import dotenv_values
@@ -86,16 +87,37 @@ def load_env(names: Union[str, Tuple[str, ...]]) -> Env:
 
 @dataclass
 class Config:
-    openai: OpenAiConfig
+    horoscope: HoroscopeConfig
     sentry_dsn: Optional[str]
     telegram: TelegramConfig
 
     @classmethod
     def from_env(cls, env: Env) -> Config:
         return cls(
-            openai=OpenAiConfig.from_env(env),
+            horoscope=HoroscopeConfig.from_env(env),
             sentry_dsn=env.get_string('SENTRY_DSN', required=False),
             telegram=TelegramConfig.from_env(env)
+        )
+
+
+class HoroscopeMode(Enum):
+    OpenAi = "openai"
+    Steffen = "steffen"
+
+
+@dataclass
+class HoroscopeConfig:
+    mode: HoroscopeMode
+    openai: Optional[OpenAiConfig]
+
+    @classmethod
+    def from_env(cls, env: Env) -> HoroscopeConfig:
+        mode = HoroscopeMode(env.get_string("HOROSCOPE_MODE", default="steffen"))
+        openai = OpenAiConfig.from_env(env) if mode == HoroscopeMode.OpenAi else None
+
+        return cls(
+            mode=mode,
+            openai=openai,
         )
 
 

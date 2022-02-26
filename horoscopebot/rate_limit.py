@@ -3,7 +3,8 @@ from typing import Dict
 
 
 class RateLimiter:
-    _usage_time_by_user: Dict[int, datetime]
+    def __init__(self):
+        self._usage_time_by_user: Dict[int, datetime] = {}
 
     def can_use(self, user_id: int, at_time: datetime) -> bool:
         last_usage = self._usage_time_by_user.get(user_id)

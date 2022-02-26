@@ -208,6 +208,10 @@ class Bot:
             _LOG.debug("Skipping non-message update")
             return
 
+        if message['chat']['id'] not in self.config.enabled_chats:
+            _LOG.debug("Not enabled in chat %d", message['chat']['id'])
+            return
+
         dice: Optional[dict] = message.get("dice")
         if not dice:
             _LOG.debug("Skipping non-dice message")

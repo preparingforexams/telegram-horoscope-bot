@@ -64,7 +64,7 @@ class Bot:
         result_text = self.horoscope.provide_horoscope(dice=dice["value"], context_id=chat_id, user_id=user_id)
 
         if result_text is None:
-            _LOG.debug("Not sending horoscope because build_horoscope returned None for %d", dice["value"])
+            _LOG.debug("Not sending horoscope because horoscope returned None for %d", dice["value"])
             return
 
         self._send_message(

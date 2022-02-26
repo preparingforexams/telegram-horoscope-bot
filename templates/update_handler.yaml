@@ -28,6 +28,9 @@ spec:
             requests:
               cpu: 10m
               memory: 32Mi
+          env:
+            - name: HOROSCOPE_MODE
+              value: openai
           envFrom:
             - configMapRef:
                 name: horoscope-telegram

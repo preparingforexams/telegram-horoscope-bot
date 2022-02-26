@@ -1,18 +1,14 @@
 import logging
-import os
-import sys
 from datetime import datetime
 from enum import Enum, auto
 from typing import Callable, Optional, List, Tuple, Dict
 from zoneinfo import ZoneInfo
 
 import requests
-import sentry_sdk
 
-_API_KEY = os.getenv("TELEGRAM_API_KEY")
-_OPENAI_TOKEN = os.getenv("OPENAI_TOKEN")
+from horoscopebot.config import TelegramConfig
 
-_LOG = logging.getLogger("horoscopebot")
+_LOG = logging.getLogger(__name__)
 
 
 class Slot(Enum):
@@ -159,134 +155,101 @@ _HOROSCOPE_BY_COMBINATION = {
 }
 
 
-def _build_url(method: str) -> str:
-    return f"https://api.telegram.org/bot{_API_KEY}/{method}"
+class Bot:
+    def __init__(self, config: TelegramConfig):
+        self.config = config
 
+    def run(self):
+        self._handle_updates(self._handle_update)
 
-def _get_actual_body(response: requests.Response):
-    response.raise_for_status()
-    body = response.json()
-    if body.get("ok"):
-        return body["result"]
-    raise ValueError(f"Body was not ok! {body}")
+    def _build_url(self, method: str) -> str:
+        return f"https://api.telegram.org/bot{self.config.token}/{method}"
 
+    @staticmethod
+    def _get_actual_body(response: requests.Response):
+        response.raise_for_status()
+        body = response.json()
+        if body.get("ok"):
+            return body["result"]
+        raise ValueError(f"Body was not ok! {body}")
 
-def _send_message(chat_id: int, text: str, reply_to_message_id: Optional[int]) -> dict:
-    return _get_actual_body(requests.post(
-        _build_url("sendMessage"),
-        json={
-            "text": text,
-            "chat_id": chat_id,
-            "reply_to_message_id": reply_to_message_id,
-        },
-        timeout=10,
-    ))
+    def _send_message(self, chat_id: int, text: str, reply_to_message_id: Optional[int]) -> dict:
+        return self._get_actual_body(requests.post(
+            self._build_url("sendMessage"),
+            json={
+                "text": text,
+                "chat_id": chat_id,
+                "reply_to_message_id": reply_to_message_id,
+            },
+            timeout=10,
+        ))
 
+    @staticmethod
+    def _is_new_years_day() -> bool:
+        utc_date = datetime.now()
+        zone = ZoneInfo("Europe/Berlin")
+        date = utc_date.astimezone(zone)
+        return date.month == 1 and date.day == 1
 
-def _is_new_years_day() -> bool:
-    utc_date = datetime.now()
-    zone = ZoneInfo("Europe/Berlin")
-    date = utc_date.astimezone(zone)
-    return date.month == 1 and date.day == 1
+    @staticmethod
+    def _build_horoscope(value: int) -> Optional[str]:
+        slots = _SLOT_MACHINE_VALUES[value]
 
+        horoscope = _HOROSCOPE_BY_COMBINATION.get(slots)
 
-def _build_horoscope(value: int) -> Optional[str]:
-    slots = _SLOT_MACHINE_VALUES[value]
+        # scope = "Jahr" if _is_new_years_day() else "Tag"
 
-    horoscope = _HOROSCOPE_BY_COMBINATION.get(slots)
+        return horoscope
 
-    # scope = "Jahr" if _is_new_years_day() else "Tag"
+    def _handle_update(self, update: dict):
+        message = update.get("message")
 
-    return horoscope
+        if not message:
+            _LOG.debug("Skipping non-message update")
+            return
 
+        dice: Optional[dict] = message.get("dice")
+        if not dice:
+            _LOG.debug("Skipping non-dice message")
+            return
 
-def _handle_update(update: dict):
-    message = update.get("message")
+        if dice["emoji"] != "🎰":
+            _LOG.debug("Skipping non-slot-machine message")
+            return
 
-    if not message:
-        _LOG.debug("Skipping non-message update")
-        return
+        result_text = self._build_horoscope(dice["value"])
 
-    dice: Optional[dict] = message.get("dice")
-    if not dice:
-        _LOG.debug("Skipping non-dice message")
-        return
+        if result_text is None:
+            _LOG.debug("Not sending horoscope because build_horoscope returned None for %d", dice["value"])
+            return
 
-    if dice["emoji"] != "🎰":
-        _LOG.debug("Skipping non-slot-machine message")
-        return
+        self._send_message(
+            chat_id=message["chat"]["id"],
+            text=result_text,
+            reply_to_message_id=message["message_id"],
+        )
 
-    result_text = _build_horoscope(dice["value"])
+    def _request_updates(self, last_update_id: Optional[int]) -> List[dict]:
+        body: Optional[dict] = None
+        if last_update_id:
+            body = {
+                "offset": last_update_id + 1,
+                "timeout": 10,
+            }
+        return self._get_actual_body(requests.post(
+            self._build_url("getUpdates"),
+            json=body,
+            timeout=15,
+        ))
 
-    if result_text is None:
-        _LOG.debug("Not sending horoscope because build_horoscope returned None for %d", dice["value"])
-        return
-
-    _send_message(
-        chat_id=message["chat"]["id"],
-        text=result_text,
-        reply_to_message_id=message["message_id"],
-    )
-
-
-def _request_updates(last_update_id: Optional[int]) -> List[dict]:
-    body: Optional[dict] = None
-    if last_update_id:
-        body = {
-            "offset": last_update_id + 1,
-            "timeout": 10,
-        }
-    return _get_actual_body(requests.post(
-        _build_url("getUpdates"),
-        json=body,
-        timeout=15,
-    ))
-
-
-def _handle_updates(handler: Callable[[dict], None]):
-    last_update_id: Optional[int] = None
-    while True:
-        updates = _request_updates(last_update_id)
-        try:
-            for update in updates:
-                _LOG.info(f"Received update: {update}")
-                handler(update)
-                last_update_id = update["update_id"]
-        except Exception as e:
-            _LOG.error("Could not handle update", exc_info=e)
-
-
-def _setup_logging():
-    logging.basicConfig()
-    _LOG.level = logging.INFO
-
-
-def _setup_sentry():
-    dsn = os.getenv("SENTRY_DSN")
-    if not dsn:
-        _LOG.warning("Sentry DSN not found")
-        return
-
-    sentry_sdk.init(
-        dsn,
-
-        # Set traces_sample_rate to 1.0 to capture 100%
-        # of transactions for performance monitoring.
-        # We recommend adjusting this value in production.
-        traces_sample_rate=1.0
-    )
-
-
-def main():
-    _setup_logging()
-    _setup_sentry()
-
-    if not _API_KEY:
-        _LOG.error("Missing API key")
-        sys.exit(1)
-
-    _handle_updates(_handle_update)
-
-
-if __name__ == '__main__':
-    main()
+    def _handle_updates(self, handler: Callable[[dict], None]):
+        last_update_id: Optional[int] = None
+        while True:
+            updates = self._request_updates(last_update_id)
+            try:
+                for update in updates:
+                    _LOG.info(f"Received update: {update}")
+                    handler(update)
+                    last_update_id = update["update_id"]
+            except Exception as e:
+                _LOG.error("Could not handle update", exc_info=e)

@@ -29,5 +29,7 @@ spec:
               cpu: 10m
               memory: 32Mi
           envFrom:
+            - configMapRef:
+                name: horoscope-telegram
             - secretRef:
                 name: horoscope-secrets

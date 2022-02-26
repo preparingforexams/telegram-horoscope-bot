@@ -10,6 +10,7 @@ import requests
 import sentry_sdk
 
 _API_KEY = os.getenv("TELEGRAM_API_KEY")
+_OPENAI_TOKEN = os.getenv("OPENAI_TOKEN")
 
 _LOG = logging.getLogger("horoscopebot")
 

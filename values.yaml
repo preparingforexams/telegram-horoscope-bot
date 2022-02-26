@@ -3,3 +3,5 @@ telegram:
   apiKey: ${TELEGRAM_TOKEN}
 sentry:
   dsn: ${SENTRY_DSN}
+openai:
+  token: ${OPENAI_TOKEN}

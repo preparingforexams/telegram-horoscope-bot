@@ -1,9 +1,9 @@
 import random
 from dataclasses import dataclass
-from datetime import datetime
 from typing import Optional, List, Dict
 
 import openai
+import pendulum
 
 from horoscopebot.config import OpenAiConfig
 from .horoscope import Horoscope, SLOT_MACHINE_VALUES, Slot
@@ -140,14 +140,14 @@ class OpenAiHoroscope(Horoscope):
         if slots == (Slot.LEMON, Slot.LEMON, Slot.LEMON):
             return None
 
-        if not self._rate_limiter.can_use(context_id=context_id, user_id=user_id, at_time=datetime.now()):
+        if not self._rate_limiter.can_use(context_id=context_id, user_id=user_id, at_time=pendulum.now(pendulum.UTC)):
             return "Du warst heute schon dran."
 
         avenue = _AVENUE_BY_FIRST_SLOT[slots[0]]
         prompt = avenue.build_prompt()
         completion = self._create_completion(user_id, prompt)
 
-        self._rate_limiter.add_usage(context_id=context_id, user_id=user_id, time=datetime.now())
+        self._rate_limiter.add_usage(context_id=context_id, user_id=user_id, time=pendulum.now(pendulum.UTC))
 
         return completion
 

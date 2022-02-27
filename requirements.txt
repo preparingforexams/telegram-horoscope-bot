@@ -1,3 +1,4 @@
+pendulum==2.1.2
 python-dotenv==0.19.2
 openai==0.15.0
 requests==2.27.1

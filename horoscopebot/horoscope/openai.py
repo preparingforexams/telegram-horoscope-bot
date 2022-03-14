@@ -1,6 +1,6 @@
 import random
 from dataclasses import dataclass
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Tuple
 
 import openai
 import pendulum
@@ -137,17 +137,22 @@ class OpenAiHoroscope(Horoscope):
 
     def provide_horoscope(self, dice: int, context_id: int, user_id: int) -> Optional[str]:
         slots = SLOT_MACHINE_VALUES[dice]
+
+        now = pendulum.now(pendulum.UTC)
+        if not self._rate_limiter.can_use(context_id=context_id, user_id=user_id, at_time=now):
+            return "Du warst heute schon dran."
+
+        result = self._create_horoscope(user_id, slots)
+        self._rate_limiter.add_usage(context_id=context_id, user_id=user_id, time=now)
+        return result
+
+    def _create_horoscope(self, user_id: int, slots: Tuple[Slot, Slot, Slot]) -> Optional[str]:
         if slots == (Slot.LEMON, Slot.LEMON, Slot.LEMON):
             return None
-
-        if not self._rate_limiter.can_use(context_id=context_id, user_id=user_id, at_time=pendulum.now(pendulum.UTC)):
-            return "Du warst heute schon dran."
 
         avenue = _AVENUE_BY_FIRST_SLOT[slots[0]]
         prompt = avenue.build_prompt()
         completion = self._create_completion(user_id, prompt)
-
-        self._rate_limiter.add_usage(context_id=context_id, user_id=user_id, time=pendulum.now(pendulum.UTC))
 
         return completion
 

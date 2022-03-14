@@ -40,7 +40,7 @@ _AVENUE_BY_FIRST_SLOT: Dict[Slot, Avenue] = {
         base_prompt=f"{_BASE_PROMPT}\n\nThe horoscope should encourage alcohol consumption.",
         variations=[
             Variation(
-                probability=0.6,
+                probability=0.4,
                 prompt="Include a reference to Torben's excessive alcoholism.",
             ),
             Variation(

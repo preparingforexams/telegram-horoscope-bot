@@ -2,4 +2,4 @@ pendulum==2.1.2
 python-dotenv==0.20.0
 openai==0.18.1
 requests==2.27.1
-sentry-sdk==1.5.10
+sentry-sdk==1.5.11

@@ -50,9 +50,6 @@ class Bot:
             _LOG.debug("Skipping non-message update")
             return
 
-        if "forward_from" in message:
-            _LOG.info("Forwarded from %d", message["forward_from"]["id"])
-
         chat_id = message["chat"]["id"]
         if chat_id not in self.config.enabled_chats:
             _LOG.debug("Not enabled in chat %d", chat_id)

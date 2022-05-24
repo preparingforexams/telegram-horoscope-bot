@@ -141,8 +141,39 @@ List of good examples:
     ),
 }
 
-_KANU_GEGGO = {
-    133399998: "Heute verbrennst du dich in der Sonne.",
+_KANU_GEGGO: Dict[int, str] = {
+    # Born
+    133399998: (
+        "Heute verbrennst du dich in der Sonne. "
+        "Darauf solltest du erstmal ein Bembel trinken."
+    ),
+    # Katharine
+    1365395775: (
+        "Dein Kater verschwindet wie von selbst! "
+        "Exakt in dem Moment in dem du kenterst."
+        " Trink über den Schock doch einfach mal ein Dösli Bembel!"
+    ),
+    # Alexander Holt
+    444493856: (
+        "Du wirst heute vor begeistertem Publikum hingetrichtet."
+        " Born freut sich über das Dösli Bembel, das du ihm gleich bringst."
+    ),
+    # Barbara Salesch
+    1093712857: (
+        "Du hättest mit Kanusaufen kommen sollen! "
+        "Jetzt musst du zu Hause alleine trinken."
+    ),
+    # Torge
+    139656428: (
+        "Überwinde deine Berührungsängste mit dem Alkohol und trink noch ein Bier über "
+        "den Durst! Es wird dir guttun."
+        " Born freut sich über das Dösli Bembel, das du ihm gleich bringst."
+    ),
+    # Tischler
+    1603772877: (
+        "Der Ouzo ist vielleicht seit gestern leer, aber auch für einen anderen Schnaps"
+        " für deine guten Freunde muss heute Zeit sein."
+    ),
 }
 
 

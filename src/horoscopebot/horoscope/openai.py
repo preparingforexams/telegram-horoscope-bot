@@ -1,5 +1,6 @@
 import random
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Optional, List, Dict, Tuple
 
 import openai
@@ -140,6 +141,10 @@ List of good examples:
     ),
 }
 
+_KANU_GEGGO = {
+    133399998: "Heute verbrennst du dich in der Sonne.",
+}
+
 
 class OpenAiHoroscope(Horoscope):
     def __init__(self, config: OpenAiConfig):
@@ -162,15 +167,29 @@ class OpenAiHoroscope(Horoscope):
         ):
             return "Du warst heute schon dran."
 
-        result = self._create_horoscope(user_id, slots)
+        result = self._create_horoscope(user_id, slots, now)
         self._rate_limiter.add_usage(context_id=context_id, user_id=user_id, time=now)
         return result
 
-    def _create_horoscope(self, user_id: int, slots: Tuple[Slot, Slot, Slot]) -> str:
+    def _create_horoscope(
+        self,
+        user_id: int,
+        slots: Tuple[Slot, Slot, Slot],
+        time: datetime,
+    ) -> str:
+        geggo = self._make_geggo(user_id, time)
+        if geggo:
+            return geggo
+
         avenue = _AVENUE_BY_FIRST_SLOT[slots[0]]
         prompt = avenue.build_prompt()
         completion = self._create_completion(user_id, prompt)
         return completion
+
+    def _make_geggo(self, user_id: int, time: datetime) -> Optional[str]:
+        date = time.date()
+        if date.year == 2022 and date.month == 5 and date.day == 28:
+            return _KANU_GEGGO.get(user_id)
 
     def _create_completion(self, user_id: int, prompt: str) -> str:
         response = openai.Completion.create(

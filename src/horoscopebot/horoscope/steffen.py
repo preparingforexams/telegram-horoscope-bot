@@ -33,11 +33,10 @@ _HOROSCOPE_BY_COMBINATION = {
         Slot.BAR,
     ): "Ein platter Autoreifen verändert heute dein Leben.",
     (Slot.LEMON, Slot.SEVEN, Slot.GRAPE): "Im Kühlschrank gibt es nichts zu sehen.",
-    (
-        Slot.LEMON,
-        Slot.SEVEN,
-        Slot.SEVEN,
-    ): "Völlig übermüdet manövrierst du dich doch noch elegant durch den Tag in Richtung Bett.",
+    (Slot.LEMON, Slot.SEVEN, Slot.SEVEN,): (
+        "Völlig übermüdet manövrierst du dich "
+        "doch noch elegant durch den Tag in Richtung Bett."
+    ),
     (
         Slot.GRAPE,
         Slot.LEMON,
@@ -80,17 +79,14 @@ _HOROSCOPE_BY_COMBINATION = {
         Slot.BAR,
         Slot.GRAPE,
     ): "Du verlierst dich heute in einer Diskussion über Elefantenbabys.",
-    (
-        Slot.GRAPE,
-        Slot.BAR,
-        Slot.BAR,
-    ): "Ein spanischer Geheimagent reibt dich mit Apfelsaft ein und die Polizei schaut tatenlos zu.",
+    (Slot.GRAPE, Slot.BAR, Slot.BAR,): (
+        "Ein spanischer Geheimagent reibt dich mit Apfelsaft ein und"
+        " die Polizei schaut tatenlos zu."
+    ),
     (Slot.GRAPE, Slot.BAR, Slot.SEVEN): "Eine Rinderherde nimmt dir die Vorfahrt.",
-    (
-        Slot.GRAPE,
-        Slot.SEVEN,
-        Slot.LEMON,
-    ): "Etwas verschwindet heute plötzlich und du zweifelst an deiner mentalen Verfassung.",
+    (Slot.GRAPE, Slot.SEVEN, Slot.LEMON,): (
+        "Etwas verschwindet heute plötzlich und du zweifelst an deiner mentalen Verfassung."
+    ),
     (Slot.GRAPE, Slot.SEVEN, Slot.GRAPE): "Deine linke Socke hat heute Abend ein Loch.",
     (Slot.GRAPE, Slot.SEVEN, Slot.BAR): "Ein Eichhörnchen klaut dein Portemonnaie.",
     (

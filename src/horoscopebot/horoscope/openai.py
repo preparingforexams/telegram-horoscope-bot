@@ -9,9 +9,11 @@ from horoscopebot.config import OpenAiConfig
 from .horoscope import Horoscope, SLOT_MACHINE_VALUES, Slot
 from ..rate_limit import RateLimiter
 
-_BASE_PROMPT = r'Write a creative and witty horoscope for the day without mentioning a specific zodiac sign.' \
-               r' The horoscope must be written in German. The horoscope should consist of two short sentences.' \
-               r' Use "Du" instead of "Sie".'
+_BASE_PROMPT = (
+    r"Write a creative and witty horoscope for the day without mentioning a specific zodiac sign."
+    r" The horoscope must be written in German. The horoscope should consist of two short sentences."
+    r' Use "Du" instead of "Sie".'
+)
 
 
 @dataclass
@@ -51,27 +53,34 @@ _AVENUE_BY_FIRST_SLOT: Dict[Slot, Avenue] = {
 - Hugo
 - Ringreiterbowle
 - Rakete
-- Trichter"""
+- Trichter""",
             ),
             Variation(
                 probability=0.2,
-                prompt="Suggest some random positive effects of alcohol on the liver."
+                prompt="Suggest some random positive effects of alcohol on the liver.",
             ),
         ],
     ),
     Slot.GRAPE: Avenue(
-        base_prompt=('Beschreibe in zwei kurzen Sätzen eine sehr unerwartete Begebenheit,'
-                     ' die jemandem heute in seinem Alltag passieren wird.'
-                     ' Schreibe in der zweiten Person. Die Begebenheit sollte vollkommen undenkbar sein.'),
+        base_prompt=(
+            "Beschreibe in zwei kurzen Sätzen eine sehr unerwartete Begebenheit,"
+            " die jemandem heute in seinem Alltag passieren wird."
+            " Schreibe in der zweiten Person. Die Begebenheit sollte vollkommen undenkbar sein."
+        ),
         variations=[
             Variation(probability=0.2, prompt="Nutze Traum-Logik."),
-            Variation(probability=0.2, prompt="Die Situation sollte auf der Arbeit passieren."),
-            Variation(probability=0.2, prompt="Die Situation sollte beim Spaziergang passieren."),
+            Variation(
+                probability=0.2, prompt="Die Situation sollte auf der Arbeit passieren."
+            ),
+            Variation(
+                probability=0.2,
+                prompt="Die Situation sollte beim Spaziergang passieren.",
+            ),
             Variation(probability=0.1, prompt="Referenziere kontextfrei Trauben."),
         ],
     ),
     Slot.LEMON: Avenue(
-        base_prompt=f'''{_BASE_PROMPT}
+        base_prompt=f"""{_BASE_PROMPT}
 
 The outlook of the horoscope should be negative.
 
@@ -91,11 +100,11 @@ A list of good examples:
 - "Im Kühlschrank gibt es nichts zu sehen."
 - "Völlig übermüdet manövrierst du dich doch noch elegant durch den Tag in Richtung Bett."
 - "Du fängst schwach an, lässt dann aber auch stark nach."
-''',
+""",
         variations=[],
     ),
     Slot.SEVEN: Avenue(
-        base_prompt=f'''{_BASE_PROMPT}
+        base_prompt=f"""{_BASE_PROMPT}
 
 The outlook of the horoscope should be very positive.
 
@@ -116,11 +125,11 @@ List of good examples:
 - "Dein Leben hat heute endlich wieder Sinn."
 - "Niemand kann dich aufhalten!"
 - "Du hast heute die Chance, dein Leben zu verändern. Nehme sie wahr!"
-''',
+""",
         variations=[
             Variation(
                 probability=0.2,
-                prompt="Suggest a random risky activity that one could do in their daily life."
+                prompt="Suggest a random risky activity that one could do in their daily life.",
             ),
         ],
     ),
@@ -128,25 +137,30 @@ List of good examples:
 
 
 class OpenAiHoroscope(Horoscope):
-
     def __init__(self, config: OpenAiConfig):
         self._config = config
         openai.api_key = config.token
 
         self._rate_limiter = RateLimiter()
 
-    def provide_horoscope(self, dice: int, context_id: int, user_id: int) -> Optional[str]:
+    def provide_horoscope(
+        self, dice: int, context_id: int, user_id: int
+    ) -> Optional[str]:
         slots = SLOT_MACHINE_VALUES[dice]
 
         now = pendulum.now(pendulum.UTC)
-        if not self._rate_limiter.can_use(context_id=context_id, user_id=user_id, at_time=now):
+        if not self._rate_limiter.can_use(
+            context_id=context_id, user_id=user_id, at_time=now
+        ):
             return "Du warst heute schon dran."
 
         result = self._create_horoscope(user_id, slots)
         self._rate_limiter.add_usage(context_id=context_id, user_id=user_id, time=now)
         return result
 
-    def _create_horoscope(self, user_id: int, slots: Tuple[Slot, Slot, Slot]) -> Optional[str]:
+    def _create_horoscope(
+        self, user_id: int, slots: Tuple[Slot, Slot, Slot]
+    ) -> Optional[str]:
         if slots == (Slot.LEMON, Slot.LEMON, Slot.LEMON):
             return None
 

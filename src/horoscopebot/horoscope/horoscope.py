@@ -5,7 +5,9 @@ from typing import Dict, Tuple, Optional
 
 class Horoscope(abc.ABC):
     @abc.abstractmethod
-    def provide_horoscope(self, dice: int, context_id: int, user_id: int) -> Optional[str]:
+    def provide_horoscope(
+        self, dice: int, context_id: int, user_id: int
+    ) -> Optional[str]:
         pass
 
 

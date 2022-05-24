@@ -12,10 +12,10 @@ class Env:
         self._values = values
 
     def get_string(
-            self,
-            key: str,
-            default: Optional[str] = None,
-            required: bool = True,
+        self,
+        key: str,
+        default: Optional[str] = None,
+        required: bool = True,
     ) -> Optional[str]:
         value = self._values.get(key, default)
         if required:
@@ -27,10 +27,10 @@ class Env:
         return value
 
     def get_int(
-            self,
-            key: str,
-            default: Optional[int] = None,
-            required: bool = True,
+        self,
+        key: str,
+        default: Optional[int] = None,
+        required: bool = True,
     ) -> Optional[int]:
         value = self._values.get(key)
         if required and default is None:
@@ -44,10 +44,10 @@ class Env:
         return int(value)
 
     def get_int_list(
-            self,
-            key: str,
-            default: Optional[List[int]] = None,
-            required: bool = True,
+        self,
+        key: str,
+        default: Optional[List[int]] = None,
+        required: bool = True,
     ) -> Optional[List[int]]:
         values = self._values.get(key)
         if required and default is None:
@@ -58,7 +58,7 @@ class Env:
         elif values is None or not values.strip() and default is not None:
             return default
 
-        return [int(value) for value in values.split(',')]
+        return [int(value) for value in values.split(",")]
 
 
 def _load_env(name: str) -> dict:
@@ -80,6 +80,7 @@ def load_env(names: Union[str, Tuple[str, ...]]) -> Env:
         raise ValueError(f"Invalid .env names: {names}")
 
     from os import environ
+
     result.update(environ)
 
     return Env(result)
@@ -95,8 +96,8 @@ class Config:
     def from_env(cls, env: Env) -> Config:
         return cls(
             horoscope=HoroscopeConfig.from_env(env),
-            sentry_dsn=env.get_string('SENTRY_DSN', required=False),
-            telegram=TelegramConfig.from_env(env)
+            sentry_dsn=env.get_string("SENTRY_DSN", required=False),
+            telegram=TelegramConfig.from_env(env),
         )
 
 
@@ -128,7 +129,7 @@ class OpenAiConfig:
     @classmethod
     def from_env(cls, env: Env) -> OpenAiConfig:
         return cls(
-            token=env.get_string('OPENAI_TOKEN'),
+            token=env.get_string("OPENAI_TOKEN"),
         )
 
 
@@ -140,6 +141,6 @@ class TelegramConfig:
     @classmethod
     def from_env(cls, env: Env) -> TelegramConfig:
         return cls(
-            enabled_chats=env.get_int_list('TELEGRAM_ENABLED_CHATS', [133399998]),
-            token=env.get_string('TELEGRAM_API_KEY'),
+            enabled_chats=env.get_int_list("TELEGRAM_ENABLED_CHATS", [133399998]),
+            token=env.get_string("TELEGRAM_API_KEY"),
         )

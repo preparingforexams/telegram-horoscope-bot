@@ -28,16 +28,20 @@ class Bot:
             return body["result"]
         raise ValueError(f"Body was not ok! {body}")
 
-    def _send_message(self, chat_id: int, text: str, reply_to_message_id: Optional[int]) -> dict:
-        return self._get_actual_body(requests.post(
-            self._build_url("sendMessage"),
-            json={
-                "text": text,
-                "chat_id": chat_id,
-                "reply_to_message_id": reply_to_message_id,
-            },
-            timeout=10,
-        ))
+    def _send_message(
+        self, chat_id: int, text: str, reply_to_message_id: Optional[int]
+    ) -> dict:
+        return self._get_actual_body(
+            requests.post(
+                self._build_url("sendMessage"),
+                json={
+                    "text": text,
+                    "chat_id": chat_id,
+                    "reply_to_message_id": reply_to_message_id,
+                },
+                timeout=10,
+            )
+        )
 
     def _handle_update(self, update: dict):
         message = update.get("message")
@@ -46,7 +50,7 @@ class Bot:
             _LOG.debug("Skipping non-message update")
             return
 
-        chat_id = message['chat']['id']
+        chat_id = message["chat"]["id"]
         if chat_id not in self.config.enabled_chats:
             _LOG.debug("Not enabled in chat %d", chat_id)
             return
@@ -60,11 +64,16 @@ class Bot:
             _LOG.debug("Skipping non-slot-machine message")
             return
 
-        user_id = message['from']['id']
-        result_text = self.horoscope.provide_horoscope(dice=dice["value"], context_id=chat_id, user_id=user_id)
+        user_id = message["from"]["id"]
+        result_text = self.horoscope.provide_horoscope(
+            dice=dice["value"], context_id=chat_id, user_id=user_id
+        )
 
         if result_text is None:
-            _LOG.debug("Not sending horoscope because horoscope returned None for %d", dice["value"])
+            _LOG.debug(
+                "Not sending horoscope because horoscope returned None for %d",
+                dice["value"],
+            )
             return
 
         self._send_message(
@@ -80,11 +89,13 @@ class Bot:
                 "offset": last_update_id + 1,
                 "timeout": 10,
             }
-        return self._get_actual_body(requests.post(
-            self._build_url("getUpdates"),
-            json=body,
-            timeout=15,
-        ))
+        return self._get_actual_body(
+            requests.post(
+                self._build_url("getUpdates"),
+                json=body,
+                timeout=15,
+            )
+        )
 
     def _handle_updates(self, handler: Callable[[dict], None]):
         last_update_id: Optional[int] = None

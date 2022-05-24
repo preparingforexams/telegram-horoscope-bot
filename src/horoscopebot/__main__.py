@@ -24,11 +24,10 @@ def _setup_sentry(dsn: Optional[str]):
 
     sentry_sdk.init(
         dsn,
-
         # Set traces_sample_rate to 1.0 to capture 100%
         # of transactions for performance monitoring.
         # We recommend adjusting this value in production.
-        traces_sample_rate=1.0
+        traces_sample_rate=1.0,
     )
 
 
@@ -56,5 +55,5 @@ def main():
     bot.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

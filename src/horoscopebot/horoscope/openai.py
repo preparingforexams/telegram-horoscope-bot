@@ -166,9 +166,7 @@ class OpenAiHoroscope(Horoscope):
         self._rate_limiter.add_usage(context_id=context_id, user_id=user_id, time=now)
         return result
 
-    def _create_horoscope(
-        self, user_id: int, slots: Tuple[Slot, Slot, Slot]
-    ) -> str:
+    def _create_horoscope(self, user_id: int, slots: Tuple[Slot, Slot, Slot]) -> str:
         avenue = _AVENUE_BY_FIRST_SLOT[slots[0]]
         prompt = avenue.build_prompt()
         completion = self._create_completion(user_id, prompt)

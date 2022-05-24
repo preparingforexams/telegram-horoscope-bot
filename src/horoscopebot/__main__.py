@@ -35,7 +35,7 @@ def _load_horoscope(config: HoroscopeConfig) -> Horoscope:
     if config.mode == HoroscopeMode.Steffen:
         return SteffenHoroscope()
     elif config.mode == HoroscopeMode.OpenAi:
-        return OpenAiHoroscope(config.openai)
+        return OpenAiHoroscope(config.openai)  # type:ignore
     else:
         raise ValueError()
 

@@ -10,9 +10,10 @@ from .horoscope import Horoscope, SLOT_MACHINE_VALUES, Slot
 from ..rate_limit import RateLimiter
 
 _BASE_PROMPT = (
-    r"Write a creative and witty horoscope for the day without mentioning a specific zodiac sign."
-    r" The horoscope must be written in German. The horoscope should consist of two short sentences."
-    r' Use "Du" instead of "Sie".'
+    r"Write a creative and witty horoscope for the day without mentioning a specific "
+    r"zodiac sign. The horoscope must be written in German. The horoscope should "
+    r"consist of two short sentences. "
+    r'Use "Du" instead of "Sie".'
 )
 
 
@@ -39,7 +40,9 @@ class Avenue:
 
 _AVENUE_BY_FIRST_SLOT: Dict[Slot, Avenue] = {
     Slot.BAR: Avenue(
-        base_prompt=f"{_BASE_PROMPT}\n\nThe horoscope should encourage alcohol consumption.",
+        base_prompt=(
+            f"{_BASE_PROMPT}\n\nThe horoscope should encourage alcohol consumption."
+        ),
         variations=[
             Variation(
                 probability=0.4,
@@ -63,9 +66,9 @@ _AVENUE_BY_FIRST_SLOT: Dict[Slot, Avenue] = {
     ),
     Slot.GRAPE: Avenue(
         base_prompt=(
-            "Beschreibe in zwei kurzen Sätzen eine sehr unerwartete Begebenheit,"
-            " die jemandem heute in seinem Alltag passieren wird."
-            " Schreibe in der zweiten Person. Die Begebenheit sollte vollkommen undenkbar sein."
+            "Beschreibe in zwei kurzen Sätzen eine sehr unerwartete Begebenheit, "
+            "die jemandem heute in seinem Alltag passieren wird. Schreibe in der "
+            "zweiten Person. Die Begebenheit sollte vollkommen undenkbar sein."
         ),
         variations=[
             Variation(probability=0.2, prompt="Nutze Traum-Logik."),
@@ -98,7 +101,6 @@ A list of good examples:
 - "Deine Freunde machen sich über deine Frisur lustig."
 - "Ein platter Autoreifen verändert heute dein Leben."
 - "Im Kühlschrank gibt es nichts zu sehen."
-- "Völlig übermüdet manövrierst du dich doch noch elegant durch den Tag in Richtung Bett."
 - "Du fängst schwach an, lässt dann aber auch stark nach."
 """,
         variations=[],
@@ -129,7 +131,10 @@ List of good examples:
         variations=[
             Variation(
                 probability=0.2,
-                prompt="Suggest a random risky activity that one could do in their daily life.",
+                prompt=(
+                    "Suggest a random risky activity that one "
+                    "could do in their daily life."
+                ),
             ),
         ],
     ),

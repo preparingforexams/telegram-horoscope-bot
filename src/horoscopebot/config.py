@@ -129,7 +129,7 @@ class OpenAiConfig:
     @classmethod
     def from_env(cls, env: Env) -> OpenAiConfig:
         return cls(
-            token=env.get_string("OPENAI_TOKEN"),
+            token=env.get_string("OPENAI_TOKEN"),  # type:ignore
         )
 
 
@@ -141,6 +141,9 @@ class TelegramConfig:
     @classmethod
     def from_env(cls, env: Env) -> TelegramConfig:
         return cls(
-            enabled_chats=env.get_int_list("TELEGRAM_ENABLED_CHATS", [133399998]),
-            token=env.get_string("TELEGRAM_API_KEY"),
+            enabled_chats=env.get_int_list(  # type:ignore
+                "TELEGRAM_ENABLED_CHATS",
+                [133399998],
+            ),
+            token=env.get_string("TELEGRAM_API_KEY"),  # type:ignore
         )

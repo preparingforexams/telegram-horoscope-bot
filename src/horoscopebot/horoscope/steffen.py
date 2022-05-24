@@ -85,7 +85,8 @@ _HOROSCOPE_BY_COMBINATION = {
     ),
     (Slot.GRAPE, Slot.BAR, Slot.SEVEN): "Eine Rinderherde nimmt dir die Vorfahrt.",
     (Slot.GRAPE, Slot.SEVEN, Slot.LEMON,): (
-        "Etwas verschwindet heute plötzlich und du zweifelst an deiner mentalen Verfassung."
+        "Etwas verschwindet heute plötzlich und "
+        "du zweifelst an deiner mentalen Verfassung."
     ),
     (Slot.GRAPE, Slot.SEVEN, Slot.GRAPE): "Deine linke Socke hat heute Abend ein Loch.",
     (Slot.GRAPE, Slot.SEVEN, Slot.BAR): "Ein Eichhörnchen klaut dein Portemonnaie.",

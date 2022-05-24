@@ -2,11 +2,14 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
+RUN pip install poetry --no-cache
+RUN poetry config virtualenvs.create false
 
-RUN pip install -r requirements.txt --no-cache
+COPY [ "poetry.toml", "poetry.lock", "pyproject.toml", "./" ]
 
-COPY horoscopebot horoscopebot
+RUN poetry install --no-dev
+
+COPY src .
 
 ARG build
 ENV BUILD_SHA=$build

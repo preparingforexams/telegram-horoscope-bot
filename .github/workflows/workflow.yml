@@ -1,9 +1,25 @@
 name: Workflow
-on: [push]
+on: [ push ]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    container: python:3.10-slim
+    steps:
+      - name: Install Poetry
+        run: pip install poetry
+      - uses: actions/checkout@v3
+      - run: poetry install
+      - name: Check coding standards
+        run: |
+          poetry run black --check src/
+          poetry run flake8 src/
+          poetry run mypy src/
+
   push_docker:
     runs-on: ubuntu-latest
+    needs:
+      - lint
     if: success() && github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v3

@@ -191,6 +191,8 @@ class OpenAiHoroscope(Horoscope):
         if date.year == 2022 and date.month == 5 and date.day == 28:
             return _KANU_GEGGO.get(user_id)
 
+        return None
+
     def _create_completion(self, user_id: int, prompt: str) -> str:
         response = openai.Completion.create(
             engine="text-davinci-001",

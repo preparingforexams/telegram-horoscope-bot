@@ -153,6 +153,9 @@ class OpenAiHoroscope(Horoscope):
     ) -> Optional[str]:
         slots = SLOT_MACHINE_VALUES[dice]
 
+        if slots == (Slot.LEMON, Slot.LEMON, Slot.LEMON):
+            return None
+
         now = pendulum.now(pendulum.UTC)
         if not self._rate_limiter.can_use(
             context_id=context_id, user_id=user_id, at_time=now
@@ -165,14 +168,10 @@ class OpenAiHoroscope(Horoscope):
 
     def _create_horoscope(
         self, user_id: int, slots: Tuple[Slot, Slot, Slot]
-    ) -> Optional[str]:
-        if slots == (Slot.LEMON, Slot.LEMON, Slot.LEMON):
-            return None
-
+    ) -> str:
         avenue = _AVENUE_BY_FIRST_SLOT[slots[0]]
         prompt = avenue.build_prompt()
         completion = self._create_completion(user_id, prompt)
-
         return completion
 
     def _create_completion(self, user_id: int, prompt: str) -> str:

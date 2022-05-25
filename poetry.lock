@@ -130,7 +130,7 @@ python-versions = ">=3.8"
 
 [[package]]
 name = "openai"
-version = "0.18.1"
+version = "0.19.0"
 description = "Python client library for the OpenAI API"
 category = "main"
 optional = false
@@ -391,7 +391,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.10"
-content-hash = "4634c18acfec543bbdddce1de122988ee13237ff12b9747e437ad493cfe8c2cd"
+content-hash = "9dc1535438dc31bf8813b6f2a79fea43aac479dcf9c08afc187abe7ffce9c3e9"
 
 [metadata.files]
 black = [
@@ -505,7 +505,7 @@ numpy = [
     {file = "numpy-1.22.4.zip", hash = "sha256:425b390e4619f58d8526b3dcf656dde069133ae5c240229821f01b5f44ea07af"},
 ]
 openai = [
-    {file = "openai-0.18.1.tar.gz", hash = "sha256:a3efbaf16fc1f6d096232b161869f003d0496744071878466ced646a082ee61c"},
+    {file = "openai-0.19.0.tar.gz", hash = "sha256:9606025836a09527d88799f0230ddc851711f1775298af7be649630defd26793"},
 ]
 openpyxl = [
     {file = "openpyxl-3.0.10-py2.py3-none-any.whl", hash = "sha256:0ab6d25d01799f97a9464630abacbb34aafecdcaa0ef3cba6d6b3499867d0355"},

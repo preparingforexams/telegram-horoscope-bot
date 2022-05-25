@@ -5,8 +5,8 @@ from typing import Optional, List, Dict, Tuple
 
 import openai
 import pendulum
-
 from horoscopebot.config import OpenAiConfig
+
 from .horoscope import Horoscope, SLOT_MACHINE_VALUES, Slot
 from ..rate_limit import RateLimiter
 
@@ -189,28 +189,35 @@ class OpenAiHoroscope(Horoscope):
     ) -> Optional[str]:
         slots = SLOT_MACHINE_VALUES[dice]
 
-        if slots == (Slot.LEMON, Slot.LEMON, Slot.LEMON):
-            return None
-
         now = pendulum.now(pendulum.UTC)
         if not self._rate_limiter.can_use(
             context_id=context_id, user_id=user_id, at_time=now
         ):
+            if self._is_lemons(slots):
+                # The other bot will send the picture anyway, so we'll be quiet
+                return None
             return "Du warst heute schon dran."
 
         result = self._create_horoscope(user_id, slots, now)
         self._rate_limiter.add_usage(context_id=context_id, user_id=user_id, time=now)
         return result
 
+    @staticmethod
+    def _is_lemons(slots: Tuple[Slot, Slot, Slot]) -> bool:
+        return slots == (Slot.LEMON, Slot.LEMON, Slot.LEMON)
+
     def _create_horoscope(
         self,
         user_id: int,
         slots: Tuple[Slot, Slot, Slot],
         time: datetime,
-    ) -> str:
+    ) -> Optional[str]:
         geggo = self._make_geggo(user_id, time)
         if geggo:
             return geggo
+
+        if self._is_lemons(slots):
+            return None
 
         avenue = _AVENUE_BY_FIRST_SLOT[slots[0]]
         prompt = avenue.build_prompt()

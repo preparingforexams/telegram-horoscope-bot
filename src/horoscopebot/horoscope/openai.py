@@ -174,6 +174,11 @@ _KANU_GEGGO: Dict[int, str] = {
         "Der Ouzo ist vielleicht seit gestern leer, aber auch für einen anderen Schnaps"
         " für deine guten Freunde muss heute Zeit sein."
     ),
+    # Patt
+    166418774: (
+        "Das Paddel in die eine Hand, das Bier in die andere, und dann Vollgas! "
+        "Heute hat der Zug keine Bremsen und der Trichter ist dein bester Freund."
+    ),
 }
 
 

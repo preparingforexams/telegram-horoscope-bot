@@ -175,11 +175,14 @@ test = ["hypothesis (>=5.5.3)", "pytest (>=6.0)", "pytest-xdist (>=1.31)"]
 
 [[package]]
 name = "pandas-stubs"
-version = "1.4.3.220710"
+version = "1.4.3.220718"
 description = "Type annotations for pandas"
 category = "main"
 optional = false
 python-versions = ">=3.8,<3.11"
+
+[package.dependencies]
+types-pytz = ">=2022.1.1"
 
 [[package]]
 name = "pathspec"
@@ -349,6 +352,14 @@ dev = ["py-make (>=0.1.0)", "twine", "wheel"]
 notebook = ["ipywidgets (>=6)"]
 slack = ["slack-sdk"]
 telegram = ["requests"]
+
+[[package]]
+name = "types-pytz"
+version = "2022.1.2"
+description = "Typing stubs for pytz"
+category = "main"
+optional = false
+python-versions = "*"
 
 [[package]]
 name = "types-requests"
@@ -537,8 +548,8 @@ pandas = [
     {file = "pandas-1.4.3.tar.gz", hash = "sha256:2ff7788468e75917574f080cd4681b27e1a7bf36461fe968b49a87b5a54d007c"},
 ]
 pandas-stubs = [
-    {file = "pandas-stubs-1.4.3.220710.tar.gz", hash = "sha256:57afeb068d56012ff9813e61ebdc36473fa225ff1258fc3e4783e524101f4ad0"},
-    {file = "pandas_stubs-1.4.3.220710-py3-none-any.whl", hash = "sha256:90998e8477e7c28a9a2f84b6aa0a6cfca4ae3b98ed1a4484ece9f75da3f7395b"},
+    {file = "pandas-stubs-1.4.3.220718.tar.gz", hash = "sha256:b1ce4d805c56b98c3453935bbedc46b96d169701137c4e03cff7d22731c6bad5"},
+    {file = "pandas_stubs-1.4.3.220718-py3-none-any.whl", hash = "sha256:05e7b0b2cb2b1f07ce27ea8b360b3bdf11e602cf44276199ca7f88a2c2705784"},
 ]
 pathspec = [
     {file = "pathspec-0.9.0-py2.py3-none-any.whl", hash = "sha256:7d15c4ddb0b5c802d161efc417ec1a2558ea2653c2e8ad9c19098201dc1c993a"},
@@ -614,6 +625,10 @@ tomli = [
 tqdm = [
     {file = "tqdm-4.64.0-py2.py3-none-any.whl", hash = "sha256:74a2cdefe14d11442cedf3ba4e21a3b84ff9a2dbdc6cfae2c34addb2a14a5ea6"},
     {file = "tqdm-4.64.0.tar.gz", hash = "sha256:40be55d30e200777a307a7585aee69e4eabb46b4ec6a4b4a5f2d9f11e7d5408d"},
+]
+types-pytz = [
+    {file = "types-pytz-2022.1.2.tar.gz", hash = "sha256:1a8b25c225c5e6bd8468aa9eb45ddd3b337f6716d4072ad0aa4ef1e41478eebc"},
+    {file = "types_pytz-2022.1.2-py3-none-any.whl", hash = "sha256:8aa9fd2af9dee5f5bd7221c6804c9addeafa7ebc0008f544d4ace02b066818a4"},
 ]
 types-requests = [
     {file = "types-requests-2.28.3.tar.gz", hash = "sha256:fb9ea69311766967f9e91861211ec7449f6484025b766ea709689c0dbb29d7ba"},

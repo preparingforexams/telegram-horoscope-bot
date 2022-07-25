@@ -363,7 +363,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-requests"
-version = "2.28.3"
+version = "2.28.4"
 description = "Typing stubs for requests"
 category = "dev"
 optional = false
@@ -404,7 +404,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.10"
-content-hash = "19aa82e170e36f4636ee2fb5e87ec1d160defd434a57869863ed6f9b2b2761e6"
+content-hash = "8a02eea4ec22a4a4c2e9cc975d6b0d917a1c6a54b368839eea3d74a578ef627a"
 
 [metadata.files]
 black = [
@@ -631,8 +631,8 @@ types-pytz = [
     {file = "types_pytz-2022.1.2-py3-none-any.whl", hash = "sha256:8aa9fd2af9dee5f5bd7221c6804c9addeafa7ebc0008f544d4ace02b066818a4"},
 ]
 types-requests = [
-    {file = "types-requests-2.28.3.tar.gz", hash = "sha256:fb9ea69311766967f9e91861211ec7449f6484025b766ea709689c0dbb29d7ba"},
-    {file = "types_requests-2.28.3-py3-none-any.whl", hash = "sha256:66f0e427708588d4dac2f365a0b2c1ad8f31780429fd8ad193fec93139b22112"},
+    {file = "types-requests-2.28.4.tar.gz", hash = "sha256:1b9bedd60e789db62b73a4a5e5f5a78c3106e535ad69faba97b0bbdb1ea36b8f"},
+    {file = "types_requests-2.28.4-py3-none-any.whl", hash = "sha256:3ded964449fbd695ab0f8570828e2fa7cb120c3ebe8cac520e7db5834d2c8e75"},
 ]
 types-urllib3 = [
     {file = "types-urllib3-1.26.16.tar.gz", hash = "sha256:8bb3832c684c30cbed40b96e28bc04703becb2b97d82ac65ba4b968783453b0e"},

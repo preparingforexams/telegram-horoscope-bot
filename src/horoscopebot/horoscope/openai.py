@@ -46,22 +46,28 @@ _AVENUE_BY_FIRST_SLOT: Dict[Slot, Avenue] = {
         ),
         variations=[
             Variation(
-                probability=0.4,
-                prompt="Include a reference to Torben's excessive alcoholism.",
+                probability=0.3,
+                prompt="Include a reference to Fabienne's excessive alcoholism.",
             ),
             Variation(
-                probability=0.4,
-                prompt="""A list of examples of drinks to include:
-- Dousnbier
-- Ein Dösli Kölsch
-- Hugo
-- Ringreiterbowle
-- Rakete
-- Trichter""",
+                probability=0.05,
+                prompt="Suggest drinking Dousnbier",
             ),
             Variation(
-                probability=0.2,
+                probability=0.05,
+                prompt="Suggest drinking Hugo",
+            ),
+            Variation(
+                probability=0.05,
+                prompt="Suggest drinking Rakete",
+            ),
+            Variation(
+                probability=0.1,
                 prompt="Suggest some random positive effects of alcohol on the liver.",
+            ),
+            Variation(
+                probability=0.05,
+                prompt="Bully the reader for their lack of discipline.",
             ),
         ],
     ),

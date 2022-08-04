@@ -130,13 +130,14 @@ python-versions = ">=3.8"
 
 [[package]]
 name = "openai"
-version = "0.20.0"
+version = "0.22.1"
 description = "Python client library for the OpenAI API"
 category = "main"
 optional = false
 python-versions = ">=3.7.1"
 
 [package.dependencies]
+numpy = ">=1.22.0"
 openpyxl = ">=3.0.7"
 pandas = ">=1.2.3"
 pandas-stubs = ">=1.1.0.11"
@@ -145,6 +146,7 @@ tqdm = "*"
 
 [package.extras]
 dev = ["black (>=21.6b0,<22.0.0)", "pytest (>=6.0.0,<7.0.0)"]
+embeddings = ["scikit-learn (>=1.0.2)", "tenacity (>=8.0.1)"]
 
 [[package]]
 name = "openpyxl"
@@ -404,7 +406,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.10"
-content-hash = "d2a08b8c7f31f982468f0c5d892f2f75cb3f25028e17ea5e99eade47b992638d"
+content-hash = "22f350ad47b117d79585dde0c7519cd7c7a83773eb6ab1be99276617c8894c61"
 
 [metadata.files]
 black = [
@@ -518,7 +520,7 @@ numpy = [
     {file = "numpy-1.23.1.tar.gz", hash = "sha256:d748ef349bfef2e1194b59da37ed5a29c19ea8d7e6342019921ba2ba4fd8b624"},
 ]
 openai = [
-    {file = "openai-0.20.0.tar.gz", hash = "sha256:6175bf1cbd773602b80d503674f8831fc957b36b6c4f776a520b187778982720"},
+    {file = "openai-0.22.1.tar.gz", hash = "sha256:a42f8eb318b6b54458569343d178ff3062bda019c5a7793368cbf11bf3cc9bb9"},
 ]
 openpyxl = [
     {file = "openpyxl-3.0.10-py2.py3-none-any.whl", hash = "sha256:0ab6d25d01799f97a9464630abacbb34aafecdcaa0ef3cba6d6b3499867d0355"},

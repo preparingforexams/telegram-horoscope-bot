@@ -3,10 +3,13 @@ from typing import Dict, Optional, List
 
 from pendulum import DateTime, tz
 
+from datetime import tzinfo
+
 
 class RateLimitingPolicy(abc.ABC):
-    @abc.abstractmethod
+
     @property
+    @abc.abstractmethod
     def requested_history(self) -> int:
         pass
 
@@ -41,7 +44,7 @@ class RateLimiter:
         self,
         policy: RateLimitingPolicy,
         repo: RateLimitingRepo,
-        timezone: Optional[tz] = None,
+        timezone: Optional[tzinfo] = None,
     ):
         self._policy = policy
         self._repo = repo

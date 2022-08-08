@@ -39,10 +39,6 @@ spec:
       labels:
         app: horoscope-update-handler
     spec:
-      volumes:
-        - name: state
-          persistentVolumeClaim:
-            claimName: horoscope-state
       containers:
         - name: app
           image: {{ .Values.image }}

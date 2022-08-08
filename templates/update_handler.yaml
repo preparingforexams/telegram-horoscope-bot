@@ -50,7 +50,7 @@ spec:
               memory: 32Mi
           volumeMounts:
             - mountPath: /state
-              name: state
+              name: horoscope-state
           env:
             - name: HOROSCOPE_MODE
               value: openai

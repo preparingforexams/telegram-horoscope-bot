@@ -29,6 +29,8 @@ spec:
         namespace: telegram-bots
         name: horoscope-state
       spec:
+        accessModes:
+          - ReadWriteOnce
         resources:
           requests:
             storage: 1Gi

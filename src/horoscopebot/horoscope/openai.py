@@ -8,7 +8,7 @@ import pendulum
 from horoscopebot.config import OpenAiConfig
 
 from .horoscope import Horoscope, SLOT_MACHINE_VALUES, Slot
-from ..rate_limit import RateLimiter
+from ..rate_limit import RateLimiter, policy, repo
 
 _BASE_PROMPT = (
     r"Write a creative and witty horoscope for the day without mentioning a specific "
@@ -193,7 +193,10 @@ class OpenAiHoroscope(Horoscope):
         self._config = config
         openai.api_key = config.token
 
-        self._rate_limiter = RateLimiter()
+        self._rate_limiter = RateLimiter(
+            policy=policy.DailyLimitRateLimitingPolicy(limit=1),
+            repo=repo.InMemoryRateLimitingRepo(),
+        )
 
     def provide_horoscope(
         self, dice: int, context_id: int, user_id: int

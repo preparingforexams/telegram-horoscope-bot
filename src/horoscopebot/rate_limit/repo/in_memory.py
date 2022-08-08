@@ -1,11 +1,10 @@
 from typing import Dict, List
 
-from pendulum import DateTime, tz
+from pendulum import DateTime
 from .. import RateLimitingRepo
 
 
 class InMemoryRateLimitingRepo(RateLimitingRepo):
-
     def __init__(self):
         # TODO: this implementation should store more than one usage
         self._usage_time_by_user: Dict[int, Dict[int, DateTime]] = {}

@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from contextlib import contextmanager
 from pathlib import Path
-from typing import List, Iterable
+from typing import List, Generator
 
 from pendulum import DateTime
 import sqlite3
@@ -24,7 +24,7 @@ class SqliteRateLimitingRepo(RateLimitingRepo):
         return cls(connection)
 
     @contextmanager
-    def _cursor(self) -> Iterable[sqlite3.Cursor]:
+    def _cursor(self) -> Generator[sqlite3.Cursor, None, None]:
         cursor = self._connection.cursor()
         try:
             if not self._is_initialized:
@@ -72,7 +72,7 @@ class SqliteRateLimitingRepo(RateLimitingRepo):
                     context_id,
                     user_id,
                     int(utc_time.timestamp()),
-                ]
+                ],
             )
 
     def get_usages(

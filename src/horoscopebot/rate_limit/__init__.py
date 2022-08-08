@@ -1,5 +1,5 @@
 import abc
-from typing import Dict, Optional, List
+from typing import Optional, List
 
 from pendulum import DateTime, tz
 
@@ -7,7 +7,6 @@ from datetime import tzinfo
 
 
 class RateLimitingPolicy(abc.ABC):
-
     @property
     @abc.abstractmethod
     def requested_history(self) -> int:

@@ -10,3 +10,5 @@ build/
 .idea/
 
 .env
+
+usages.db

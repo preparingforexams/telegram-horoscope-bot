@@ -1,6 +1,7 @@
 import random
 from dataclasses import dataclass
 from datetime import datetime
+from pathlib import Path
 from typing import Optional, List, Dict, Tuple
 
 import openai
@@ -195,7 +196,7 @@ class OpenAiHoroscope(Horoscope):
 
         self._rate_limiter = RateLimiter(
             policy=policy.DailyLimitRateLimitingPolicy(limit=1),
-            repo=repo.InMemoryRateLimitingRepo(),
+            repo=repo.SqliteRateLimitingRepo.connect(Path(config.rate_limit_file)),
         )
 
     def provide_horoscope(

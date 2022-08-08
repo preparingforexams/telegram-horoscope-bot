@@ -1,6 +1,15 @@
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: telegram-bots
+  name: horoscope-update-handler
+spec:
+  clusterIP: None
+  type: ClusterIP
+---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   namespace: telegram-bots
   name: horoscope-update-handler
@@ -9,16 +18,29 @@ metadata:
 spec:
   revisionHistoryLimit: 1
   replicas: 1
-  strategy:
-    type: Recreate
+  serviceName: horoscope-update-handler
   selector:
     matchLabels:
       app: horoscope-update-handler
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        namespace: telegram-bots
+        name: horoscope-state
+      spec:
+        resources:
+          requests:
+            storage: 1Gi
   template:
     metadata:
       labels:
         app: horoscope-update-handler
     spec:
+      volumes:
+        - name: state
+          persistentVolumeClaim:
+            claimName: horoscope-state
       containers:
         - name: app
           image: {{ .Values.image }}
@@ -28,9 +50,14 @@ spec:
             requests:
               cpu: 10m
               memory: 32Mi
+          volumeMounts:
+            - mountPath: /state
+              name: state
           env:
             - name: HOROSCOPE_MODE
               value: openai
+            - name: OPENAI_RATE_LIMIT_FILE
+              value: /state/usages.db
           envFrom:
             - configMapRef:
                 name: horoscope-telegram

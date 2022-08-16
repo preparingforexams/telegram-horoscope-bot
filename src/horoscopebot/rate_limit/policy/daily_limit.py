@@ -6,6 +6,8 @@ from pendulum import DateTime
 from .. import RateLimitingPolicy
 
 _LOG = logging.getLogger(__name__)
+
+
 class DailyLimitRateLimitingPolicy(RateLimitingPolicy):
     def __init__(self, limit: int = 1):
         self._limit = limit

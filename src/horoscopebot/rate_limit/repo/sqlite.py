@@ -93,5 +93,5 @@ class SqliteRateLimitingRepo(RateLimitingRepo):
             )
             datetimes = [DateTime.utcfromtimestamp(row[0]) for row in result]
 
-        _LOG.info("Found {} datetimes, latest: {}", len(datetimes), datetimes[0])
+        _LOG.info("Found {} datetimes", len(datetimes))
         return datetimes

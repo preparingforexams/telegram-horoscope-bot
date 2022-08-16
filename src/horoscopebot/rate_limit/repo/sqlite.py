@@ -87,7 +87,11 @@ class SqliteRateLimitingRepo(RateLimitingRepo):
                 SELECT time FROM usages
                 WHERE context_id = ? AND user_id = ?
                 ORDER BY time DESC
+                LIMIT ?
                 """,
-                [context_id, user_id],
+                [context_id, user_id, limit],
             )
-            return [DateTime.utcfromtimestamp(row[0]) for row in result]
+            datetimes = [DateTime.utcfromtimestamp(row[0]) for row in result]
+
+        _LOG.info("Found {} datetimes, latest: {}", len(datetimes), datetimes[0])
+        return datetimes

@@ -74,6 +74,7 @@ class SqliteRateLimitingRepo(RateLimitingRepo):
                     int(utc_time.timestamp()),
                 ],
             )
+        _LOG.debug("Inserted usage for user %s in context %s", user_id, context_id)
 
     def get_usages(
         self,
@@ -93,5 +94,11 @@ class SqliteRateLimitingRepo(RateLimitingRepo):
             )
             usages = [DateTime.utcfromtimestamp(row[0]) for row in result]
 
-        _LOG.info("Found %d usages", len(usages))
+        _LOG.debug(
+            "Found %d usages for user %s in context %s (limit was %d)",
+            len(usages),
+            user_id,
+            context_id,
+            limit,
+        )
         return usages

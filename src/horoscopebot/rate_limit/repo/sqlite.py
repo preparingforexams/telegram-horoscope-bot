@@ -91,7 +91,7 @@ class SqliteRateLimitingRepo(RateLimitingRepo):
                 """,
                 [context_id, user_id, limit],
             )
-            datetimes = [DateTime.utcfromtimestamp(row[0]) for row in result]
+            usages = [DateTime.utcfromtimestamp(row[0]) for row in result]
 
-        _LOG.info("Found %d datetimes", len(datetimes))
-        return datetimes
+        _LOG.info("Found %d usages", len(usages))
+        return usages

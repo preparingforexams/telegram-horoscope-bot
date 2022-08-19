@@ -35,8 +35,8 @@ class SqliteRateLimitingRepo(RateLimitingRepo):
 
     def add_usage(
         self,
-        context_id: int,
-        user_id: int,
+        context_id: str,
+        user_id: str,
         utc_time: DateTime,
     ):
         with self._cursor() as cursor:
@@ -55,8 +55,8 @@ class SqliteRateLimitingRepo(RateLimitingRepo):
 
     def get_usages(
         self,
-        context_id: int,
-        user_id: int,
+        context_id: str,
+        user_id: str,
         limit: int = 1,
     ) -> List[DateTime]:
         with self._cursor() as cursor:

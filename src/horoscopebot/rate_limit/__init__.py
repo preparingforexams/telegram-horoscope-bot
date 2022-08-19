@@ -15,8 +15,8 @@ class RateLimitingPolicy(abc.ABC):
     @abc.abstractmethod
     def can_use(
         self,
-        context_id: int,
-        user_id: int,
+        context_id: str,
+        user_id: str,
         at_time: DateTime,
         last_usages: List[DateTime],
     ) -> bool:
@@ -25,14 +25,14 @@ class RateLimitingPolicy(abc.ABC):
 
 class RateLimitingRepo(abc.ABC):
     @abc.abstractmethod
-    def add_usage(self, context_id: int, user_id: int, utc_time: DateTime):
+    def add_usage(self, context_id: str, user_id: str, utc_time: DateTime):
         pass
 
     @abc.abstractmethod
     def get_usages(
         self,
-        context_id: int,
-        user_id: int,
+        context_id: str,
+        user_id: str,
         limit: int = 1,
     ) -> List[DateTime]:
         pass
@@ -49,7 +49,11 @@ class RateLimiter:
         self._repo = repo
         self._timezone = timezone or tz.timezone("Europe/Berlin")
 
-    def can_use(self, context_id: int, user_id: int, at_time: DateTime) -> bool:
+    def can_use(
+        self, context_id: str | int, user_id: str | int, at_time: DateTime
+    ) -> bool:
+        context_id = str(context_id)
+        user_id = str(user_id)
         requested_history = self._policy.requested_history
         history = self._repo.get_usages(
             context_id=context_id,
@@ -63,7 +67,9 @@ class RateLimiter:
             last_usages=[usage.astimezone(self._timezone) for usage in history],
         )
 
-    def add_usage(self, context_id: int, user_id: int, time: DateTime):
+    def add_usage(self, context_id: str | int, user_id: str | int, time: DateTime):
+        context_id = str(context_id)
+        user_id = str(user_id)
         utc_time = time.astimezone(tz.UTC)
         self._repo.add_usage(
             context_id=context_id,

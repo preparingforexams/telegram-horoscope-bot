@@ -18,8 +18,8 @@ class DailyLimitRateLimitingPolicy(RateLimitingPolicy):
 
     def can_use(
         self,
-        context_id: int,
-        user_id: int,
+        context_id: str,
+        user_id: str,
         at_time: DateTime,
         last_usages: List[DateTime],
     ) -> bool:

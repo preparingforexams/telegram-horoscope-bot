@@ -1,0 +1,1 @@
+CREATE TABLE debug (key TEXT PRIMARY KEY, value TEXT);

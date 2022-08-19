@@ -38,17 +38,19 @@ class SqliteRateLimitingRepo(RateLimitingRepo):
         context_id: str,
         user_id: str,
         utc_time: DateTime,
+        reference_id: str | None,
     ):
         with self._cursor() as cursor:
             cursor.execute(
                 """
-                INSERT INTO usages (context_id, user_id, time)
-                VALUES (?, ?, ?);
+                INSERT INTO usages (context_id, user_id, time, reference_id)
+                VALUES (?, ?, ?, ?);
                 """,
                 [
                     context_id,
                     user_id,
                     int(utc_time.timestamp()),
+                    reference_id,
                 ],
             )
         _LOG.debug("Inserted usage for user %s in context %s", user_id, context_id)

@@ -25,7 +25,13 @@ class RateLimitingPolicy(abc.ABC):
 
 class RateLimitingRepo(abc.ABC):
     @abc.abstractmethod
-    def add_usage(self, context_id: str, user_id: str, utc_time: DateTime):
+    def add_usage(
+        self,
+        context_id: str,
+        user_id: str,
+        utc_time: DateTime,
+        reference_id: str | None,
+    ):
         pass
 
     @abc.abstractmethod
@@ -67,7 +73,13 @@ class RateLimiter:
             last_usages=[usage.astimezone(self._timezone) for usage in history],
         )
 
-    def add_usage(self, context_id: str | int, user_id: str | int, time: DateTime):
+    def add_usage(
+        self,
+        context_id: str | int,
+        user_id: str | int,
+        time: DateTime,
+        reference_id: str | None = None
+    ):
         context_id = str(context_id)
         user_id = str(user_id)
         utc_time = time.astimezone(tz.UTC)
@@ -75,4 +87,5 @@ class RateLimiter:
             context_id=context_id,
             user_id=user_id,
             utc_time=utc_time,
+            reference_id=reference_id,
         )

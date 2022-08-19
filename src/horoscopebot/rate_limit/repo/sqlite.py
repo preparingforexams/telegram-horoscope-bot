@@ -15,11 +15,12 @@ _LOG = logging.getLogger(__name__)
 
 class SqliteRateLimitingRepo(RateLimitingRepo):
     def __init__(self, connection: sqlite3.Connection):
-        self._is_initialized = False
         self._connection = connection
 
     @classmethod
     def connect(cls, db_file: Path) -> SqliteRateLimitingRepo:
+        if not db_file.is_file():
+            raise ValueError(f"Database file {db_file} does not exist or is not a file")
         connection = sqlite3.connect(db_file)
         return cls(connection)
 
@@ -27,30 +28,6 @@ class SqliteRateLimitingRepo(RateLimitingRepo):
     def _cursor(self) -> Generator[sqlite3.Cursor, None, None]:
         cursor = self._connection.cursor()
         try:
-            if not self._is_initialized:
-                _LOG.info("Initializing database")
-                cursor.execute(
-                    """
-                    CREATE TABLE IF NOT EXISTS usages (
-                        context_id INT,
-                        user_id INT,
-                        time INT,
-                        PRIMARY KEY (context_id, user_id, time)
-                    );
-                    """
-                )
-                cursor.execute(
-                    """
-                    CREATE INDEX IF NOT EXISTS usages_by_ids on usages (
-                        context_id,
-                        user_id,
-                        time DESC
-                    );
-                    """
-                )
-                cursor.connection.commit()
-                self._is_initialized = True
-
             yield cursor
             cursor.connection.commit()
         finally:

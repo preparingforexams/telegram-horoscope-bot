@@ -39,9 +39,20 @@ spec:
       labels:
         app: horoscope-update-handler
     spec:
+      initContainers:
+        - name: flyway
+          image: {{ .Values.image.flyway }}
+          args:
+            - migrate
+          volumeMounts:
+            - mountPath: /state
+              name: horoscope-state
+          env:
+            - name: FLYWAY_URL
+              value: jdbc:sqlite:/state/usages.db
       containers:
         - name: app
-          image: {{ .Values.image }}
+          image: {{ .Values.image.app }}
           resources:
             limits:
               cpu: 50m

@@ -1,10 +1,8 @@
-# Files and directories created by pub.
+# Files and directories created by conventional Python tools.
 __pycache__
 .venv
 venv
-
-# Conventional directory for build output.
-build/
+.mypy_cache/
 
 # IntelliJ IDEA
 .idea/

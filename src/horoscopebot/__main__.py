@@ -52,6 +52,7 @@ def main():
         config.telegram,
         horoscope=horoscope,
     )
+    _LOG.info("Launching bot...")
     bot.run()
 
 

@@ -52,8 +52,6 @@ spec:
               name: horoscope-state
         - name: flyway
           image: {{ .Values.image.flyway }}
-          command:
-            - flyway
           args:
             - migrate
           volumeMounts:

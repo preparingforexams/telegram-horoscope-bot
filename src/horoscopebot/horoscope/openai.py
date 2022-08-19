@@ -200,7 +200,11 @@ class OpenAiHoroscope(Horoscope):
         )
 
     def provide_horoscope(
-        self, dice: int, context_id: int, user_id: int
+        self,
+        dice: int,
+        context_id: int,
+        user_id: int,
+        message_id: int,
     ) -> Optional[str]:
         slots = SLOT_MACHINE_VALUES[dice]
 
@@ -214,7 +218,12 @@ class OpenAiHoroscope(Horoscope):
             return "Du warst heute schon dran."
 
         result = self._create_horoscope(user_id, slots, now)
-        self._rate_limiter.add_usage(context_id=context_id, user_id=user_id, time=now)
+        self._rate_limiter.add_usage(
+            context_id=context_id,
+            user_id=user_id,
+            time=now,
+            reference_id=str(message_id),
+        )
         return result
 
     @staticmethod

@@ -65,8 +65,12 @@ class Bot:
             return
 
         user_id = message["from"]["id"]
+        message_id = message["message_id"]
         result_text = self.horoscope.provide_horoscope(
-            dice=dice["value"], context_id=chat_id, user_id=user_id
+            dice=dice["value"],
+            context_id=chat_id,
+            user_id=user_id,
+            message_id=message_id,
         )
 
         if result_text is None:
@@ -79,7 +83,7 @@ class Bot:
         self._send_message(
             chat_id=chat_id,
             text=result_text,
-            reply_to_message_id=message["message_id"],
+            reply_to_message_id=message_id,
         )
 
     def _request_updates(self, last_update_id: Optional[int]) -> List[dict]:

@@ -78,7 +78,7 @@ class RateLimiter:
         context_id: str | int,
         user_id: str | int,
         time: DateTime,
-        reference_id: str | None = None
+        reference_id: str | None = None,
     ):
         context_id = str(context_id)
         user_id = str(user_id)

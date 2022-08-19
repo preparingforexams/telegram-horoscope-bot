@@ -40,16 +40,28 @@ spec:
         app: horoscope-update-handler
     spec:
       initContainers:
+        - name: fix_volume_permissions
+          image: alpine:3
+          command:
+            - chmod
+            - -R
+            - "777"
+            - /state
+          volumeMounts:
+            - mountPath: /state
+              name: horoscope-state
         - name: flyway
           image: {{ .Values.image.flyway }}
+          command:
+            - flyway
           args:
             - migrate
           volumeMounts:
-            - mountPath: /flyway/data
+            - mountPath: /state
               name: horoscope-state
           env:
             - name: FLYWAY_URL
-              value: jdbc:sqlite:/flyway/data/usages.db
+              value: jdbc:sqlite:/state/usages.db
       containers:
         - name: app
           image: {{ .Values.image.app }}

@@ -1,4 +1,5 @@
 import logging
+import signal
 from typing import Callable, Optional, List
 
 import requests
@@ -13,9 +14,19 @@ class Bot:
     def __init__(self, config: TelegramConfig, horoscope: Horoscope):
         self.config = config
         self.horoscope = horoscope
+        self._should_terminate = False
 
     def run(self):
+        signal.signal(signal.SIGTERM, self._on_kill)
+        signal.signal(signal.SIGINT, self._on_kill)
         self._handle_updates(self._handle_update)
+
+    def _on_kill(self, kill_signal: int, _):
+        _LOG.info(
+            "Received %s signal, requesting termination...",
+            signal.Signals(kill_signal).name,
+        )
+        self._should_terminate = True
 
     def _build_url(self, method: str) -> str:
         return f"https://api.telegram.org/bot{self.config.token}/{method}"
@@ -103,7 +114,7 @@ class Bot:
 
     def _handle_updates(self, handler: Callable[[dict], None]):
         last_update_id: Optional[int] = None
-        while True:
+        while not self._should_terminate:
             updates = self._request_updates(last_update_id)
             try:
                 for update in updates:
@@ -112,3 +123,4 @@ class Bot:
                     last_update_id = update["update_id"]
             except Exception as e:
                 _LOG.error("Could not handle update", exc_info=e)
+        _LOG.info("Stopping update handling because of terminate signal")

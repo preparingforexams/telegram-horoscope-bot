@@ -45,11 +45,11 @@ spec:
           args:
             - migrate
           volumeMounts:
-            - mountPath: /state
+            - mountPath: /flyway/data
               name: horoscope-state
           env:
             - name: FLYWAY_URL
-              value: jdbc:sqlite:/state/usages.db
+              value: jdbc:sqlite:/flyway/data/usages.db
       containers:
         - name: app
           image: {{ .Values.image.app }}

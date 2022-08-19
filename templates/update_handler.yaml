@@ -40,7 +40,7 @@ spec:
         app: horoscope-update-handler
     spec:
       initContainers:
-        - name: fix_volume_permissions
+        - name: fix-volume-permissions
           image: alpine:3
           command:
             - chmod

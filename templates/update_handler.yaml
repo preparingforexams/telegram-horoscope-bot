@@ -45,7 +45,7 @@ spec:
           command:
             - chmod
             - -R
-            - "666"
+            - "777"
             - /state
           volumeMounts:
             - mountPath: /state

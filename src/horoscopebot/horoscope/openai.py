@@ -191,7 +191,7 @@ _KANU_GEGGO: Dict[int, str] = {
 
 class OpenAiHoroscope(Horoscope):
     def __init__(self, config: OpenAiConfig):
-        self._config = config
+        self._debug_mode = config.debug_mode
         openai.api_key = config.token
 
         self._rate_limiter = RateLimiter(
@@ -236,6 +236,9 @@ class OpenAiHoroscope(Horoscope):
         slots: Tuple[Slot, Slot, Slot],
         time: datetime,
     ) -> Optional[str]:
+        if self._debug_mode:
+            return "debug mode is turned on"
+
         geggo = self._make_geggo(user_id, time)
         if geggo:
             return geggo

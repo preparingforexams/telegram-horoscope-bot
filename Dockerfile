@@ -7,12 +7,9 @@ RUN poetry config virtualenvs.create false
 
 COPY [ "poetry.toml", "poetry.lock", "pyproject.toml", "./" ]
 
-RUN poetry install --no-dev
-
 # We don't want the tests
 COPY src/horoscopebot ./src/horoscopebot
 
-# Only install own project
 RUN poetry install --no-dev
 
 ARG build

@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Optional
 
 import sentry_sdk
+from rate_limit import RateLimiter, repo, policy, RateLimitingRepo
 
 from horoscopebot.bot import Bot
 from horoscopebot.config import (
@@ -15,7 +16,6 @@ from horoscopebot.config import (
 from horoscopebot.horoscope.horoscope import Horoscope
 from horoscopebot.horoscope.openai import OpenAiHoroscope
 from horoscopebot.horoscope.steffen import SteffenHoroscope
-from horoscopebot.rate_limit import RateLimiter, repo, policy, RateLimitingRepo
 
 _LOG = logging.getLogger(__package__)
 

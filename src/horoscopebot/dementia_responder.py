@@ -3,7 +3,7 @@ from datetime import timedelta
 
 from pendulum import DateTime
 
-from horoscopebot.rate_limit import Usage
+from rate_limit import Usage
 
 
 @dataclass

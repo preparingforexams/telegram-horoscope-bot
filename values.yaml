@@ -1,6 +1,6 @@
 image:
   app: ghcr.io/preparingforexams/horoscopebot:${GITHUB_SHA}
-  flyway: ghcr.io/preparingforexams/horoscopebot-flyway:${GITHUB_SHA}
+  flyway: ghcr.io/preparingforexams/rate-limiter-migrations:1.0.0
 telegram:
   apiKey: ${TELEGRAM_TOKEN}
   enabledChats:

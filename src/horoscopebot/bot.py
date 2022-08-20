@@ -4,11 +4,11 @@ from typing import Callable, Optional, List
 
 import pendulum
 import requests
+from rate_limit import RateLimiter
 
 from horoscopebot.config import TelegramConfig
 from horoscopebot.dementia_responder import DementiaResponder
 from horoscopebot.horoscope.horoscope import Horoscope
-from .rate_limit import RateLimiter
 
 _LOG = logging.getLogger(__name__)
 

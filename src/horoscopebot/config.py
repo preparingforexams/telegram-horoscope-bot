@@ -88,14 +88,18 @@ def load_env(names: Union[str, Tuple[str, ...]]) -> Env:
 
 @dataclass
 class Config:
+    app_version: str
     horoscope: HoroscopeConfig
+    rate_limit: RateLimitConfig
     sentry_dsn: Optional[str]
     telegram: TelegramConfig
 
     @classmethod
     def from_env(cls, env: Env) -> Config:
         return cls(
+            app_version=env.get_string("BUILD_SHA", "debug"),  # type: ignore
             horoscope=HoroscopeConfig.from_env(env),
+            rate_limit=RateLimitConfig.from_env(env),
             sentry_dsn=env.get_string("SENTRY_DSN", required=False),
             telegram=TelegramConfig.from_env(env),
         )
@@ -126,14 +130,23 @@ class HoroscopeConfig:
 class OpenAiConfig:
     debug_mode: bool
     token: str
-    rate_limit_file: str
 
     @classmethod
     def from_env(cls, env: Env) -> OpenAiConfig:
         return cls(
             debug_mode=env.get_string("OPENAI_DEBUG", "false") == "true",
             token=env.get_string("OPENAI_TOKEN"),  # type:ignore
-            rate_limit_file=env.get_string("OPENAI_RATE_LIMIT_FILE"),  # type: ignore
+        )
+
+
+@dataclass
+class RateLimitConfig:
+    rate_limit_file: str | None
+
+    @classmethod
+    def from_env(cls, env: Env) -> RateLimitConfig:
+        return cls(
+            rate_limit_file=env.get_string("RATE_LIMIT_FILE", None),  # type: ignore
         )
 
 

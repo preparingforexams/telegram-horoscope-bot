@@ -75,7 +75,7 @@ spec:
           env:
             - name: HOROSCOPE_MODE
               value: openai
-            - name: OPENAI_RATE_LIMIT_FILE
+            - name: RATE_LIMIT_FILE
               value: /state/usages.db
           envFrom:
             - configMapRef:

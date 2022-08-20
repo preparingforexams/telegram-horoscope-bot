@@ -8,16 +8,22 @@ import requests
 from horoscopebot.config import TelegramConfig
 from horoscopebot.dementia_responder import DementiaResponder
 from horoscopebot.horoscope.horoscope import Horoscope
-from horoscopebot.rate_limit import Usage
+from .rate_limit import RateLimiter
 
 _LOG = logging.getLogger(__name__)
 
 
 class Bot:
-    def __init__(self, config: TelegramConfig, horoscope: Horoscope):
+    def __init__(
+        self,
+        config: TelegramConfig,
+        horoscope: Horoscope,
+        rate_limiter: RateLimiter,
+    ):
         self.config = config
         self.horoscope = horoscope
         self._dementia_responder = DementiaResponder()
+        self._rate_limiter = rate_limiter
         self._should_terminate = False
 
     def run(self):
@@ -58,6 +64,10 @@ class Bot:
             )
         )
 
+    @staticmethod
+    def _is_lemons(dice: int) -> bool:
+        return dice == 43
+
     def _handle_update(self, update: dict):
         message = update.get("message")
 
@@ -83,32 +93,53 @@ class Bot:
         time = pendulum.from_timestamp(timestamp)
         user_id = message["from"]["id"]
         message_id = message["message_id"]
-        result_text = self.horoscope.provide_horoscope(
-            dice=dice["value"],
+        dice_value = dice["value"]
+
+        conflicting_usage = self._rate_limiter.get_offending_usage(
             context_id=chat_id,
             user_id=user_id,
-            message_id=message_id,
-            message_time=time,
+            at_time=time,
         )
 
-        if result_text is None:
-            _LOG.debug(
-                "Not sending horoscope because horoscope returned None for %d",
-                dice["value"],
-            )
-            return
+        if conflicting_usage is not None:
+            if self._is_lemons(dice_value):
+                # The other bot will send the picture anyway, so we'll be quiet
+                return
 
-        if isinstance(result_text, Usage):
             response = self._dementia_responder.create_response(
                 current_message_id=message_id,
                 current_message_time=time,
-                usage=result_text,
+                usage=conflicting_usage,
             )
             reply_message_id = response.reply_message_id or message_id
             self._send_message(
                 chat_id=chat_id,
                 reply_to_message_id=reply_message_id,
                 text=response.text,
+            )
+            return
+
+        result_text: str | None = None
+        if not self._is_lemons(dice_value):
+            result_text = self.horoscope.provide_horoscope(
+                dice=dice_value,
+                context_id=chat_id,
+                user_id=user_id,
+                message_id=message_id,
+                message_time=time,
+            )
+
+        self._rate_limiter.add_usage(
+            context_id=chat_id,
+            user_id=user_id,
+            time=time,
+            reference_id=str(message_id),
+        )
+
+        if result_text is None:
+            _LOG.debug(
+                "Not sending horoscope because horoscope returned None for %d",
+                dice["value"],
             )
             return
 

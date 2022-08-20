@@ -3,8 +3,6 @@ from enum import auto, Enum
 
 from pendulum import DateTime
 
-from horoscopebot.rate_limit import Usage
-
 
 class Horoscope(abc.ABC):
     @abc.abstractmethod
@@ -15,7 +13,7 @@ class Horoscope(abc.ABC):
         user_id: int,
         message_id: int,
         message_time: DateTime,
-    ) -> str | Usage | None:
+    ) -> str | None:
         pass
 
 

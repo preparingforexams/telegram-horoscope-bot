@@ -1,14 +1,12 @@
 import random
 from dataclasses import dataclass
 from datetime import datetime
-from pathlib import Path
 
 import openai
 from pendulum import DateTime
 
 from horoscopebot.config import OpenAiConfig
 from .horoscope import Horoscope, SLOT_MACHINE_VALUES, Slot
-from ..rate_limit import RateLimiter, policy, repo, Usage
 
 _BASE_PROMPT = (
     r"Write a creative and witty horoscope for the day without mentioning a specific "
@@ -193,11 +191,6 @@ class OpenAiHoroscope(Horoscope):
         self._debug_mode = config.debug_mode
         openai.api_key = config.token
 
-        self._rate_limiter = RateLimiter(
-            policy=policy.DailyLimitRateLimitingPolicy(limit=1),
-            repo=repo.SqliteRateLimitingRepo.connect(Path(config.rate_limit_file)),
-        )
-
     def provide_horoscope(
         self,
         dice: int,
@@ -205,32 +198,9 @@ class OpenAiHoroscope(Horoscope):
         user_id: int,
         message_id: int,
         message_time: DateTime,
-    ) -> str | Usage | None:
+    ) -> str | None:
         slots = SLOT_MACHINE_VALUES[dice]
-
-        conflicting_usage = self._rate_limiter.get_offending_usage(
-            context_id=context_id,
-            user_id=user_id,
-            at_time=message_time,
-        )
-        if conflicting_usage is not None:
-            if self._is_lemons(slots):
-                # The other bot will send the picture anyway, so we'll be quiet
-                return None
-            return conflicting_usage
-
-        result = self._create_horoscope(user_id, slots, message_time)
-        self._rate_limiter.add_usage(
-            context_id=context_id,
-            user_id=user_id,
-            time=message_time,
-            reference_id=str(message_id),
-        )
-        return result
-
-    @staticmethod
-    def _is_lemons(slots: tuple[Slot, Slot, Slot]) -> bool:
-        return slots == (Slot.LEMON, Slot.LEMON, Slot.LEMON)
+        return self._create_horoscope(user_id, slots, message_time)
 
     def _create_horoscope(
         self,
@@ -244,9 +214,6 @@ class OpenAiHoroscope(Horoscope):
         geggo = self._make_geggo(user_id, time)
         if geggo:
             return geggo
-
-        if self._is_lemons(slots):
-            return None
 
         avenue = _AVENUE_BY_FIRST_SLOT[slots[0]]
         prompt = avenue.build_prompt()

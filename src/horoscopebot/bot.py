@@ -136,12 +136,12 @@ class Bot:
                 dice["value"],
             )
         else:
-            response = self._send_message(
+            response_message = self._send_message(
                 chat_id=chat_id,
                 text=result_text,
                 reply_to_message_id=message_id,
             )
-            response_id = str(response["message_id"])
+            response_id = str(response_message["message_id"])
 
         self._rate_limiter.add_usage(
             context_id=chat_id,

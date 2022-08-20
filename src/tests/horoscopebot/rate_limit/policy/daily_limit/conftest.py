@@ -19,6 +19,7 @@ def create_usage() -> Callable[[DateTime], Usage]:
             user_id=f"test-user-{current_id}",
             time=time,
             reference_id=f"reference-{current_id}",
+            response_id=f"f-response-{current_id}",
         )
 
     return _create_usage

@@ -124,12 +124,14 @@ class HoroscopeConfig:
 
 @dataclass
 class OpenAiConfig:
+    debug_mode: bool
     token: str
     rate_limit_file: str
 
     @classmethod
     def from_env(cls, env: Env) -> OpenAiConfig:
         return cls(
+            debug_mode=env.get_string("OPENAI_DEBUG", "false") == "true",
             token=env.get_string("OPENAI_TOKEN"),  # type:ignore
             rate_limit_file=env.get_string("OPENAI_RATE_LIMIT_FILE"),  # type: ignore
         )

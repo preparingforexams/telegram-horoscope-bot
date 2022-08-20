@@ -1,9 +1,27 @@
+from __future__ import annotations
+
 import abc
-from typing import Optional, List
+from dataclasses import dataclass
 
+from deprecated.classic import deprecated
 from pendulum import DateTime, tz
+from pendulum.tz.timezone import Timezone
 
-from datetime import tzinfo
+
+@dataclass(frozen=True)
+class Usage:
+    context_id: str
+    user_id: str
+    time: DateTime
+    reference_id: str | None
+
+    def in_timezone(self, timezone: Timezone) -> Usage:
+        return Usage(
+            context_id=self.context_id,
+            user_id=self.user_id,
+            time=self.time.in_timezone(timezone),
+            reference_id=self.reference_id,
+        )
 
 
 class RateLimitingPolicy(abc.ABC):
@@ -13,13 +31,11 @@ class RateLimitingPolicy(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def can_use(
+    def get_offending_usage(
         self,
-        context_id: str,
-        user_id: str,
         at_time: DateTime,
-        last_usages: List[DateTime],
-    ) -> bool:
+        last_usages: list[Usage],
+    ) -> Usage | None:
         pass
 
 
@@ -40,7 +56,7 @@ class RateLimitingRepo(abc.ABC):
         context_id: str,
         user_id: str,
         limit: int = 1,
-    ) -> List[DateTime]:
+    ) -> list[Usage]:
         pass
 
 
@@ -49,15 +65,29 @@ class RateLimiter:
         self,
         policy: RateLimitingPolicy,
         repo: RateLimitingRepo,
-        timezone: Optional[tzinfo] = None,
+        timezone: Timezone | None = None,
     ):
         self._policy = policy
         self._repo = repo
         self._timezone = timezone or tz.timezone("Europe/Berlin")
 
+    @deprecated("Use get_offending_usage instead")
     def can_use(
         self, context_id: str | int, user_id: str | int, at_time: DateTime
     ) -> bool:
+        offending_usage = self.get_offending_usage(
+            context_id=context_id,
+            user_id=user_id,
+            at_time=at_time,
+        )
+        return offending_usage is None
+
+    def get_offending_usage(
+        self,
+        context_id: str | int,
+        user_id: str | int,
+        at_time: DateTime,
+    ) -> Usage | None:
         context_id = str(context_id)
         user_id = str(user_id)
         requested_history = self._policy.requested_history
@@ -66,11 +96,9 @@ class RateLimiter:
             user_id=user_id,
             limit=requested_history,
         )
-        return self._policy.can_use(
-            context_id=context_id,
-            user_id=user_id,
-            at_time=at_time.astimezone(self._timezone),
-            last_usages=[usage.astimezone(self._timezone) for usage in history],
+        return self._policy.get_offending_usage(
+            at_time=at_time,
+            last_usages=[usage.in_timezone(self._timezone) for usage in history],
         )
 
     def add_usage(

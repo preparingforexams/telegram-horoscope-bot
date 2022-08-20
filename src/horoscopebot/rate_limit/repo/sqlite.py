@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 import logging
+import sqlite3
 from contextlib import contextmanager
 from pathlib import Path
 from typing import List, Generator
 
 from pendulum import DateTime
-import sqlite3
 
-from .. import RateLimitingRepo
+from .. import RateLimitingRepo, Usage
 
 _LOG = logging.getLogger(__name__)
 
@@ -60,18 +60,26 @@ class SqliteRateLimitingRepo(RateLimitingRepo):
         context_id: str,
         user_id: str,
         limit: int = 1,
-    ) -> List[DateTime]:
+    ) -> List[Usage]:
         with self._cursor() as cursor:
             result = cursor.execute(
                 """
-                SELECT time FROM usages
+                SELECT time, reference_id FROM usages
                 WHERE context_id = ? AND user_id = ?
                 ORDER BY time DESC
                 LIMIT ?
                 """,
                 [context_id, user_id, limit],
             )
-            usages = [DateTime.utcfromtimestamp(row[0]) for row in result]
+            usages = [
+                Usage(
+                    context_id=context_id,
+                    user_id=user_id,
+                    time=DateTime.utcfromtimestamp(row[0]),
+                    reference_id=row[1],
+                )
+                for row in result
+            ]
 
         _LOG.debug(
             "Found %d usages for user %s in context %s (limit was %d)",
@@ -80,4 +88,5 @@ class SqliteRateLimitingRepo(RateLimitingRepo):
             context_id,
             limit,
         )
+
         return usages

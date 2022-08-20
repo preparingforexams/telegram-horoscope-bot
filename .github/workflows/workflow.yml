@@ -52,7 +52,6 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - push_docker
-      - push_flyway_docker
     steps:
       - uses: actions/checkout@v3
       - name: Substitute environment variables in values.yaml

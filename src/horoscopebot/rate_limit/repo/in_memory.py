@@ -23,6 +23,7 @@ class InMemoryRateLimitingRepo(RateLimitingRepo):
         user_id: str,
         utc_time: DateTime,
         reference_id: str | None,
+        response_id: str | None,
     ):
         if context_id not in self._usage_time_by_user:
             self._usage_time_by_user[context_id] = {}
@@ -32,4 +33,5 @@ class InMemoryRateLimitingRepo(RateLimitingRepo):
             user_id=user_id,
             time=utc_time,
             reference_id=reference_id,
+            response_id=response_id,
         )

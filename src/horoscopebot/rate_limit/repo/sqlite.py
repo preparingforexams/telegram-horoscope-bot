@@ -39,18 +39,26 @@ class SqliteRateLimitingRepo(RateLimitingRepo):
         user_id: str,
         utc_time: DateTime,
         reference_id: str | None,
+        response_id: str | None,
     ):
         with self._cursor() as cursor:
             cursor.execute(
                 """
-                INSERT INTO usages (context_id, user_id, time, reference_id)
-                VALUES (?, ?, ?, ?);
+                INSERT INTO usages (
+                    context_id,
+                    user_id,
+                    time,
+                    reference_id,
+                    response_id
+                )
+                VALUES (?, ?, ?, ?, ?);
                 """,
                 [
                     context_id,
                     user_id,
                     int(utc_time.timestamp()),
                     reference_id,
+                    response_id,
                 ],
             )
         _LOG.debug("Inserted usage for user %s in context %s", user_id, context_id)
@@ -64,7 +72,7 @@ class SqliteRateLimitingRepo(RateLimitingRepo):
         with self._cursor() as cursor:
             result = cursor.execute(
                 """
-                SELECT time, reference_id FROM usages
+                SELECT time, reference_id, response_id FROM usages
                 WHERE context_id = ? AND user_id = ?
                 ORDER BY time DESC
                 LIMIT ?
@@ -77,6 +85,7 @@ class SqliteRateLimitingRepo(RateLimitingRepo):
                     user_id=user_id,
                     time=DateTime.utcfromtimestamp(row[0]),
                     reference_id=row[1],
+                    response_id=row[2],
                 )
                 for row in result
             ]

@@ -129,24 +129,26 @@ class Bot:
                 message_time=time,
             )
 
-        self._rate_limiter.add_usage(
-            context_id=chat_id,
-            user_id=user_id,
-            time=time,
-            reference_id=str(message_id),
-        )
-
+        response_id: str | None = None
         if result_text is None:
             _LOG.debug(
                 "Not sending horoscope because horoscope returned None for %d",
                 dice["value"],
             )
-            return
+        else:
+            response = self._send_message(
+                chat_id=chat_id,
+                text=result_text,
+                reply_to_message_id=message_id,
+            )
+            response_id = str(response["message_id"])
 
-        self._send_message(
-            chat_id=chat_id,
-            text=result_text,
-            reply_to_message_id=message_id,
+        self._rate_limiter.add_usage(
+            context_id=chat_id,
+            user_id=user_id,
+            time=time,
+            reference_id=str(message_id),
+            response_id=response_id,
         )
 
     def _request_updates(self, last_update_id: Optional[int]) -> List[dict]:

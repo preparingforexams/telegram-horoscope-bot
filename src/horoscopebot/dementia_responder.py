@@ -21,6 +21,10 @@ class DementiaResponder:
     ) -> Response:
         reference_id = usage.reference_id
         message_id = None if reference_id is None else int(reference_id)
+
+        response_id = usage.response_id
+        response_message_id = None if response_id is None else int(response_id)
+
         if message_id == current_message_id - 2:
             return Response("Du warst doch gerade erst dran!")
 
@@ -30,11 +34,11 @@ class DementiaResponder:
                 " Wirst du alt?"
             )
 
-        if message_id is not None:
-            # TODO: use horoscope message ID
+        reply_message_id = response_message_id or message_id
+        if reply_message_id:
             return Response(
-                "Du hast dein Schicksal doch vorhin schon erfahren",
-                reply_message_id=message_id,
+                "Du hast dein Schicksal doch vorhin schon erfahren!",
+                reply_message_id=reply_message_id,
             )
 
         return Response("Du warst heute schon dran.")

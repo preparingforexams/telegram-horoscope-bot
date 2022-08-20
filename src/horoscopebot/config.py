@@ -146,7 +146,10 @@ class RateLimitConfig:
     @classmethod
     def from_env(cls, env: Env) -> RateLimitConfig:
         return cls(
-            rate_limit_file=env.get_string("RATE_LIMIT_FILE", None),  # type: ignore
+            rate_limit_file=env.get_string(
+                "RATE_LIMIT_FILE",
+                required=False
+            ),  # type: ignore
         )
 
 

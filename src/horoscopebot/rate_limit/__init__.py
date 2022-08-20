@@ -14,6 +14,7 @@ class Usage:
     user_id: str
     time: DateTime
     reference_id: str | None
+    response_id: str | None
 
     def in_timezone(self, timezone: Timezone) -> Usage:
         return Usage(
@@ -21,6 +22,7 @@ class Usage:
             user_id=self.user_id,
             time=self.time.in_timezone(timezone),
             reference_id=self.reference_id,
+            response_id=self.response_id,
         )
 
 
@@ -47,6 +49,7 @@ class RateLimitingRepo(abc.ABC):
         user_id: str,
         utc_time: DateTime,
         reference_id: str | None,
+        response_id: str | None,
     ):
         pass
 
@@ -107,6 +110,7 @@ class RateLimiter:
         user_id: str | int,
         time: DateTime,
         reference_id: str | None = None,
+        response_id: str | None = None,
     ):
         context_id = str(context_id)
         user_id = str(user_id)
@@ -116,4 +120,5 @@ class RateLimiter:
             user_id=user_id,
             utc_time=utc_time,
             reference_id=reference_id,
+            response_id=response_id,
         )

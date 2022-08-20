@@ -9,7 +9,8 @@ COPY [ "poetry.toml", "poetry.lock", "pyproject.toml", "./" ]
 
 RUN poetry install --no-dev
 
-COPY src .
+# We don't want the tests
+COPY src/horoscopebot ./src/horoscopebot
 
 ARG build
 ENV BUILD_SHA=$build

@@ -5,7 +5,9 @@ from typing import Callable, Optional, List
 import requests
 
 from horoscopebot.config import TelegramConfig
+from horoscopebot.dementia_responder import DementiaResponder
 from horoscopebot.horoscope.horoscope import Horoscope
+from horoscopebot.rate_limit import Usage
 
 _LOG = logging.getLogger(__name__)
 
@@ -14,6 +16,7 @@ class Bot:
     def __init__(self, config: TelegramConfig, horoscope: Horoscope):
         self.config = config
         self.horoscope = horoscope
+        self._dementia_responder = DementiaResponder()
         self._should_terminate = False
 
     def run(self):
@@ -88,6 +91,19 @@ class Bot:
             _LOG.debug(
                 "Not sending horoscope because horoscope returned None for %d",
                 dice["value"],
+            )
+            return
+
+        if isinstance(result_text, Usage):
+            response = self._dementia_responder.create_response(
+                current_message_id=message_id,
+                usage=result_text,
+            )
+            reply_message_id = response.reply_message_id or message_id
+            self._send_message(
+                chat_id=chat_id,
+                reply_to_message_id=reply_message_id,
+                text=response.text,
             )
             return
 

@@ -1,13 +1,14 @@
 import abc
 from enum import auto, Enum
-from typing import Dict, Tuple, Optional
+
+from horoscopebot.rate_limit import Usage
 
 
 class Horoscope(abc.ABC):
     @abc.abstractmethod
     def provide_horoscope(
         self, dice: int, context_id: int, user_id: int, message_id: int
-    ) -> Optional[str]:
+    ) -> str | Usage | None:
         pass
 
 
@@ -18,7 +19,7 @@ class Slot(Enum):
     SEVEN = auto()
 
 
-SLOT_MACHINE_VALUES: Dict[int, Tuple[Slot, Slot, Slot]] = {
+SLOT_MACHINE_VALUES: dict[int, tuple[Slot, Slot, Slot]] = {
     1: (Slot.BAR, Slot.BAR, Slot.BAR),
     2: (Slot.GRAPE, Slot.BAR, Slot.BAR),
     3: (Slot.LEMON, Slot.BAR, Slot.BAR),

@@ -1,5 +1,3 @@
-from typing import Optional
-
 from .horoscope import Horoscope, Slot, SLOT_MACHINE_VALUES
 
 _HOROSCOPE_BY_COMBINATION = {
@@ -169,6 +167,6 @@ _HOROSCOPE_BY_COMBINATION = {
 class SteffenHoroscope(Horoscope):
     def provide_horoscope(
         self, dice: int, context_id: int, user_id: int, message_id: int
-    ) -> Optional[str]:
+    ) -> str | None:
         slots = SLOT_MACHINE_VALUES[dice]
         return _HOROSCOPE_BY_COMBINATION.get(slots)

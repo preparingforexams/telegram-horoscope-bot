@@ -2,14 +2,13 @@ import random
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, List, Dict, Tuple
 
 import openai
 import pendulum
-from horoscopebot.config import OpenAiConfig
 
+from horoscopebot.config import OpenAiConfig
 from .horoscope import Horoscope, SLOT_MACHINE_VALUES, Slot
-from ..rate_limit import RateLimiter, policy, repo
+from ..rate_limit import RateLimiter, policy, repo, Usage
 
 _BASE_PROMPT = (
     r"Write a creative and witty horoscope for the day without mentioning a specific "
@@ -28,7 +27,7 @@ class Variation:
 @dataclass
 class Avenue:
     base_prompt: str
-    variations: List[Variation]
+    variations: list[Variation]
 
     def build_prompt(self) -> str:
         active_variation_prompts = [
@@ -40,7 +39,7 @@ class Avenue:
         return "\n\n".join([self.base_prompt, *active_variation_prompts, "Horoskop:"])
 
 
-_AVENUE_BY_FIRST_SLOT: Dict[Slot, Avenue] = {
+_AVENUE_BY_FIRST_SLOT: dict[Slot, Avenue] = {
     Slot.BAR: Avenue(
         base_prompt=(
             f"{_BASE_PROMPT}\n\nThe horoscope should encourage alcohol consumption."
@@ -148,7 +147,7 @@ List of good examples:
     ),
 }
 
-_KANU_GEGGO: Dict[int, str] = {
+_KANU_GEGGO: dict[int, str] = {
     # Born
     133399998: (
         "Heute verbrennst du dich in der Sonne. "
@@ -205,17 +204,20 @@ class OpenAiHoroscope(Horoscope):
         context_id: int,
         user_id: int,
         message_id: int,
-    ) -> Optional[str]:
+    ) -> str | Usage | None:
         slots = SLOT_MACHINE_VALUES[dice]
 
         now = pendulum.now(pendulum.UTC)
-        if not self._rate_limiter.can_use(
-            context_id=context_id, user_id=user_id, at_time=now
-        ):
+        conflicting_usage = self._rate_limiter.get_offending_usage(
+            context_id=context_id,
+            user_id=user_id,
+            at_time=now,
+        )
+        if conflicting_usage is not None:
             if self._is_lemons(slots):
                 # The other bot will send the picture anyway, so we'll be quiet
                 return None
-            return "Du warst heute schon dran."
+            return conflicting_usage
 
         result = self._create_horoscope(user_id, slots, now)
         self._rate_limiter.add_usage(
@@ -227,15 +229,15 @@ class OpenAiHoroscope(Horoscope):
         return result
 
     @staticmethod
-    def _is_lemons(slots: Tuple[Slot, Slot, Slot]) -> bool:
+    def _is_lemons(slots: tuple[Slot, Slot, Slot]) -> bool:
         return slots == (Slot.LEMON, Slot.LEMON, Slot.LEMON)
 
     def _create_horoscope(
         self,
         user_id: int,
-        slots: Tuple[Slot, Slot, Slot],
+        slots: tuple[Slot, Slot, Slot],
         time: datetime,
-    ) -> Optional[str]:
+    ) -> str | None:
         if self._debug_mode:
             return "debug mode is turned on"
 
@@ -251,7 +253,7 @@ class OpenAiHoroscope(Horoscope):
         completion = self._create_completion(user_id, prompt)
         return completion
 
-    def _make_geggo(self, user_id: int, time: datetime) -> Optional[str]:
+    def _make_geggo(self, user_id: int, time: datetime) -> str | None:
         date = time.date()
         if date.year == 2022 and date.month == 5 and date.day == 28:
             return _KANU_GEGGO.get(user_id)

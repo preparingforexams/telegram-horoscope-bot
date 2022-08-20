@@ -9,6 +9,10 @@ _LOG = logging.getLogger(__name__)
 
 class DailyLimitRateLimitingPolicy(RateLimitingPolicy):
     def __init__(self, limit: int = 1):
+        if limit < 1:
+            raise ValueError(
+                f"Limit may not be less than or equal to zero, but was {limit}"
+            )
         self._limit = limit
 
     @property
@@ -20,6 +24,12 @@ class DailyLimitRateLimitingPolicy(RateLimitingPolicy):
         at_time: DateTime,
         last_usages: list[Usage],
     ) -> Usage | None:
+        if len(last_usages) > self._limit:
+            raise ValueError(
+                f"Got more usages than the requested limit"
+                f" ({len(last_usages)} > {self._limit})"
+            )
+
         if len(last_usages) < self._limit:
             _LOG.info("ALLOW: Got fewer usages than the limit")
             # We haven't reached the limit yet

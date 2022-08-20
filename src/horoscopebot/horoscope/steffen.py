@@ -1,3 +1,5 @@
+from pendulum import DateTime
+
 from .horoscope import Horoscope, Slot, SLOT_MACHINE_VALUES
 
 _HOROSCOPE_BY_COMBINATION = {
@@ -166,7 +168,12 @@ _HOROSCOPE_BY_COMBINATION = {
 
 class SteffenHoroscope(Horoscope):
     def provide_horoscope(
-        self, dice: int, context_id: int, user_id: int, message_id: int
+        self,
+        dice: int,
+        context_id: int,
+        user_id: int,
+        message_id: int,
+        message_time: DateTime,
     ) -> str | None:
         slots = SLOT_MACHINE_VALUES[dice]
         return _HOROSCOPE_BY_COMBINATION.get(slots)

@@ -4,7 +4,7 @@ from datetime import datetime
 from pathlib import Path
 
 import openai
-import pendulum
+from pendulum import DateTime
 
 from horoscopebot.config import OpenAiConfig
 from .horoscope import Horoscope, SLOT_MACHINE_VALUES, Slot
@@ -204,14 +204,14 @@ class OpenAiHoroscope(Horoscope):
         context_id: int,
         user_id: int,
         message_id: int,
+        message_time: DateTime,
     ) -> str | Usage | None:
         slots = SLOT_MACHINE_VALUES[dice]
 
-        now = pendulum.now(pendulum.UTC)
         conflicting_usage = self._rate_limiter.get_offending_usage(
             context_id=context_id,
             user_id=user_id,
-            at_time=now,
+            at_time=message_time,
         )
         if conflicting_usage is not None:
             if self._is_lemons(slots):
@@ -219,11 +219,11 @@ class OpenAiHoroscope(Horoscope):
                 return None
             return conflicting_usage
 
-        result = self._create_horoscope(user_id, slots, now)
+        result = self._create_horoscope(user_id, slots, message_time)
         self._rate_limiter.add_usage(
             context_id=context_id,
             user_id=user_id,
-            time=now,
+            time=message_time,
             reference_id=str(message_id),
         )
         return result

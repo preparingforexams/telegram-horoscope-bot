@@ -1,13 +1,20 @@
 import abc
 from enum import auto, Enum
 
+from pendulum import DateTime
+
 from horoscopebot.rate_limit import Usage
 
 
 class Horoscope(abc.ABC):
     @abc.abstractmethod
     def provide_horoscope(
-        self, dice: int, context_id: int, user_id: int, message_id: int
+        self,
+        dice: int,
+        context_id: int,
+        user_id: int,
+        message_id: int,
+        message_time: DateTime,
     ) -> str | Usage | None:
         pass
 

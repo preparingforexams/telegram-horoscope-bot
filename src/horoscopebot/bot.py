@@ -2,6 +2,7 @@ import logging
 import signal
 from typing import Callable, Optional, List
 
+import pendulum
 import requests
 
 from horoscopebot.config import TelegramConfig
@@ -78,6 +79,8 @@ class Bot:
             _LOG.debug("Skipping non-slot-machine message")
             return
 
+        timestamp = message["date"]
+        time = pendulum.from_timestamp(timestamp)
         user_id = message["from"]["id"]
         message_id = message["message_id"]
         result_text = self.horoscope.provide_horoscope(
@@ -85,6 +88,7 @@ class Bot:
             context_id=chat_id,
             user_id=user_id,
             message_id=message_id,
+            message_time=time,
         )
 
         if result_text is None:
@@ -97,6 +101,7 @@ class Bot:
         if isinstance(result_text, Usage):
             response = self._dementia_responder.create_response(
                 current_message_id=message_id,
+                current_message_time=time,
                 usage=result_text,
             )
             reply_message_id = response.reply_message_id or message_id

@@ -31,6 +31,7 @@ class DementiaResponder:
             return Response("Du warst doch gerade erst dran!")
 
         time_difference = abs(current_message_time - usage.time).as_timedelta()
+        _LOG.info("Time since usage: %s", time_difference)
         if time_difference < timedelta(minutes=10):
             return Response(
                 "Ich habe dir dein Horoskop vor nicht mal zehn Minuten gegeben."

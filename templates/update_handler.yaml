@@ -51,7 +51,7 @@ spec:
             - mountPath: /state
               name: horoscope-state
         - name: flyway
-          image: ghcr.io/preparingforexams/rate-limiter-migrations:1.0.1
+          image: ghcr.io/preparingforexams/rate-limiter-migrations:1.0.2
           args:
             - migrate
           volumeMounts:

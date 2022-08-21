@@ -17,7 +17,7 @@ openai = "^0.22.0"
 pendulum = "^2.0.0"
 python = "~3.10"
 python-dotenv = "^0.20.0"
-rate_limit = { version = "1.0.1", source = "internal" }
+rate_limit = { version = "1.0.2", source = "internal" }
 requests = "2.28.1"
 sentry-sdk = "1.9.5"
 

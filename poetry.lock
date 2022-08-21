@@ -381,7 +381,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "rate-limit"
-version = "1.0.1"
+version = "1.0.2"
 description = "Provides scaffolding for rate limited features"
 category = "main"
 optional = false
@@ -549,7 +549,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.10"
-content-hash = "cb72c662f6a2110d44282459a54ebad2f4dedb5160a35522098021ba258cf100"
+content-hash = "8697aba5ee12cf2a092d1e6622b4bca39cbfa87b0f68003020bc2bb36a8655f6"
 
 [metadata.files]
 atomicwrites = []
@@ -630,8 +630,8 @@ pytzdata = [
     {file = "pytzdata-2020.1.tar.gz", hash = "sha256:3efa13b335a00a8de1d345ae41ec78dd11c9f8807f522d39850f2dd828681540"},
 ]
 rate-limit = [
-    {file = "rate_limit-1.0.1-py3-none-any.whl", hash = "sha256:79418f8fcc224d7691b7837c13eb0c12a81b94e29457d114dbcceb1ceff2b139"},
-    {file = "rate_limit-1.0.1.tar.gz", hash = "sha256:33c9ca266d7db5b9bfadaa49c2531ba7f1e5ea2f055ca19d741fc5fc43c320e4"},
+    {file = "rate_limit-1.0.2-py3-none-any.whl", hash = "sha256:ada99655a4f1bfd68479c538154b4903ca0df9b761ddbb09c11028ef9b6dc5be"},
+    {file = "rate_limit-1.0.2.tar.gz", hash = "sha256:a29d2388ba42005ab6bcf8cb6fe31f9d8a97cef2f2aaa87d35a7e512fc36d22b"},
 ]
 requests = []
 sentry-sdk = []

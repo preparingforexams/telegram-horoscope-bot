@@ -27,7 +27,7 @@ class DementiaResponder:
         response_message_id = None if response_id is None else int(response_id)
 
         if message_id == current_message_id - 2:
-            return Response("Du warst doch gerade erst dran!")
+            return Response("Dein Horoskop steht direkt über deiner Nachricht!")
 
         if current_message_time.diff(usage.time).in_minutes() < 10:
             return Response(

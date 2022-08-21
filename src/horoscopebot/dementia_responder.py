@@ -1,6 +1,5 @@
 import logging
 from dataclasses import dataclass
-from datetime import timedelta
 
 from pendulum import DateTime
 from rate_limit import Usage
@@ -30,9 +29,7 @@ class DementiaResponder:
         if message_id == current_message_id - 2:
             return Response("Du warst doch gerade erst dran!")
 
-        time_difference = abs(current_message_time - usage.time).as_timedelta()
-        _LOG.info("Time since usage: %s", time_difference)
-        if time_difference < timedelta(minutes=10):
+        if current_message_time.diff(usage.time).in_minutes() < 10:
             return Response(
                 "Ich habe dir dein Horoskop vor nicht mal zehn Minuten gegeben."
                 " Wirst du alt?"

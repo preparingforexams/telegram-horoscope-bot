@@ -1,16 +1,27 @@
+import functools
 import logging
 import signal
 from typing import Callable, Optional, List
 
 import pendulum
-import requests
 from rate_limit import RateLimiter
+from requests import Response, Session
 
 from horoscopebot.config import TelegramConfig
 from horoscopebot.dementia_responder import DementiaResponder
 from horoscopebot.horoscope.horoscope import Horoscope
 
 _LOG = logging.getLogger(__name__)
+
+
+def _build_session(default_timeout: float | int = 60) -> Session:
+    session = Session()
+    request_with_default_timeout = functools.partial(
+        session.request,
+        timeout=default_timeout,
+    )
+    session.request = request_with_default_timeout  # type: ignore
+    return session
 
 
 class Bot:
@@ -24,6 +35,7 @@ class Bot:
         self.horoscope = horoscope
         self._dementia_responder = DementiaResponder()
         self._rate_limiter = rate_limiter
+        self._session = _build_session()
         self._should_terminate = False
 
     def run(self):
@@ -42,7 +54,7 @@ class Bot:
         return f"https://api.telegram.org/bot{self.config.token}/{method}"
 
     @staticmethod
-    def _get_actual_body(response: requests.Response):
+    def _get_actual_body(response: Response):
         response.raise_for_status()
         body = response.json()
         if body.get("ok"):
@@ -53,7 +65,7 @@ class Bot:
         self, chat_id: int, text: str, reply_to_message_id: Optional[int]
     ) -> dict:
         return self._get_actual_body(
-            requests.post(
+            self._session.post(
                 self._build_url("sendMessage"),
                 json={
                     "text": text,
@@ -159,7 +171,7 @@ class Bot:
                 "timeout": 10,
             }
         return self._get_actual_body(
-            requests.post(
+            self._session.post(
                 self._build_url("getUpdates"),
                 json=body,
                 timeout=15,

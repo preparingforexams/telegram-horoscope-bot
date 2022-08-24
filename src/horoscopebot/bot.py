@@ -5,7 +5,7 @@ from typing import Callable, Optional, List
 
 import pendulum
 from rate_limit import RateLimiter
-from requests import Response, Session
+from requests import Response, Session, exceptions as requests_exceptions
 
 from horoscopebot.config import TelegramConfig
 from horoscopebot.dementia_responder import DementiaResponder
@@ -164,19 +164,23 @@ class Bot:
         )
 
     def _request_updates(self, last_update_id: Optional[int]) -> List[dict]:
-        body: Optional[dict] = None
+        body = {
+            "timeout": 10,
+        }
         if last_update_id:
-            body = {
-                "offset": last_update_id + 1,
-                "timeout": 10,
-            }
-        return self._get_actual_body(
-            self._session.post(
-                self._build_url("getUpdates"),
-                json=body,
-                timeout=15,
+            body["offset"] = last_update_id + 1
+
+        try:
+            return self._get_actual_body(
+                self._session.post(
+                    self._build_url("getUpdates"),
+                    json=body,
+                    timeout=15,
+                )
             )
-        )
+        except (requests_exceptions.HTTPError, requests_exceptions.ReadTimeout) as e:
+            _LOG.error("Encountered error while getting updates", exc_info=e)
+            return []
 
     def _handle_updates(self, handler: Callable[[dict], None]):
         last_update_id: Optional[int] = None

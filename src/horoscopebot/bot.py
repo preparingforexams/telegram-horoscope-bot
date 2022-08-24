@@ -1,6 +1,7 @@
 import functools
 import logging
 import signal
+import time
 from typing import Callable, Optional, List
 
 import pendulum
@@ -178,9 +179,21 @@ class Bot:
                     timeout=15,
                 )
             )
-        except (requests_exceptions.HTTPError, requests_exceptions.ReadTimeout) as e:
-            _LOG.error("Encountered error while getting updates", exc_info=e)
+        except requests_exceptions.Timeout as e:
+            _LOG.warning("Encountered timeout while getting updates", exc_info=e)
             return []
+        except requests_exceptions.HTTPError as e:
+            response = e.response
+            if response is not None and response.status_code == 429:
+                _LOG.error(
+                    "Sent Too Many Requests to Telegram, rate limiting myself",
+                    exc_info=e,
+                )
+                time.sleep(30)
+                return []
+            else:
+                _LOG.warning("Got HTTPError when requesting updates", exc_info=e)
+                return []
 
     def _handle_updates(self, handler: Callable[[dict], None]):
         last_update_id: Optional[int] = None

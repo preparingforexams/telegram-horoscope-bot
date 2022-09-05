@@ -417,7 +417,7 @@ use_chardet_on_py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
 name = "sentry-sdk"
-version = "1.9.7"
+version = "1.9.8"
 description = "Python client for Sentry (https://sentry.io)"
 category = "main"
 optional = false
@@ -547,7 +547,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.10"
-content-hash = "dcfe8ed2f45f1ad3189bc3cd87c0356c081e6a04adc4cc95526d7ecccef8c0c8"
+content-hash = "1f652e3dff7e6ab22d68a564a9a3a151685c50f5756e02b5090de5f022bf192f"
 
 [metadata.files]
 atomicwrites = [
@@ -799,8 +799,8 @@ requests = [
     {file = "requests-2.28.1.tar.gz", hash = "sha256:7c5599b102feddaa661c826c56ab4fee28bfd17f5abca1ebbe3e7f19d7c97983"},
 ]
 sentry-sdk = [
-    {file = "sentry-sdk-1.9.7.tar.gz", hash = "sha256:af0987fc074ada4a166bdc7e9d99d1da7811c6107e4b3416c7052ea1adb77dfc"},
-    {file = "sentry_sdk-1.9.7-py2.py3-none-any.whl", hash = "sha256:d391204a2a59c54b764cd351c44c67eed17b43d51f4dbe3eba48b83b70c93db9"},
+    {file = "sentry-sdk-1.9.8.tar.gz", hash = "sha256:ef4b4d57631662ff81e15c22bf007f7ce07c47321648c8e601fbd22950ed1a79"},
+    {file = "sentry_sdk-1.9.8-py2.py3-none-any.whl", hash = "sha256:7378c08d81da78a4860da7b4900ac51fef38be841d01bc5b7cb249ac51e070c6"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},

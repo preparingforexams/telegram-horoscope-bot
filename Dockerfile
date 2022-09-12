@@ -2,7 +2,8 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-RUN pip install poetry --no-cache
+ENV POETRY_PYPI_VERSION=1.2.0
+RUN pip install poetry==$POETRY_PYPI_VERSION --no-cache
 RUN poetry config virtualenvs.create false
 
 COPY [ "poetry.toml", "poetry.lock", "pyproject.toml", "./" ]

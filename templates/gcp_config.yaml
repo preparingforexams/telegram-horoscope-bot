@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: horoscope-gcp
+data:
+  EVENT_PUBLISHER_MODE: pubsub
+  GOOGLE_CLOUD_PROJECT: prep-telegram-bots
+  PUBSUB_HOROSCOPE_TOPIC: horoscopes

@@ -39,6 +39,13 @@ spec:
       labels:
         app: horoscope-update-handler
     spec:
+      volumes:
+        - name: service-account
+          secret:
+            secretName: horoscope-secrets
+            items:
+              - key: GSA_JSON
+                path: ./gsa.json
       initContainers:
         - name: fix-volume-permissions
           image: alpine:3
@@ -72,13 +79,19 @@ spec:
           volumeMounts:
             - mountPath: /state
               name: horoscope-state
+            - mountPath: /gcp
+              name: service-account
           env:
             - name: HOROSCOPE_MODE
               value: openai
             - name: RATE_LIMIT_FILE
               value: /state/usages.db
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /gcp/gsa.json
           envFrom:
             - configMapRef:
                 name: horoscope-telegram
+            - configMapRef:
+                name: horoscope-gcp
             - secretRef:
                 name: horoscope-secrets

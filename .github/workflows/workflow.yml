@@ -57,6 +57,7 @@ jobs:
       - name: Substitute environment variables in values.yaml
         run: "envsubst < values.yaml > values_sub.yaml && mv values_sub.yaml values.yaml"
         env:
+          GSA_JSON: ${{ secrets.GSA_JSON }}
           OPENAI_TOKEN: ${{ secrets.OPENAI_TOKEN }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}

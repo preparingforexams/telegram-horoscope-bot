@@ -12,7 +12,11 @@ from horoscopebot.config import (
     HoroscopeConfig,
     HoroscopeMode,
     RateLimitConfig,
+    EventPublisherConfig,
 )
+from horoscopebot.event.publisher import EventPublisher
+from horoscopebot.event.pubsub import PubSubEventPublisher
+from horoscopebot.event.stub import StubEventPublisher
 from horoscopebot.horoscope.horoscope import Horoscope
 from horoscopebot.horoscope.openai import OpenAiHoroscope
 from horoscopebot.horoscope.steffen import SteffenHoroscope
@@ -45,6 +49,16 @@ def _load_horoscope(config: HoroscopeConfig) -> Horoscope:
         raise ValueError()
 
 
+def _load_event_publisher(config: EventPublisherConfig) -> EventPublisher:
+    if config.mode == "stub":
+        _LOG.warning("Using stub event publisher")
+        return StubEventPublisher()
+    elif config.mode == "pubsub":
+        return PubSubEventPublisher(config)
+    else:
+        raise ValueError(f"Unknown mode {config.mode}")
+
+
 def _load_rate_limiter(config: RateLimitConfig) -> RateLimiter:
     rate_limit_file = config.rate_limit_file
     repository: RateLimitingRepo
@@ -68,11 +82,13 @@ def main():
     _setup_sentry(config.sentry_dsn, release=config.app_version)
 
     horoscope = _load_horoscope(config.horoscope)
+    event_publisher = _load_event_publisher(config.event_publisher)
     rate_limiter = _load_rate_limiter(config.rate_limit)
 
     bot = Bot(
         config.telegram,
         horoscope=horoscope,
+        event_publisher=event_publisher,
         rate_limiter=rate_limiter,
     )
     _LOG.info("Launching bot...")

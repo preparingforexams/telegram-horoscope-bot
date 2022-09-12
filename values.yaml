@@ -1,5 +1,7 @@
 image:
   app: ghcr.io/preparingforexams/horoscopebot:${GITHUB_SHA}
+gcp:
+  gsaJson: ${GSA_JSON}
 telegram:
   apiKey: ${TELEGRAM_TOKEN}
   enabledChats:

@@ -2,6 +2,7 @@ import functools
 import logging
 import signal
 import time
+from dataclasses import dataclass
 from typing import Callable, Optional, List
 
 import pendulum
@@ -10,6 +11,7 @@ from requests import Response, Session, exceptions as requests_exceptions
 
 from horoscopebot.config import TelegramConfig
 from horoscopebot.dementia_responder import DementiaResponder
+from horoscopebot.event.publisher import EventPublisher, Event, EventPublishingException
 from horoscopebot.horoscope.horoscope import Horoscope
 
 _LOG = logging.getLogger(__name__)
@@ -25,16 +27,25 @@ def _build_session(default_timeout: float | int = 60) -> Session:
     return session
 
 
+@dataclass
+class HoroscopeEvent(Event):
+    message_id: int
+    user_id: int
+    horoscope: str
+
+
 class Bot:
     def __init__(
         self,
         config: TelegramConfig,
         horoscope: Horoscope,
+        event_publisher: EventPublisher,
         rate_limiter: RateLimiter,
     ):
         self.config = config
         self.horoscope = horoscope
         self._dementia_responder = DementiaResponder()
+        self._event_publisher = event_publisher
         self._rate_limiter = rate_limiter
         self._session = _build_session()
         self._should_terminate = False
@@ -76,6 +87,12 @@ class Bot:
                 timeout=10,
             )
         )
+
+    def _publish_horoscope_event(self, event: HoroscopeEvent):
+        try:
+            self._event_publisher.publish(event)
+        except EventPublishingException as e:
+            _LOG.error("Could not publish event", exc_info=e)
 
     @staticmethod
     def _is_lemons(dice: int) -> bool:
@@ -154,7 +171,16 @@ class Bot:
                 text=result_text,
                 reply_to_message_id=message_id,
             )
-            response_id = str(response_message["message_id"])
+            response_message_id = response_message["message_id"]
+            response_id = str(response_message_id)
+            self._publish_horoscope_event(
+                HoroscopeEvent(
+                    chat_id=chat_id,
+                    user_id=user_id,
+                    message_id=response_message_id,
+                    horoscope=result_text,
+                )
+            )
 
         self._rate_limiter.add_usage(
             context_id=chat_id,

@@ -90,6 +90,7 @@ def load_env(names: Union[str, Tuple[str, ...]]) -> Env:
 class Config:
     app_version: str
     horoscope: HoroscopeConfig
+    event_publisher: EventPublisherConfig
     rate_limit: RateLimitConfig
     sentry_dsn: Optional[str]
     telegram: TelegramConfig
@@ -99,6 +100,7 @@ class Config:
         return cls(
             app_version=env.get_string("BUILD_SHA", "debug"),  # type: ignore
             horoscope=HoroscopeConfig.from_env(env),
+            event_publisher=EventPublisherConfig.from_env(env),
             rate_limit=RateLimitConfig.from_env(env),
             sentry_dsn=env.get_string("SENTRY_DSN", required=False),
             telegram=TelegramConfig.from_env(env),
@@ -136,6 +138,21 @@ class OpenAiConfig:
         return cls(
             debug_mode=env.get_string("OPENAI_DEBUG", "false") == "true",
             token=env.get_string("OPENAI_TOKEN"),  # type:ignore
+        )
+
+
+@dataclass
+class EventPublisherConfig:
+    mode: str
+    project_id: str | None
+    topic_name: str | None
+
+    @classmethod
+    def from_env(cls, env: Env) -> EventPublisherConfig:
+        return cls(
+            mode=env.get_string("EVENT_PUBLISHER_MODE", "stub"),  # type: ignore
+            project_id=env.get_string("GOOGLE_CLOUD_PROJECT", required=False),
+            topic_name=env.get_string("PUBSUB_HOROSCOPE_TOPIC", required=False),
         )
 
 

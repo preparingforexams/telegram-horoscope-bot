@@ -131,7 +131,7 @@ class Bot:
             at_time=time,
         )
 
-        if conflicting_usage is not None and user_id != 133399998:
+        if conflicting_usage is not None:
             if self._is_lemons(dice_value):
                 # The other bot will send the picture anyway, so we'll be quiet
                 return

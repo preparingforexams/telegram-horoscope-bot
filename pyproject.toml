@@ -11,7 +11,7 @@ url = "https://pypi.bjoernpetersen.net"
 secondary = true
 
 [tool.poetry.dependencies]
-certifi = "2022.6.15.1"
+certifi = "2022.6.15.2"
 Deprecated = "^1.2.13"
 google-cloud-pubsub = "^2.0.0"
 openai = "^0.23.0"

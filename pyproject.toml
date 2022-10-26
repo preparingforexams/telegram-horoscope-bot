@@ -16,7 +16,7 @@ Deprecated = "^1.2.13"
 google-cloud-pubsub = "^2.0.0"
 openai = "^0.24.0"
 pendulum = "^2.0.0"
-python = "~3.10"
+python = "~3.11"
 python-dotenv = "^0.21.0"
 rate_limit = { version = "1.1.0", source = "internal" }
 requests = "2.28.1"

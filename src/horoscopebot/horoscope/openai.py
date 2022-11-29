@@ -229,7 +229,7 @@ class OpenAiHoroscope(Horoscope):
 
     def _create_completion(self, user_id: int, prompt: str) -> str:
         response = openai.Completion.create(
-            engine="text-davinci-001",
+            engine="text-davinci-003",
             prompt=prompt,
             temperature=1,
             max_tokens=96,

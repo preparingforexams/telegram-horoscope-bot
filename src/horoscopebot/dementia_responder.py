@@ -27,9 +27,10 @@ class DementiaResponder:
         response_message_id = None if response_id is None else int(response_id)
 
         if message_id == current_message_id - 2:
-            return Response("Dein Horoskop steht direkt über deiner Nachricht!")
+            return Response("Dein Horoskop steht direkt über deiner Slot Machine 🎰!")
 
-        if current_message_time.diff(usage.time).in_minutes() < 10:
+        time_diff = current_message_time.diff(usage.time)
+        if time_diff.in_minutes() < 10:
             return Response(
                 "Ich habe dir dein Horoskop vor nicht mal zehn Minuten gegeben."
                 " Wirst du alt?"
@@ -37,8 +38,15 @@ class DementiaResponder:
 
         reply_message_id = response_message_id or message_id
         if reply_message_id:
+            text = "Du hast dein Schicksal doch vorhin schon erfahren!"
+
+            if time_diff.in_hours() > 4 and usage.time.hour < 11:
+                text = "Du dein Schicksal doch heute Morgen schon erfahren!"
+            elif usage.time.hour < 15 and current_message_time.hour > 18:
+                text = "Es wird auch abends nicht besser."
+
             return Response(
-                "Du hast dein Schicksal doch vorhin schon erfahren!",
+                text,
                 reply_message_id=reply_message_id,
             )
 

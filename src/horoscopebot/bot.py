@@ -136,9 +136,13 @@ class Bot:
                 # The other bot will send the picture anyway, so we'll be quiet
                 return
 
+            tz = conflicting_usage.time.tz
+            if not tz:
+                raise ValueError("Found usage without timezone")
+
             response = self._dementia_responder.create_response(
                 current_message_id=message_id,
-                current_message_time=time.in_timezone(conflicting_usage.time.tz),
+                current_message_time=time.in_timezone(tz),
                 usage=conflicting_usage,
             )
             reply_message_id = response.reply_message_id or message_id

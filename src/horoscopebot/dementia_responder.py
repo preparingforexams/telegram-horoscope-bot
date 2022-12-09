@@ -40,6 +40,11 @@ class DementiaResponder:
         if reply_message_id:
             text = "Du hast dein Schicksal doch vorhin schon erfahren!"
 
+            if current_message_time.hour > 7 and usage.time.hour < 3:
+                text = (
+                    "Hast du nen Filmriss?"
+                    " Dein Horoskop hast du gestern Nacht schon erfragt!"
+                )
             if time_diff.in_hours() > 4 and usage.time.hour < 11:
                 text = "Du dein Schicksal doch heute Morgen schon erfahren!"
             elif usage.time.hour < 15 and current_message_time.hour > 18:

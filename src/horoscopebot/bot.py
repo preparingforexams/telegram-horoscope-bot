@@ -138,7 +138,7 @@ class Bot:
 
             response = self._dementia_responder.create_response(
                 current_message_id=message_id,
-                current_message_time=time,
+                current_message_time=time.in_timezone(conflicting_usage.time.tz),
                 usage=conflicting_usage,
             )
             reply_message_id = response.reply_message_id or message_id

@@ -56,8 +56,16 @@ _AVENUE_BY_FIRST_SLOT: dict[Slot, Avenue] = {
                 prompt="Suggest drinking Hugo",
             ),
             Variation(
-                probability=0.05,
+                probability=0.02,
                 prompt="Suggest drinking Rakete",
+            ),
+            Variation(
+                probability=0.05,
+                prompt="Suggest drinking Dream Jizz",
+            ),
+            Variation(
+                probability=0.05,
+                prompt="Suggest drinking Eiersaft",
             ),
             Variation(
                 probability=0.1,
@@ -224,6 +232,9 @@ class OpenAiHoroscope(Horoscope):
         date = time.date()
         if date.year == 2022 and date.month == 5 and date.day == 28:
             return _KANU_GEGGO.get(user_id)
+
+        if time.hour == 0 and time.minute == 18:
+            return "Um 0:18 Uhr schmeckt der Traubensaft am herrlichsten."
 
         return None
 

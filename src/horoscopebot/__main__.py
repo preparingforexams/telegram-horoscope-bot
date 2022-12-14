@@ -1,7 +1,8 @@
 import logging
 from pathlib import Path
 from typing import Optional
-
+from pendulum import tz
+from pendulum.tz.timezone import Timezone
 import sentry_sdk
 from rate_limit import RateLimiter, repo, policy, RateLimitingRepo
 
@@ -59,7 +60,7 @@ def _load_event_publisher(config: EventPublisherConfig) -> EventPublisher:
         raise ValueError(f"Unknown mode {config.mode}")
 
 
-def _load_rate_limiter(config: RateLimitConfig) -> RateLimiter:
+def _load_rate_limiter(timezone: Timezone, config: RateLimitConfig) -> RateLimiter:
     rate_limit_file = config.rate_limit_file
     repository: RateLimitingRepo
 
@@ -72,6 +73,7 @@ def _load_rate_limiter(config: RateLimitConfig) -> RateLimiter:
     return RateLimiter(
         policy=policy.DailyLimitRateLimitingPolicy(limit=1),
         repo=repository,
+        timezone=timezone,
     )
 
 
@@ -81,15 +83,18 @@ def main():
     config = Config.from_env(load_env(""))
     _setup_sentry(config.sentry_dsn, release=config.app_version)
 
+    timezone = tz.timezone("Europe/Berlin")
+
     horoscope = _load_horoscope(config.horoscope)
     event_publisher = _load_event_publisher(config.event_publisher)
-    rate_limiter = _load_rate_limiter(config.rate_limit)
+    rate_limiter = _load_rate_limiter(timezone, config.rate_limit)
 
     bot = Bot(
         config.telegram,
         horoscope=horoscope,
         event_publisher=event_publisher,
         rate_limiter=rate_limiter,
+        timezone=timezone,
     )
     _LOG.info("Launching bot...")
     bot.run()

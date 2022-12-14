@@ -4,7 +4,7 @@ import signal
 import time
 from dataclasses import dataclass
 from typing import Callable, Optional, List
-
+from pendulum.tz.timezone import Timezone
 import pendulum
 from rate_limit import RateLimiter
 from requests import Response, Session, exceptions as requests_exceptions
@@ -41,12 +41,14 @@ class Bot:
         horoscope: Horoscope,
         event_publisher: EventPublisher,
         rate_limiter: RateLimiter,
+        timezone: Timezone,
     ):
         self.config = config
         self.horoscope = horoscope
-        self._dementia_responder = DementiaResponder()
         self._event_publisher = event_publisher
         self._rate_limiter = rate_limiter
+        self._timezone = timezone
+        self._dementia_responder = DementiaResponder()
         self._session = _build_session()
         self._should_terminate = False
 
@@ -120,7 +122,7 @@ class Bot:
             return
 
         timestamp = message["date"]
-        time = pendulum.from_timestamp(timestamp)
+        time = pendulum.from_timestamp(timestamp).in_timezone(self._timezone)
         user_id = message["from"]["id"]
         message_id = message["message_id"]
         dice_value = dice["value"]
@@ -136,13 +138,9 @@ class Bot:
                 # The other bot will send the picture anyway, so we'll be quiet
                 return
 
-            tz = conflicting_usage.time.tz
-            if not tz:
-                raise ValueError("Found usage without timezone")
-
             response = self._dementia_responder.create_response(
                 current_message_id=message_id,
-                current_message_time=time.in_timezone(tz),
+                current_message_time=time,
                 usage=conflicting_usage,
             )
             reply_message_id = response.reply_message_id or message_id

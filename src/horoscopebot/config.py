@@ -89,6 +89,7 @@ def load_env(names: Union[str, Tuple[str, ...]]) -> Env:
 @dataclass
 class Config:
     app_version: str
+    timezone_name: str
     horoscope: HoroscopeConfig
     event_publisher: EventPublisherConfig
     rate_limit: RateLimitConfig
@@ -99,6 +100,10 @@ class Config:
     def from_env(cls, env: Env) -> Config:
         return cls(
             app_version=env.get_string("BUILD_SHA", "debug"),  # type: ignore
+            timezone_name=env.get_string(  # type: ignore
+                "TIMEZONE_NAME",
+                "Europe/Berlin",
+            ),
             horoscope=HoroscopeConfig.from_env(env),
             event_publisher=EventPublisherConfig.from_env(env),
             rate_limit=RateLimitConfig.from_env(env),

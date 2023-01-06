@@ -246,14 +246,14 @@ libcst = ["libcst (>=0.3.10)"]
 
 [[package]]
 name = "googleapis-common-protos"
-version = "1.57.0"
+version = "1.57.1"
 description = "Common protobufs used in Google APIs"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "googleapis-common-protos-1.57.0.tar.gz", hash = "sha256:27a849d6205838fb6cc3c1c21cb9800707a661bb21c6ce7fb13e99eb1f8a0c46"},
-    {file = "googleapis_common_protos-1.57.0-py2.py3-none-any.whl", hash = "sha256:a9f4a1d7f6d9809657b7f1316a1aa527f6664891531bcfcc13b6696e685f443c"},
+    {file = "googleapis-common-protos-1.57.1.tar.gz", hash = "sha256:e877f2f041b640b4888b6917dde4f44515ab938bf744c4dbc06f11f0e8ed56b5"},
+    {file = "googleapis_common_protos-1.57.1-py2.py3-none-any.whl", hash = "sha256:2672d6b3a7b6188b70a5a4c70def7ddbb9000852dfbf49daf52fc7306c09db0c"},
 ]
 
 [package.dependencies]
@@ -592,14 +592,14 @@ test = ["hypothesis (>=5.5.3)", "pytest (>=6.0)", "pytest-xdist (>=1.31)"]
 
 [[package]]
 name = "pandas-stubs"
-version = "1.5.2.221213"
+version = "1.5.2.230105"
 description = "Type annotations for pandas"
 category = "main"
 optional = false
 python-versions = ">=3.8,<3.12"
 files = [
-    {file = "pandas_stubs-1.5.2.221213-py3-none-any.whl", hash = "sha256:3551177a44eec5945b4e47131b6a545a564b3d41dfd4e50e06ba1a736e7d695d"},
-    {file = "pandas_stubs-1.5.2.221213.tar.gz", hash = "sha256:0cbc1dbdf5dddb4d67ebc851b9cfb265bf62fe317b043bd37ee5a4a2659421f2"},
+    {file = "pandas_stubs-1.5.2.230105-py3-none-any.whl", hash = "sha256:b2874d26eabcaecb83aa8435d47e41f1b5f90ad04f3e1e70c3c8604027490225"},
+    {file = "pandas_stubs-1.5.2.230105.tar.gz", hash = "sha256:c78e433aca82577ce4a9fefc0d78cd26828dd95f8b1612416babff1b6957a22a"},
 ]
 
 [package.dependencies]

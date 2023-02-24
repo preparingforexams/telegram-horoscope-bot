@@ -52,6 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - push_docker
+    concurrency: production
     steps:
       - uses: actions/checkout@v3
       - name: Substitute environment variables in values.yaml
@@ -63,5 +64,5 @@ jobs:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
       - uses: WyriHaximus/github-action-helm3@v2
         with:
-          exec: helm upgrade horoscopebot . --install --namespace=telegram-bots
+          exec: helm upgrade horoscopebot . --install --namespace=telegram-bots --atomic
           kubeconfig: '${{ secrets.KUBECONFIG_RAW }}'

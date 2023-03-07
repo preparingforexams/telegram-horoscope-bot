@@ -30,6 +30,7 @@ jobs:
 
   push_docker:
     runs-on: ubuntu-latest
+    concurrency: production
     needs:
       - lint
       - test
@@ -47,12 +48,17 @@ jobs:
           build-args: build=${{ github.sha }}
           push: true
           tags: ghcr.io/preparingforexams/horoscopebot:${{ github.sha }}
-
+      - name: Clean up old container images
+        uses: actions/delete-package-versions@v4
+        with:
+          package-name: horoscopebot
+          package-type: container
+          min-versions-to-keep: 10
   deploy:
     runs-on: ubuntu-latest
+    concurrency: production
     needs:
       - push_docker
-    concurrency: production
     steps:
       - uses: actions/checkout@v3
       - name: Substitute environment variables in values.yaml

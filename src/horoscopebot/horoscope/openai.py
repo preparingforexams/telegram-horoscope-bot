@@ -50,7 +50,10 @@ _AVENUE_BY_FIRST_SLOT: dict[Slot, Avenue] = {
         variations=[
             Variation(
                 probability=0.3,
-                prompt="Include a reference to Fabienne's excessive alcoholism.",
+                prompt=(
+                    "Include a reference to Fabienne's excessive alcoholism."
+                    " Fabienne does not drink wine."
+                ),
             ),
             Variation(
                 probability=0.05,
@@ -247,11 +250,11 @@ class OpenAiHoroscope(Horoscope):
         response = openai.Completion.create(
             engine="text-davinci-003",
             prompt=prompt,
-            temperature=1,
-            max_tokens=96,
+            temperature=1.2,
+            max_tokens=160,
             top_p=1,
-            frequency_penalty=0.35,
-            presence_penalty=0.75,
+            frequency_penalty=0.75,
+            presence_penalty=0.5,
             user=str(user_id),
         )
         message = response.choices[0].text

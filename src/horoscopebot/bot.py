@@ -81,8 +81,10 @@ class Bot:
         chat_id: int,
         text: str,
         reply_to_message_id: int | None,
+        use_html_parsing: bool = False,
         image: bytes | None = None,
     ) -> dict:
+        parsing_conf = {"parse_mode": "HTML"} if use_html_parsing else {}
         if image is None:
             response = self._session.post(
                 self._build_url("sendMessage"),
@@ -90,6 +92,7 @@ class Bot:
                     "text": text,
                     "chat_id": chat_id,
                     "reply_to_message_id": reply_to_message_id,
+                    **parsing_conf,
                 },
                 timeout=10,
             )
@@ -100,6 +103,7 @@ class Bot:
                     "caption": text,
                     "chat_id": chat_id,
                     "reply_to_message_id": reply_to_message_id,
+                    **parsing_conf,
                 },
                 files={
                     "photo": image,
@@ -191,6 +195,7 @@ class Bot:
                 chat_id=chat_id,
                 text=horoscope_result.message,
                 image=horoscope_result.image,
+                use_html_parsing=horoscope_result.should_use_html_parsing,
                 reply_to_message_id=message_id,
             )
             response_message_id = response_message["message_id"]

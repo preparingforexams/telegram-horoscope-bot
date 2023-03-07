@@ -257,7 +257,8 @@ class OpenAiHoroscope(Horoscope):
         message = response.choices[0].text
         image = self._create_image(message)
         return HoroscopeResult(
-            message=message,
+            message=f"<tg-spoiler>{message}</tg-spoiler>",
+            use_html=True,
             image=image,
         )
 

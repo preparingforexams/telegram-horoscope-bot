@@ -1,6 +1,6 @@
 from pendulum import DateTime
 
-from .horoscope import Horoscope, Slot, SLOT_MACHINE_VALUES
+from .horoscope import Horoscope, Slot, SLOT_MACHINE_VALUES, HoroscopeResult
 
 _HOROSCOPE_BY_COMBINATION = {
     (Slot.LEMON, Slot.LEMON, Slot.GRAPE): "Bleib einfach liegen.",
@@ -130,6 +130,14 @@ class SteffenHoroscope(Horoscope):
         user_id: int,
         message_id: int,
         message_time: DateTime,
-    ) -> str | None:
+    ) -> HoroscopeResult | None:
         slots = SLOT_MACHINE_VALUES[dice]
-        return _HOROSCOPE_BY_COMBINATION.get(slots)
+        message = _HOROSCOPE_BY_COMBINATION.get(slots)
+
+        if message:
+            return HoroscopeResult(
+                message=message,
+                image=None,
+            )
+
+        return None

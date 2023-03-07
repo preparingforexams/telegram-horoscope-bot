@@ -1,12 +1,17 @@
+import logging
 import random
 from dataclasses import dataclass
 from datetime import datetime
 
 import openai
+import requests
 from pendulum import DateTime
+from requests import RequestException
 
 from horoscopebot.config import OpenAiConfig
-from .horoscope import Horoscope, SLOT_MACHINE_VALUES, Slot
+from .horoscope import Horoscope, SLOT_MACHINE_VALUES, Slot, HoroscopeResult
+
+_LOG = logging.getLogger(__name__)
 
 _BASE_PROMPT = (
     r"Write a creative and witty horoscope for the day without mentioning a specific "
@@ -206,7 +211,7 @@ class OpenAiHoroscope(Horoscope):
         user_id: int,
         message_id: int,
         message_time: DateTime,
-    ) -> str | None:
+    ) -> HoroscopeResult | None:
         slots = SLOT_MACHINE_VALUES[dice]
         return self._create_horoscope(user_id, slots, message_time)
 
@@ -215,13 +220,13 @@ class OpenAiHoroscope(Horoscope):
         user_id: int,
         slots: tuple[Slot, Slot, Slot],
         time: datetime,
-    ) -> str | None:
+    ) -> HoroscopeResult | None:
         if self._debug_mode:
-            return "debug mode is turned on"
+            return HoroscopeResult(message="debug mode is turned on")
 
         geggo = self._make_geggo(user_id, time)
         if geggo:
-            return geggo
+            return HoroscopeResult(message=geggo)
 
         avenue = _AVENUE_BY_FIRST_SLOT[slots[0]]
         prompt = avenue.build_prompt()
@@ -238,7 +243,7 @@ class OpenAiHoroscope(Horoscope):
 
         return None
 
-    def _create_completion(self, user_id: int, prompt: str) -> str:
+    def _create_completion(self, user_id: int, prompt: str) -> HoroscopeResult:
         response = openai.Completion.create(
             engine="text-davinci-003",
             prompt=prompt,
@@ -249,4 +254,33 @@ class OpenAiHoroscope(Horoscope):
             presence_penalty=0.75,
             user=str(user_id),
         )
-        return response.choices[0].text
+        message = response.choices[0].text
+        image = self._create_image(message)
+        return HoroscopeResult(
+            message=message,
+            image=image,
+        )
+
+    def _create_image(self, message: str) -> bytes | None:
+        response = openai.Image.create(
+            prompt=message,
+            n=1,
+            size="512x512",
+            response_format="url",
+        )
+        url = response["data"][0]["url"]
+
+        try:
+            response = requests.get(url, timeout=60)
+        except RequestException as e:
+            _LOG.error("Could not get generated image", exc_info=e)
+            return None
+
+        if response.status_code >= 400:
+            _LOG.error(
+                "Got unsuccessful response %d when trying to get image",
+                response.status_code,
+            )
+            return None
+
+        return response.content

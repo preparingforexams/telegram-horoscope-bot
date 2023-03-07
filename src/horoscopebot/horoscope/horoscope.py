@@ -1,7 +1,14 @@
 import abc
+from dataclasses import dataclass
 from enum import auto, Enum
 
 from pendulum import DateTime
+
+
+@dataclass
+class HoroscopeResult:
+    message: str
+    image: bytes | None = None
 
 
 class Horoscope(abc.ABC):
@@ -13,7 +20,7 @@ class Horoscope(abc.ABC):
         user_id: int,
         message_id: int,
         message_time: DateTime,
-    ) -> str | None:
+    ) -> HoroscopeResult | None:
         pass
 
 

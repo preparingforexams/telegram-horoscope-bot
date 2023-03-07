@@ -4,15 +4,16 @@ import signal
 import time
 from dataclasses import dataclass
 from typing import Callable, Optional, List
-from pendulum.tz.timezone import Timezone
+
 import pendulum
+from pendulum.tz.timezone import Timezone
 from rate_limit import RateLimiter
 from requests import Response, Session, exceptions as requests_exceptions
 
 from horoscopebot.config import TelegramConfig
 from horoscopebot.dementia_responder import DementiaResponder
 from horoscopebot.event.publisher import EventPublisher, Event, EventPublishingException
-from horoscopebot.horoscope.horoscope import Horoscope
+from horoscopebot.horoscope.horoscope import Horoscope, HoroscopeResult
 
 _LOG = logging.getLogger(__name__)
 
@@ -76,10 +77,14 @@ class Bot:
         raise ValueError(f"Body was not ok! {body}")
 
     def _send_message(
-        self, chat_id: int, text: str, reply_to_message_id: Optional[int]
+        self,
+        chat_id: int,
+        text: str,
+        reply_to_message_id: int | None,
+        image: bytes | None = None,
     ) -> dict:
-        return self._get_actual_body(
-            self._session.post(
+        if image is None:
+            response = self._session.post(
                 self._build_url("sendMessage"),
                 json={
                     "text": text,
@@ -88,7 +93,21 @@ class Bot:
                 },
                 timeout=10,
             )
-        )
+        else:
+            response = self._session.post(
+                self._build_url("sendPhoto"),
+                data={
+                    "caption": text,
+                    "chat_id": chat_id,
+                    "reply_to_message_id": reply_to_message_id,
+                },
+                files={
+                    "photo": image,
+                },
+                timeout=20,
+            )
+
+        return self._get_actual_body(response)
 
     def _publish_horoscope_event(self, event: HoroscopeEvent):
         try:
@@ -151,9 +170,9 @@ class Bot:
             )
             return
 
-        result_text: str | None = None
+        horoscope_result: HoroscopeResult | None = None
         if not self._is_lemons(dice_value):
-            result_text = self.horoscope.provide_horoscope(
+            horoscope_result = self.horoscope.provide_horoscope(
                 dice=dice_value,
                 context_id=chat_id,
                 user_id=user_id,
@@ -162,7 +181,7 @@ class Bot:
             )
 
         response_id: str | None = None
-        if result_text is None:
+        if horoscope_result is None:
             _LOG.debug(
                 "Not sending horoscope because horoscope returned None for %d",
                 dice["value"],
@@ -170,7 +189,8 @@ class Bot:
         else:
             response_message = self._send_message(
                 chat_id=chat_id,
-                text=result_text,
+                text=horoscope_result.message,
+                image=horoscope_result.image,
                 reply_to_message_id=message_id,
             )
             response_message_id = response_message["message_id"]
@@ -180,7 +200,7 @@ class Bot:
                     chat_id=chat_id,
                     user_id=user_id,
                     message_id=response_message_id,
-                    horoscope=result_text,
+                    horoscope=horoscope_result.message,
                 )
             )
 

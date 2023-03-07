@@ -49,10 +49,10 @@ _AVENUE_BY_FIRST_SLOT: dict[Slot, Avenue] = {
         ),
         variations=[
             Variation(
-                probability=0.3,
+                probability=0.25,
                 prompt=(
                     "Include a reference to Fabienne's excessive alcoholism."
-                    " Fabienne does not drink wine."
+                    " Fabienne does not drink wine, but don't mention that."
                 ),
             ),
             Variation(

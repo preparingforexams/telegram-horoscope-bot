@@ -35,18 +35,18 @@ jobs:
       - test
     if: success() && github.ref == 'refs/heads/main'
     steps:
-      - uses: actions/checkout@v3
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build the tagged Docker image
-        run: docker build -t ghcr.io/preparingforexams/horoscopebot:${GITHUB_SHA} --build-arg "build=${GITHUB_SHA}" .
-      - name: Push the tagged Docker image
-        run: docker push ghcr.io/preparingforexams/horoscopebot:${GITHUB_SHA}
-
+          password: ${{ github.token }}
+      - name: Build and push container image
+        uses: docker/build-push-action@v4
+        with:
+          build-args: build=${{ github.sha }}
+          push: true
+          tags: ghcr.io/preparingforexams/horoscopebot:${{ github.sha }}
 
   deploy:
     runs-on: ubuntu-latest

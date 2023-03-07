@@ -30,7 +30,6 @@ jobs:
 
   push_docker:
     runs-on: ubuntu-latest
-    concurrency: production
     needs:
       - lint
       - test
@@ -48,12 +47,8 @@ jobs:
           build-args: build=${{ github.sha }}
           push: true
           tags: ghcr.io/preparingforexams/horoscopebot:${{ github.sha }}
-      - name: Clean up old container images
-        uses: actions/delete-package-versions@v4
-        with:
-          package-name: horoscopebot
-          package-type: container
-          min-versions-to-keep: 10
+
+
   deploy:
     runs-on: ubuntu-latest
     concurrency: production
@@ -72,3 +67,9 @@ jobs:
         with:
           exec: helm upgrade horoscopebot . --install --namespace=telegram-bots --atomic
           kubeconfig: '${{ secrets.KUBECONFIG_RAW }}'
+      - name: Clean up old container images
+        uses: actions/delete-package-versions@v4
+        with:
+          package-name: horoscopebot
+          package-type: container
+          min-versions-to-keep: 10

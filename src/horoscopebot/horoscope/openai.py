@@ -5,6 +5,7 @@ from datetime import datetime
 
 import openai
 import requests
+from openai import InvalidRequestError, OpenAIError
 from pendulum import DateTime
 from requests import RequestException
 
@@ -265,12 +266,23 @@ class OpenAiHoroscope(Horoscope):
         )
 
     def _create_image(self, message: str) -> bytes | None:
-        response = openai.Image.create(
-            prompt=message,
-            n=1,
-            size="512x512",
-            response_format="url",
-        )
+        try:
+            response = openai.Image.create(
+                prompt=message,
+                n=1,
+                size="512x512",
+                response_format="url",
+            )
+        except InvalidRequestError as e:
+            # Only ever saw this because of their profanity filter. Of course the error
+            # code was fucking None, so I would have to check the message to make sure
+            # that the error is actually about their "safety system", but I won't.
+            _LOG.debug("Got InvalidRequestError from OpenAI", exc_info=e)
+            return None
+        except OpenAIError as e:
+            _LOG.error("An error occurred during image generation", exc_info=e)
+            return None
+
         url = response["data"][0]["url"]
 
         try:

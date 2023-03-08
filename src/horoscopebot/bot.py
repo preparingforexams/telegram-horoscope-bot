@@ -193,7 +193,7 @@ class Bot:
         else:
             response_message = self._send_message(
                 chat_id=chat_id,
-                text=horoscope_result.message,
+                text=horoscope_result.formatted_message,
                 image=horoscope_result.image,
                 use_html_parsing=horoscope_result.should_use_html_parsing,
                 reply_to_message_id=message_id,

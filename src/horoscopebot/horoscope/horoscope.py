@@ -8,12 +8,18 @@ from pendulum import DateTime
 @dataclass
 class HoroscopeResult:
     message: str
-    use_html: bool = False
     image: bytes | None = None
 
     @property
     def should_use_html_parsing(self) -> bool:
-        return self.use_html and self.image is not None
+        return self.image is not None
+
+    @property
+    def formatted_message(self) -> str:
+        if self.should_use_html_parsing:
+            return f"<tg-spoiler>{self.message}</tg-spoiler>"
+
+        return self.message
 
 
 class Horoscope(abc.ABC):

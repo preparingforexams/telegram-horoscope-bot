@@ -250,11 +250,11 @@ class OpenAiHoroscope(Horoscope):
         response = openai.Completion.create(
             engine="text-davinci-003",
             prompt=prompt,
-            temperature=1.2,
+            temperature=1.1,
             max_tokens=160,
             top_p=1,
-            frequency_penalty=0.75,
-            presence_penalty=0.5,
+            frequency_penalty=0.5,
+            presence_penalty=0.75,
             user=str(user_id),
         )
         message = response.choices[0].text

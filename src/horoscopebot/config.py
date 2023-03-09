@@ -163,11 +163,16 @@ class EventPublisherConfig:
 
 @dataclass
 class RateLimitConfig:
+    rate_limiter_type: str
     rate_limit_file: str | None
 
     @classmethod
     def from_env(cls, env: Env) -> RateLimitConfig:
         return cls(
+            rate_limiter_type=env.get_string(
+                "RATE_LIMITER_TYPE",
+                default="actual",
+            ),  # type: ignore
             rate_limit_file=env.get_string(
                 "RATE_LIMIT_FILE", required=False
             ),  # type: ignore

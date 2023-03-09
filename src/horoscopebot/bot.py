@@ -3,7 +3,7 @@ import logging
 import signal
 import time
 from dataclasses import dataclass
-from typing import Callable, Optional, List
+from typing import Callable, Optional, List, Self
 
 import pendulum
 from pendulum.tz.timezone import Timezone
@@ -26,6 +26,19 @@ def _build_session(default_timeout: float | int = 60) -> Session:
     )
     session.request = request_with_default_timeout  # type: ignore
     return session
+
+
+class RateLimitException(Exception):
+    def __init__(self, retry_after: float):
+        self.retry_after = retry_after
+
+    @classmethod
+    def from_response(cls, response: Response) -> Self:
+        parameters = response.json()["parameters"]
+        if parameters:
+            return cls(retry_after=float(parameters["retry_after"]))
+
+        return cls(retry_after=60.0)
 
 
 @dataclass
@@ -70,6 +83,9 @@ class Bot:
 
     @staticmethod
     def _get_actual_body(response: Response):
+        if response.status_code == 429:
+            raise RateLimitException.from_response(response)
+
         response.raise_for_status()
         body = response.json()
         if body.get("ok"):
@@ -235,18 +251,16 @@ class Bot:
         except requests_exceptions.Timeout as e:
             _LOG.warning("Encountered timeout while getting updates", exc_info=e)
             return []
+        except RateLimitException as e:
+            _LOG.warning(
+                "Sent too many requests to Telegram, retrying after %f seconds",
+                e.retry_after,
+            )
+            time.sleep(e.retry_after)
+            return []
         except requests_exceptions.HTTPError as e:
-            response = e.response
-            if response is not None and response.status_code == 429:
-                _LOG.error(
-                    "Sent Too Many Requests to Telegram, rate limiting myself",
-                    exc_info=e,
-                )
-                time.sleep(30)
-                return []
-            else:
-                _LOG.warning("Got HTTPError when requesting updates", exc_info=e)
-                return []
+            _LOG.error("Got HTTPError when requesting updates", exc_info=e)
+            return []
 
     def _handle_updates(self, handler: Callable[[dict], None]):
         last_update_id: Optional[int] = None

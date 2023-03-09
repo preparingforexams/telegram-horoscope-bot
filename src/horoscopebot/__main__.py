@@ -1,10 +1,18 @@
 import logging
 from pathlib import Path
 from typing import Optional
-from pendulum import tz
-from pendulum.tz.timezone import Timezone
+
 import sentry_sdk
-from rate_limit import RateLimiter, repo, policy, RateLimitingRepo
+from pendulum import tz, DateTime
+from pendulum.tz.timezone import Timezone
+from rate_limit import (
+    RateLimiter,
+    repo,
+    policy,
+    RateLimitingRepo,
+    RateLimitingPolicy,
+    Usage,
+)
 
 from horoscopebot.bot import Bot
 from horoscopebot.config import (
@@ -60,7 +68,27 @@ def _load_event_publisher(config: EventPublisherConfig) -> EventPublisher:
         raise ValueError(f"Unknown mode {config.mode}")
 
 
+class _StubRateLimitPolicy(RateLimitingPolicy):
+    @property
+    def requested_history(self) -> int:
+        return 0
+
+    def get_offending_usage(
+        self,
+        at_time: DateTime,
+        last_usages: list[Usage],
+    ) -> Usage | None:
+        return None
+
+
 def _load_rate_limiter(timezone: Timezone, config: RateLimitConfig) -> RateLimiter:
+    match config.rate_limiter_type:
+        case "stub":
+            return RateLimiter(
+                policy=_StubRateLimitPolicy(),
+                repo=repo.InMemoryRateLimitingRepo(),
+            )
+
     rate_limit_file = config.rate_limit_file
     repository: RateLimitingRepo
 

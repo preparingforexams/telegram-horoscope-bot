@@ -1111,14 +1111,14 @@ files = [
 
 [[package]]
 name = "rate-limit"
-version = "1.2.0"
+version = "1.3.0"
 description = "Provides scaffolding for rate limited features"
 category = "main"
 optional = false
 python-versions = ">=3.9,<3.12"
 files = [
-    {file = "rate_limit-1.2.0-py3-none-any.whl", hash = "sha256:d35b63b246a382ad367d9a49b1ace246ea287857f60033d4e9c93dd74290c76f"},
-    {file = "rate_limit-1.2.0.tar.gz", hash = "sha256:bc48b50cb41b980e887d8f82844e732dcb6b8bc1ca540cb35cd8b6cc6c926200"},
+    {file = "rate_limit-1.3.0-py3-none-any.whl", hash = "sha256:94c4d4c9b05ee11f3d0728e72d792d8ae93a86bd7577168ea9d0e2b5b40272ed"},
+    {file = "rate_limit-1.3.0.tar.gz", hash = "sha256:203e49a57d04e646e60ee0cebf7779d242390be9438a41b25eba73faa8cb1fae"},
 ]
 
 [package.dependencies]
@@ -1473,4 +1473,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "4610f96ce0dd8b0f909a3c489ec2e50e03b57d7292c0a434d9a2dcb80f9208bd"
+content-hash = "2d2489330f4d440f05e4b8d3f2aefc179cfb6665e25f740c1b11a6a5e79f4534"

@@ -16,7 +16,8 @@ _LOG = logging.getLogger(__name__)
 
 _BASE_PROMPT = (
     r"Write a creative and witty horoscope for the day without mentioning a specific "
-    r"zodiac sign. The horoscope must be written in German. "
+    r"zodiac sign. The horoscope must be written in German. The horoscope should "
+    r"consist of two short sentences. "
     r'Use "Du" instead of "Sie".'
 )
 

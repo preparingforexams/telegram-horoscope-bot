@@ -12,7 +12,7 @@ class HoroscopeResult:
 
     @property
     def should_use_html_parsing(self) -> bool:
-        return self.image is not None
+        return False
 
     @property
     def formatted_message(self) -> str:

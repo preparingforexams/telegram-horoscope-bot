@@ -22,12 +22,6 @@ _BASE_PROMPT = (
 )
 
 _IMAGE_IMPROVEMENT_PROMPT = (
-    "Convert the following into a suitable prompt for a text-to-image generation AI:"
-    "\n\n"
-    "{0}"
-)
-
-_IMAGE_IMPROVEMENT_PROMPT = (
     "Beschreibe in wenigen Worten ein Bild, das folgendes illustriert:\n\n{0}"
 )
 

@@ -21,6 +21,16 @@ _BASE_PROMPT = (
     r'Use "Du" instead of "Sie".'
 )
 
+_IMAGE_IMPROVEMENT_PROMPT = (
+    "Convert the following into a suitable prompt for a text-to-image generation AI:"
+    "\n\n"
+    "{0}"
+)
+
+_IMAGE_IMPROVEMENT_PROMPT = (
+    "Beschreibe in wenigen Worten ein Bild, das folgendes illustriert:\n\n{0}"
+)
+
 
 @dataclass
 class Variation:
@@ -265,10 +275,26 @@ class OpenAiHoroscope(Horoscope):
             image=image,
         )
 
+    def _improve_image_prompt(self, prompt: str) -> str | None:
+        try:
+            response = openai.Completion.create(
+                engine="text-davinci-003",
+                prompt=_IMAGE_IMPROVEMENT_PROMPT.format(prompt),
+                max_tokens=128,
+            )
+            result = response.choices[0].text
+            _LOG.info("Improved prompt from '%s'\nto '%s'", prompt, result)
+            return result
+        except OpenAIError as e:
+            _LOG.error("Could not improve image generation prompt", exc_info=e)
+            return None
+
     def _create_image(self, message: str) -> bytes | None:
+        prompt = self._improve_image_prompt(message) or message
+
         try:
             response = openai.Image.create(
-                prompt=message,
+                prompt=prompt,
                 n=1,
                 size="512x512",
                 response_format="url",

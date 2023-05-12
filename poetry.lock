@@ -491,14 +491,14 @@ grpcio-gcp = ["grpcio-gcp (>=0.2.2,<1.0dev)"]
 
 [[package]]
 name = "google-auth"
-version = "2.17.3"
+version = "2.18.0"
 description = "Google Authentication Library"
 category = "main"
 optional = false
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*"
 files = [
-    {file = "google-auth-2.17.3.tar.gz", hash = "sha256:ce311e2bc58b130fddf316df57c9b3943c2a7b4f6ec31de9663a9333e4064efc"},
-    {file = "google_auth-2.17.3-py2.py3-none-any.whl", hash = "sha256:f586b274d3eb7bd932ea424b1c702a30e0393a2e2bc4ca3eae8263ffd8be229f"},
+    {file = "google-auth-2.18.0.tar.gz", hash = "sha256:c66b488a8b005b23ccb97b1198b6cece516c91869091ac5b7c267422db2733c7"},
+    {file = "google_auth-2.18.0-py2.py3-none-any.whl", hash = "sha256:ef3f3a67fa54d421a1c155864570f9a8de9179cedc937bda496b7a8ca338e936"},
 ]
 
 [package.dependencies]
@@ -506,6 +506,7 @@ cachetools = ">=2.0.0,<6.0"
 pyasn1-modules = ">=0.2.1"
 rsa = {version = ">=3.1.4,<5", markers = "python_version >= \"3.6\""}
 six = ">=1.9.0"
+urllib3 = "<2.0"
 
 [package.extras]
 aiohttp = ["aiohttp (>=3.6.2,<4.0.0dev)", "requests (>=2.20.0,<3.0.0dev)"]
@@ -516,20 +517,20 @@ requests = ["requests (>=2.20.0,<3.0.0dev)"]
 
 [[package]]
 name = "google-cloud-pubsub"
-version = "2.16.0"
+version = "2.17.0"
 description = "Google Cloud Pub/Sub API client library"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "google-cloud-pubsub-2.16.0.tar.gz", hash = "sha256:587da7d535ca858ceeed7036205355e5a6dd3e44ea4abc96f4e50d1abfd8843b"},
-    {file = "google_cloud_pubsub-2.16.0-py2.py3-none-any.whl", hash = "sha256:e41ec9635cc68dbd238f572f295b3d0bae6340c66ba31a70dfb890950ab33c2b"},
+    {file = "google-cloud-pubsub-2.17.0.tar.gz", hash = "sha256:8288d0323800f26b331b154fd1fb31ce92fe9a26f3f8483737209c7bfe50ade9"},
+    {file = "google_cloud_pubsub-2.17.0-py2.py3-none-any.whl", hash = "sha256:85db40ce1c03ad604fe2f299906f49f2bf36abbe2320863a3e19bdc746a904f7"},
 ]
 
 [package.dependencies]
 google-api-core = {version = ">=1.34.0,<2.0.0 || >=2.11.0,<3.0.0dev", extras = ["grpc"]}
 grpc-google-iam-v1 = ">=0.12.4,<1.0.0dev"
-grpcio = ">=1.38.1,<2.0dev"
+grpcio = ">=1.51.3,<2.0dev"
 grpcio-status = ">=1.33.2"
 proto-plus = {version = ">=1.22.2,<2.0.0dev", markers = "python_version >= \"3.11\""}
 protobuf = ">=3.19.5,<3.20.0 || >3.20.0,<3.20.1 || >3.20.1,<4.21.0 || >4.21.0,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4.21.4 || >4.21.4,<4.21.5 || >4.21.5,<5.0.0dev"
@@ -910,18 +911,18 @@ pytzdata = ">=2020.1"
 
 [[package]]
 name = "platformdirs"
-version = "3.5.0"
+version = "3.5.1"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "platformdirs-3.5.0-py3-none-any.whl", hash = "sha256:47692bc24c1958e8b0f13dd727307cff1db103fca36399f457da8e05f222fdc4"},
-    {file = "platformdirs-3.5.0.tar.gz", hash = "sha256:7954a68d0ba23558d753f73437c55f89027cf8f5108c19844d4b82e5af396335"},
+    {file = "platformdirs-3.5.1-py3-none-any.whl", hash = "sha256:e2378146f1964972c03c085bb5662ae80b2b8c06226c54b2ff4aa9483e8a13a5"},
+    {file = "platformdirs-3.5.1.tar.gz", hash = "sha256:412dae91f52a6f84830f39a8078cecd0e866cb72294a5c66808e74d5e88d251f"},
 ]
 
 [package.extras]
-docs = ["furo (>=2023.3.27)", "proselint (>=0.13)", "sphinx (>=6.1.3)", "sphinx-autodoc-typehints (>=1.23,!=1.23.4)"]
+docs = ["furo (>=2023.3.27)", "proselint (>=0.13)", "sphinx (>=6.2.1)", "sphinx-autodoc-typehints (>=1.23,!=1.23.4)"]
 test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest (>=7.3.1)", "pytest-cov (>=4)", "pytest-mock (>=3.10)"]
 
 [[package]]
@@ -960,25 +961,25 @@ testing = ["google-api-core[grpc] (>=1.31.5)"]
 
 [[package]]
 name = "protobuf"
-version = "4.22.4"
+version = "4.23.0"
 description = ""
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "protobuf-4.22.4-cp310-abi3-win32.whl", hash = "sha256:a4e661247896c2ffea4b894bca2d8657e752bedb8f3c66d7befa2557291be1e8"},
-    {file = "protobuf-4.22.4-cp310-abi3-win_amd64.whl", hash = "sha256:7b42086d6027be2730151b49f27b2f5be40f3b036adf7b8da5917f4567f268c3"},
-    {file = "protobuf-4.22.4-cp37-abi3-macosx_10_9_universal2.whl", hash = "sha256:4bfb28d48628deacdb66a95aaa7b6640f3dc82b4edd34db444c7a3cdd90b01fb"},
-    {file = "protobuf-4.22.4-cp37-abi3-manylinux2014_aarch64.whl", hash = "sha256:e98e26328d7c668541d1052b02de4205b1094ef6b2ce57167440d3e39876db48"},
-    {file = "protobuf-4.22.4-cp37-abi3-manylinux2014_x86_64.whl", hash = "sha256:8fd329e5dd7b6c4b878cab4b85bb6cec880e2adaf4e8aa2c75944dcbb05e1ff1"},
-    {file = "protobuf-4.22.4-cp37-cp37m-win32.whl", hash = "sha256:b7728b5da9eee15c0aa3baaee79e94fa877ddcf7e3d2f34b1eab586cd26eea89"},
-    {file = "protobuf-4.22.4-cp37-cp37m-win_amd64.whl", hash = "sha256:f4a711588c3a79b6f9c44af4d7f4a2ae868e27063654683932ab6462f90e9656"},
-    {file = "protobuf-4.22.4-cp38-cp38-win32.whl", hash = "sha256:11b28b4e779d7f275e3ea0efa3938f4d4e8ed3ca818f9fec3b193f8e9ada99fd"},
-    {file = "protobuf-4.22.4-cp38-cp38-win_amd64.whl", hash = "sha256:144d5b46df5e44f914f715accaadf88d617242ba5a40cacef4e8de7effa79954"},
-    {file = "protobuf-4.22.4-cp39-cp39-win32.whl", hash = "sha256:5128b4d5efcaef92189e076077ae389700606ff81d2126b8361dc01f3e026197"},
-    {file = "protobuf-4.22.4-cp39-cp39-win_amd64.whl", hash = "sha256:9537ae27d43318acf8ce27d0359fe28e6ebe4179c3350bc055bb60ff4dc4fcd3"},
-    {file = "protobuf-4.22.4-py3-none-any.whl", hash = "sha256:3b21074b7fb748d8e123acaef9fa63a84fdc1436dc71199d2317b139f77dd6f4"},
-    {file = "protobuf-4.22.4.tar.gz", hash = "sha256:21fbaef7f012232eb8d6cb8ba334e931fc6ff8570f5aaedc77d5b22a439aa909"},
+    {file = "protobuf-4.23.0-cp310-abi3-win32.whl", hash = "sha256:6c16657d6717a0c62d5d740cb354fbad1b0d8cb811669e06fc1caa0ff4799ddd"},
+    {file = "protobuf-4.23.0-cp310-abi3-win_amd64.whl", hash = "sha256:baca40d067dddd62141a129f244703160d278648b569e90bb0e3753067644711"},
+    {file = "protobuf-4.23.0-cp37-abi3-macosx_10_9_universal2.whl", hash = "sha256:2b94bd6df92d71bd1234a2ffe7ce96ddf6d10cf637a18d6b55ad0a89fbb7fc21"},
+    {file = "protobuf-4.23.0-cp37-abi3-manylinux2014_aarch64.whl", hash = "sha256:9f5a0fbfcdcc364f3986f9ed9f8bb1328fb84114fd790423ff3d7fdb0f85c2d1"},
+    {file = "protobuf-4.23.0-cp37-abi3-manylinux2014_x86_64.whl", hash = "sha256:ebde3a023b8e11bfa6c890ef34cd6a8b47d586f26135e86c21344fe433daf2e2"},
+    {file = "protobuf-4.23.0-cp37-cp37m-win32.whl", hash = "sha256:7cb5b9a05ce52c6a782bb97de52679bd3438ff2b7460eff5da348db65650f227"},
+    {file = "protobuf-4.23.0-cp37-cp37m-win_amd64.whl", hash = "sha256:6fe180b56e1169d72ecc4acbd39186339aed20af5384531b8e8979b02bbee159"},
+    {file = "protobuf-4.23.0-cp38-cp38-win32.whl", hash = "sha256:d5a35ff54e3f62e8fc7be02bb0d2fbc212bba1a5a9cc2748090690093996f07b"},
+    {file = "protobuf-4.23.0-cp38-cp38-win_amd64.whl", hash = "sha256:e62fb869762b4ba18666370e2f8a18f17f8ab92dd4467295c6d38be6f8fef60b"},
+    {file = "protobuf-4.23.0-cp39-cp39-win32.whl", hash = "sha256:03eee35b60317112a72d19c54d0bff7bc58ff12fea4cd7b018232bd99758ffdf"},
+    {file = "protobuf-4.23.0-cp39-cp39-win_amd64.whl", hash = "sha256:36f5370a930cb77c8ad2f4135590c672d0d2c72d4a707c7d0058dce4b4b4a598"},
+    {file = "protobuf-4.23.0-py3-none-any.whl", hash = "sha256:9744e934ea5855d12191040ea198eaf704ac78665d365a89d9572e3b627c2688"},
+    {file = "protobuf-4.23.0.tar.gz", hash = "sha256:5f1eba1da2a2f3f7df469fccddef3cc060b8a16cfe3cc65961ad36b4dbcf59c5"},
 ]
 
 [[package]]
@@ -1155,14 +1156,14 @@ pyasn1 = ">=0.1.3"
 
 [[package]]
 name = "sentry-sdk"
-version = "1.22.1"
+version = "1.22.2"
 description = "Python client for Sentry (https://sentry.io)"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "sentry-sdk-1.22.1.tar.gz", hash = "sha256:052dff5069c6f0d836ee014323576824a9b40836fc003fb12489a1f19c60a3c9"},
-    {file = "sentry_sdk-1.22.1-py2.py3-none-any.whl", hash = "sha256:c6c6946f8c927adb00af1c5ab6921df38775b2199b9003816d5935a1310352d5"},
+    {file = "sentry-sdk-1.22.2.tar.gz", hash = "sha256:5932c092c6e6035584eb74d77064e4bce3b7935dfc4a331349719a40db265840"},
+    {file = "sentry_sdk-1.22.2-py2.py3-none-any.whl", hash = "sha256:cf89a5063ef84278d186aceaed6fb595bfe67d099298e537634a323664265669"},
 ]
 
 [package.dependencies]
@@ -1257,14 +1258,14 @@ types-urllib3 = "*"
 
 [[package]]
 name = "types-urllib3"
-version = "1.26.25.12"
+version = "1.26.25.13"
 description = "Typing stubs for urllib3"
 category = "dev"
 optional = false
 python-versions = "*"
 files = [
-    {file = "types-urllib3-1.26.25.12.tar.gz", hash = "sha256:a1557355ce8d350a555d142589f3001903757d2d36c18a66f588d9659bbc917d"},
-    {file = "types_urllib3-1.26.25.12-py3-none-any.whl", hash = "sha256:3ba3d3a8ee46e0d5512c6bd0594da4f10b2584b47a470f8422044a2ab462f1df"},
+    {file = "types-urllib3-1.26.25.13.tar.gz", hash = "sha256:3300538c9dc11dad32eae4827ac313f5d986b8b21494801f1bf97a1ac6c03ae5"},
+    {file = "types_urllib3-1.26.25.13-py3-none-any.whl", hash = "sha256:5dbd1d2bef14efee43f5318b5d36d805a489f6600252bb53626d4bfafd95e27c"},
 ]
 
 [[package]]

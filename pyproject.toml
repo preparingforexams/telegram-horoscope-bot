@@ -8,7 +8,7 @@ license = "MIT"
 [[tool.poetry.source]]
 name = "internal"
 url = "https://pypi.bjoernpetersen.net"
-secondary = true
+priority = "explicit"
 
 [tool.poetry.dependencies]
 certifi = "2023.5.7"

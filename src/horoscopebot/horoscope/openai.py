@@ -3,11 +3,11 @@ import random
 from dataclasses import dataclass
 from datetime import datetime
 
+import httpx
 import openai
-import requests
+from httpx import RequestError
 from openai import InvalidRequestError, OpenAIError
 from pendulum import DateTime
-from requests import RequestException
 
 from horoscopebot.config import OpenAiConfig
 from .horoscope import Horoscope, SLOT_MACHINE_VALUES, Slot, HoroscopeResult
@@ -306,9 +306,9 @@ class OpenAiHoroscope(Horoscope):
         url = response["data"][0]["url"]
 
         try:
-            response = requests.get(url, timeout=60)
-        except RequestException as e:
-            _LOG.error("Could not get generated image", exc_info=e)
+            response = httpx.get(url, timeout=60)
+        except RequestError as e:
+            _LOG.error("Could not request generated image", exc_info=e)
             return None
 
         if response.status_code >= 400:

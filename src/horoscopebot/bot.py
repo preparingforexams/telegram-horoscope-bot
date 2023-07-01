@@ -1,4 +1,3 @@
-import functools
 import logging
 import signal
 import time
@@ -8,7 +7,7 @@ from typing import Callable, Optional, List, Self
 import pendulum
 from pendulum.tz.timezone import Timezone
 from rate_limit import RateLimiter
-from requests import Response, Session, exceptions as requests_exceptions
+from httpx import Response, Client, TimeoutException, HTTPStatusError
 
 from horoscopebot.config import TelegramConfig
 from horoscopebot.dementia_responder import DementiaResponder
@@ -16,16 +15,6 @@ from horoscopebot.event.publisher import EventPublisher, Event, EventPublishingE
 from horoscopebot.horoscope.horoscope import Horoscope, HoroscopeResult
 
 _LOG = logging.getLogger(__name__)
-
-
-def _build_session(default_timeout: float | int = 60) -> Session:
-    session = Session()
-    request_with_default_timeout = functools.partial(
-        session.request,
-        timeout=default_timeout,
-    )
-    session.request = request_with_default_timeout  # type: ignore
-    return session
 
 
 class RateLimitException(Exception):
@@ -63,7 +52,7 @@ class Bot:
         self._rate_limiter = rate_limiter
         self._timezone = timezone
         self._dementia_responder = DementiaResponder()
-        self._session = _build_session()
+        self._session = Client()
         self._should_terminate = False
 
     def run(self):
@@ -110,7 +99,6 @@ class Bot:
                     "reply_to_message_id": reply_to_message_id,
                     **parsing_conf,
                 },
-                timeout=10,
             )
         else:
             response = self._session.post(
@@ -248,7 +236,7 @@ class Bot:
                     timeout=15,
                 )
             )
-        except requests_exceptions.Timeout as e:
+        except TimeoutException as e:
             _LOG.warning("Encountered timeout while getting updates", exc_info=e)
             return []
         except RateLimitException as e:
@@ -258,8 +246,8 @@ class Bot:
             )
             time.sleep(e.retry_after)
             return []
-        except requests_exceptions.HTTPError as e:
-            _LOG.error("Got HTTPError when requesting updates", exc_info=e)
+        except HTTPStatusError as e:
+            _LOG.error("Got HTTPStatusError when requesting updates", exc_info=e)
             return []
 
     def _handle_updates(self, handler: Callable[[dict], None]):

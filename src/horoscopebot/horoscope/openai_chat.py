@@ -184,6 +184,7 @@ Eine Liste guter Beispiele:
 class OpenAiChatHoroscope(Horoscope):
     def __init__(self, config: OpenAiConfig):
         self._debug_mode = config.debug_mode
+        self._model_name = config.model_name
         openai.api_key = config.token
 
     def provide_horoscope(
@@ -224,7 +225,7 @@ class OpenAiChatHoroscope(Horoscope):
     def _create_completion(self, user_id: int, prompt: str) -> HoroscopeResult:
         messages = [ChatMessage(role=ChatRole.USER, content=prompt)]
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model=self._model_name,
             max_tokens=100,
             frequency_penalty=0.35,
             presence_penalty=0.75,
@@ -241,7 +242,7 @@ class OpenAiChatHoroscope(Horoscope):
     def _improve_image_prompt(self, messages: list[ChatMessage]) -> ChatMessage | None:
         try:
             response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
+                model=self._model_name,
                 messages=[
                     *messages,
                     ChatMessage(

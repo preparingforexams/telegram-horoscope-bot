@@ -210,6 +210,7 @@ _KANU_GEGGO: dict[int, str] = {
 class OpenAiHoroscope(Horoscope):
     def __init__(self, config: OpenAiConfig):
         self._debug_mode = config.debug_mode
+        self._model_name = config.model_name
         openai.api_key = config.token
 
     def provide_horoscope(
@@ -253,7 +254,7 @@ class OpenAiHoroscope(Horoscope):
 
     def _create_completion(self, user_id: int, prompt: str) -> HoroscopeResult:
         response = openai.Completion.create(
-            engine="text-davinci-003",
+            engine=self._model_name,
             prompt=prompt,
             temperature=1,
             max_tokens=100,
@@ -272,7 +273,7 @@ class OpenAiHoroscope(Horoscope):
     def _improve_image_prompt(self, prompt: str) -> str | None:
         try:
             response = openai.Completion.create(
-                engine="text-davinci-003",
+                engine=self._model_name,
                 prompt=_IMAGE_IMPROVEMENT_PROMPT.format(prompt),
                 max_tokens=128,
             )

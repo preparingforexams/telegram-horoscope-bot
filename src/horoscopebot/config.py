@@ -140,13 +140,15 @@ class HoroscopeConfig:
 @dataclass
 class OpenAiConfig:
     debug_mode: bool
+    model_name: str
     token: str
 
     @classmethod
     def from_env(cls, env: Env) -> OpenAiConfig:
         return cls(
             debug_mode=env.get_string("OPENAI_DEBUG", "false") == "true",
-            token=env.get_string("OPENAI_TOKEN"),  # type:ignore
+            token=env.get_string("OPENAI_TOKEN"),  # type: ignore
+            model_name=env.get_string("OPENAI_MODEL"),  # type: ignore
         )
 
 

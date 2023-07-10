@@ -83,9 +83,9 @@ spec:
               name: service-account
           env:
             - name: HOROSCOPE_MODE
-              value: openai
+              value: openai_chat
             - name: OPENAI_MODEL
-              value: text-davinci-003
+              value: gpt-3.5-turbo
             - name: RATE_LIMIT_FILE
               value: /state/usages.db
             - name: GOOGLE_APPLICATION_CREDENTIALS

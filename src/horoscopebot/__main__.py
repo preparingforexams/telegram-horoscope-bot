@@ -28,6 +28,7 @@ from horoscopebot.event.pubsub import PubSubEventPublisher
 from horoscopebot.event.stub import StubEventPublisher
 from horoscopebot.horoscope.horoscope import Horoscope
 from horoscopebot.horoscope.openai import OpenAiHoroscope
+from horoscopebot.horoscope.openai_chat import OpenAiChatHoroscope
 from horoscopebot.horoscope.steffen import SteffenHoroscope
 
 _LOG = logging.getLogger(__package__)
@@ -54,6 +55,8 @@ def _load_horoscope(config: HoroscopeConfig) -> Horoscope:
         return SteffenHoroscope()
     elif config.mode == HoroscopeMode.OpenAi:
         return OpenAiHoroscope(config.openai)  # type:ignore
+    elif config.mode == HoroscopeMode.OpenAiChat:
+        return OpenAiChatHoroscope(config.openai)  # type:ignore
     else:
         raise ValueError()
 

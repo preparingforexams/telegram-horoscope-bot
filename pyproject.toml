@@ -22,12 +22,13 @@ python-dotenv = "^1.0.0"
 rate_limit = { version = "1.4.0", source = "internal" }
 sentry-sdk = "^1.14.0"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 black = "^23.0.0"
 flake8 = "^6.0.0"
 mypy = "~1.4.0"
 pytest = "^7.1.2"
 types-Deprecated = "^1.2.9"
+types-requests = "^2.31.0.1"
 
 [build-system]
 requires = ["poetry-core>=1.2.0"]

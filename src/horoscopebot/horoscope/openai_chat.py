@@ -106,8 +106,8 @@ _AVENUE_BY_FIRST_SLOT: dict[Slot, Avenue] = {
     ),
     Slot.GRAPE: Avenue(
         base_prompt=(
-            "Beschreibe in zwei kurzen Sätzen eine sehr unerwartete Begebenheit, "
-            "die mir heute in meinem Alltag passieren wird."
+            "Sage mir in zwei kurzen Sätzen eine sehr unerwartete Begebenheit voraus,"
+            " die heute in meinem Alltag passieren wird."
             " Realismus ist dabei unerheblich."
         ),
         variations=[

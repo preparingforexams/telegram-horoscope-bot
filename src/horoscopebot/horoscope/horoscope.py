@@ -1,6 +1,6 @@
 import abc
 from dataclasses import dataclass
-from enum import auto, Enum
+from enum import Enum, auto
 
 from pendulum import DateTime
 

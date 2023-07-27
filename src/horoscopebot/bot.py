@@ -2,16 +2,16 @@ import logging
 import signal
 import time
 from dataclasses import dataclass
-from typing import Callable, Optional, List, Self
+from typing import Callable, List, Optional, Self
 
 import pendulum
+from httpx import Client, HTTPStatusError, Response, TimeoutException
 from pendulum.tz.timezone import Timezone
 from rate_limit import RateLimiter
-from httpx import Response, Client, TimeoutException, HTTPStatusError
 
 from horoscopebot.config import TelegramConfig
 from horoscopebot.dementia_responder import DementiaResponder
-from horoscopebot.event.publisher import EventPublisher, Event, EventPublishingException
+from horoscopebot.event.publisher import Event, EventPublisher, EventPublishingException
 from horoscopebot.horoscope.horoscope import Horoscope, HoroscopeResult
 
 _LOG = logging.getLogger(__name__)

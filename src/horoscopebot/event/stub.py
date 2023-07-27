@@ -1,6 +1,6 @@
 import logging
 
-from horoscopebot.event.publisher import EventPublisher, Event
+from horoscopebot.event.publisher import Event, EventPublisher
 
 _LOG = logging.getLogger(__name__)
 

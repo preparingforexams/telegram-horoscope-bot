@@ -1,6 +1,6 @@
 from pendulum import DateTime
 
-from .horoscope import Horoscope, Slot, SLOT_MACHINE_VALUES, HoroscopeResult
+from .horoscope import SLOT_MACHINE_VALUES, Horoscope, HoroscopeResult, Slot
 
 _HOROSCOPE_BY_COMBINATION = {
     (Slot.LEMON, Slot.LEMON, Slot.GRAPE): "Bleib einfach liegen.",

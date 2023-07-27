@@ -12,7 +12,8 @@ from openai import InvalidRequestError, OpenAIError
 from pendulum import DateTime
 
 from horoscopebot.config import OpenAiConfig
-from .horoscope import Horoscope, SLOT_MACHINE_VALUES, Slot, HoroscopeResult
+
+from .horoscope import SLOT_MACHINE_VALUES, Horoscope, HoroscopeResult, Slot
 
 _LOG = logging.getLogger(__name__)
 

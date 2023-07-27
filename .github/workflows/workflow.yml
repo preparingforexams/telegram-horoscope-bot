@@ -1,5 +1,8 @@
 name: Workflow
-on: [ push ]
+on:
+  push:
+    branches: [ main ]
+  pull_request: { }
 
 jobs:
   lint:
@@ -33,8 +36,10 @@ jobs:
     needs:
       - lint
       - test
-    if: success() && github.ref == 'refs/heads/main'
+    if: success() && github.ref_name == github.event.repository.default_branch
     steps:
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v4
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
         with:
@@ -46,7 +51,7 @@ jobs:
         with:
           build-args: build=${{ github.sha }}
           push: true
-          tags: ghcr.io/preparingforexams/horoscopebot:${{ github.sha }}
+          tags: "ghcr.io/${{ env.GITHUB_REPOSITORY_OWNER_PART_SLUG }}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}:${{ github.sha }}"
 
 
   deploy:
@@ -56,10 +61,13 @@ jobs:
       - push_docker
     steps:
       - uses: actions/checkout@v3
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v4
       - name: Substitute environment variables in values.yaml
         run: "envsubst < values.yaml > values_sub.yaml && mv values_sub.yaml values.yaml"
         env:
           GSA_JSON: ${{ secrets.GSA_JSON }}
+          IMAGE_NAME: "ghcr.io/${{ env.GITHUB_REPOSITORY_OWNER_PART_SLUG }}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}"
           OPENAI_TOKEN: ${{ secrets.OPENAI_TOKEN }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
@@ -70,6 +78,6 @@ jobs:
       - name: Clean up old container images
         uses: actions/delete-package-versions@v4
         with:
-          package-name: horoscopebot
+          package-name: ${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}
           package-type: container
           min-versions-to-keep: 10

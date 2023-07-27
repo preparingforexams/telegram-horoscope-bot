@@ -31,8 +31,22 @@ jobs:
       - name: Run tests
         run: poetry run pytest src/
 
+  build-container-image:
+    runs-on: ubuntu-latest
+    if: success() && github.event_name == 'pull_request'
+    needs:
+      - lint
+      - test
+    steps:
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v4
+      - name: Build container image
+        uses: docker/build-push-action@v4
+        with:
+          push: false
+          tags: "ghcr.io/${{ env.GITHUB_REPOSITORY_OWNER_PART_SLUG }}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}:${{ github.sha }}"
 
-  push_docker:
+  push-container-image:
     runs-on: ubuntu-latest
     needs:
       - lint
@@ -50,33 +64,40 @@ jobs:
       - name: Build and push container image
         uses: docker/build-push-action@v4
         with:
-          build-args: build=${{ github.sha }}
+          build-args: APP_VERSION=${{ github.sha }}
           push: true
           tags: "ghcr.io/${{ env.GITHUB_REPOSITORY_OWNER_PART_SLUG }}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}:${{ github.sha }}"
 
-
   deploy:
     runs-on: ubuntu-latest
+    needs: push-container-image
     concurrency: production
-    needs:
-      - push_docker
     steps:
       - uses: actions/checkout@v3
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v4
       - name: Substitute environment variables in values.yaml
-        run: "envsubst < values.yaml > values_sub.yaml && mv values_sub.yaml values.yaml"
         env:
           GSA_JSON: ${{ secrets.GSA_JSON }}
           IMAGE_NAME: "ghcr.io/${{ env.GITHUB_REPOSITORY_OWNER_PART_SLUG }}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}"
           OPENAI_TOKEN: ${{ secrets.OPENAI_TOKEN }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+        run: "envsubst < values.yaml > values_sub.yaml && mv values_sub.yaml values.yaml"
       - uses: WyriHaximus/github-action-helm3@v3
         with:
           exec: helm upgrade horoscopebot . --install --namespace=telegram-bots --atomic
           kubeconfig: '${{ secrets.KUBECONFIG_RAW }}'
-      - name: Clean up old container images
+
+  clean:
+    runs-on: ubuntu-latest
+    concurrency: cleanup
+    continue-on-error: true
+    needs: [ deploy ]
+    steps:
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v4
+      - name: Clean up old app container images
         uses: actions/delete-package-versions@v4
         with:
           package-name: ${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}

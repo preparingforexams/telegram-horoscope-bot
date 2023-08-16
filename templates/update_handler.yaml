@@ -42,7 +42,7 @@ spec:
       volumes:
         - name: service-account
           secret:
-            secretName: {{ .Release.Name }}-secrets
+            secretName: {{ .Release.Name }}
             items:
               - key: GSA_JSON
                 path: ./gsa.json

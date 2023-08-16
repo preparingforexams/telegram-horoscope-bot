@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: horoscope-gcp
+  name: {{ .Release.Name }}-gcp
 data:
   EVENT_PUBLISHER_MODE: "pubsub"
   GOOGLE_CLOUD_PROJECT: "prep-telegram-bots"

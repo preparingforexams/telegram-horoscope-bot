@@ -3,7 +3,7 @@ apiVersion: v1
 kind: Service
 metadata:
   namespace: telegram-bots
-  name: horoscope-update-handler
+  name: {{ .Release.Name }}-update-handler
 spec:
   clusterIP: None
   type: ClusterIP
@@ -12,22 +12,22 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   namespace: telegram-bots
-  name: horoscope-update-handler
+  name: {{ .Release.Name }}-update-handler
   labels:
-    app: horoscope-update-handler
+    app: {{ .Release.Name }}-update-handler
 spec:
   revisionHistoryLimit: 1
   replicas: 1
-  serviceName: horoscope-update-handler
+  serviceName: {{ .Release.Name }}-update-handler
   selector:
     matchLabels:
-      app: horoscope-update-handler
+      app: {{ .Release.Name }}-update-handler
   volumeClaimTemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
       metadata:
         namespace: telegram-bots
-        name: horoscope-state
+        name: state
       spec:
         accessModes:
           - ReadWriteOnce
@@ -37,12 +37,12 @@ spec:
   template:
     metadata:
       labels:
-        app: horoscope-update-handler
+        app: {{ .Release.Name }}-update-handler
     spec:
       volumes:
         - name: service-account
           secret:
-            secretName: horoscope-secrets
+            secretName: {{ .Release.Name }}-secrets
             items:
               - key: GSA_JSON
                 path: ./gsa.json
@@ -56,14 +56,14 @@ spec:
             - /state
           volumeMounts:
             - mountPath: /state
-              name: horoscope-state
+              name: state
         - name: flyway
           image: ghcr.io/preparingforexams/rate-limiter-migrations:1.4.0
           args:
             - migrate
           volumeMounts:
             - mountPath: /state
-              name: horoscope-state
+              name: state
           env:
             - name: FLYWAY_URL
               value: jdbc:sqlite:/state/usages.db
@@ -78,7 +78,7 @@ spec:
               memory: 128Mi
           volumeMounts:
             - mountPath: /state
-              name: horoscope-state
+              name: state
             - mountPath: /gcp
               name: service-account
           env:
@@ -92,8 +92,8 @@ spec:
               value: /gcp/gsa.json
           envFrom:
             - configMapRef:
-                name: horoscope-telegram
+                name: {{ .Release.Name }}-telegram
             - configMapRef:
-                name: horoscope-gcp
+                name: {{ .Release.Name }}-gcp
             - secretRef:
-                name: horoscope-secrets
+                name: {{ .Release.Name }}

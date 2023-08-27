@@ -7,7 +7,7 @@ license = "MIT"
 
 [[tool.poetry.source]]
 name = "internal"
-url = "https://pypi.bjoernpetersen.net"
+url = "https://pypi.blindfolded.surgery"
 priority = "explicit"
 
 [tool.poetry.dependencies]

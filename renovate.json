@@ -19,7 +19,7 @@
         "rate_limit",
         "ghcr.io/preparingforexams/rate-limiter-migrations"
       ],
-      "groupName": "rate_limiters"
+      "groupName": "rate_limit"
     }
   ]
 }

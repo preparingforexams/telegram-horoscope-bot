@@ -50,7 +50,7 @@ spec:
         fsGroup: 500
       initContainers:
         - name: flyway
-          image: ghcr.io/preparingforexams/rate-limiter-migrations:1.4.0
+          image: {{ .Values.rateLimiter.image }}
           args:
             - migrate
           volumeMounts:

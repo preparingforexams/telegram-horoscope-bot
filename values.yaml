@@ -13,4 +13,4 @@ openai:
   token: ${OPENAI_TOKEN}
 rateLimiter:
   # renovate: datasource=docker
-  image: ghcr.io/preparingforexams/rate-limiter-migrations:1.4.0
+  image: ghcr.io/preparingforexams/rate-limiter-migrations:1.5.1

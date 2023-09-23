@@ -5,17 +5,6 @@
   "packageRules": [
     {
       "matchPackageNames": [
-        "rate_limit"
-      ],
-      "matchManagers": [
-        "poetry"
-      ],
-      "registryUrls": [
-        "https://pypi.blindfolded.surgery"
-      ]
-    },
-    {
-      "matchPackageNames": [
         "rate_limit",
         "ghcr.io/preparingforexams/rate-limiter-migrations"
       ],

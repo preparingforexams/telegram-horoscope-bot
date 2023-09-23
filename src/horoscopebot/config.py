@@ -1,59 +1,107 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, List, Optional, Self, Tuple, Union
+from typing import List, Optional, Self, Tuple, Union, overload
 
 from dotenv import dotenv_values
 
 
 class Env:
-    def __init__(self, values: Dict[str, str]):
+    def __init__(self, values: dict[str, str]):
         self._values = values
+
+    @overload
+    def get_string(
+        self,
+        key: str,
+        default: str,
+    ) -> str:
+        pass
+
+    @overload
+    def get_string(
+        self,
+        key: str,
+        default: None = None,
+    ) -> str | None:
+        pass
 
     def get_string(
         self,
         key: str,
-        default: Optional[str] = None,
-        required: bool = True,
-    ) -> Optional[str]:
-        value = self._values.get(key, default)
-        if required:
-            if value is None:
-                raise ValueError(f"Value for {key} is missing")
-            if not value.strip():
-                raise ValueError(f"Value for {key} is blank")
+        default: str | None = None,
+    ) -> str | None:
+        value = self._values.get(key)
+        if value is None or not value.strip():
+            return default
 
         return value
+
+    def get_bool(
+        self,
+        key: str,
+        default: bool,
+    ) -> bool:
+        value = self._values.get(key)
+        if value is None:
+            return default
+
+        stripped = value.strip()
+        if not stripped:
+            return default
+
+        return stripped == "true"
+
+    @overload
+    def get_int(
+        self,
+        key: str,
+        default: int,
+    ) -> int:
+        pass
+
+    @overload
+    def get_int(
+        self,
+        key: str,
+        default: None = None,
+    ) -> int | None:
+        pass
 
     def get_int(
         self,
         key: str,
-        default: Optional[int] = None,
-        required: bool = True,
-    ) -> Optional[int]:
+        default: int | None = None,
+    ) -> int | None:
         value = self._values.get(key)
-        if required and default is None:
-            if value is None:
-                raise ValueError(f"Value for {key} is missing")
-            if not value.strip():
-                raise ValueError(f"Value for {key} is blank")
-        elif value is None or not value.strip() and default is not None:
+        if value is None or not value.strip():
             return default
 
         return int(value)
 
+    @overload
     def get_int_list(
         self,
         key: str,
-        default: Optional[List[int]] = None,
-        required: bool = True,
-    ) -> Optional[List[int]]:
+        default: list[int],
+    ) -> list[int]:
+        pass
+
+    @overload
+    def get_int_list(
+        self,
+        key: str,
+        default: None = None,
+    ) -> list[int] | None:
+        pass
+
+    def get_int_list(
+        self,
+        key: str,
+        default: list[int] | None = None,
+    ) -> list[int] | None:
         values = self._values.get(key)
-        if required and default is None:
-            if values is None:
-                raise ValueError(f"Value for {key} is missing")
-            if not values.strip():
-                raise ValueError(f"Value for {key} is blank")
-        elif values is None or not values.strip() and default is not None:
+
+        if values is None or not values.strip():
             return default
 
         return [int(value) for value in values.split(",")]
@@ -98,10 +146,16 @@ class OpenAiConfig:
 
     @classmethod
     def from_env(cls, env: Env) -> Self:
+        token = env.get_string("OPENAI_TOKEN")
+        model_name = env.get_string("OPENAI_MODEL")
+
+        if not (token and model_name):
+            raise ValueError("Missing config values")
+
         return cls(
-            debug_mode=env.get_string("OPENAI_DEBUG", "false") == "true",
-            token=env.get_string("OPENAI_TOKEN"),  # type: ignore
-            model_name=env.get_string("OPENAI_MODEL"),  # type: ignore
+            debug_mode=env.get_bool("OPENAI_DEBUG", False),
+            token=token,
+            model_name=model_name,
         )
 
 
@@ -133,9 +187,9 @@ class EventPublisherConfig:
     @classmethod
     def from_env(cls, env: Env) -> Self:
         return cls(
-            mode=env.get_string("EVENT_PUBLISHER_MODE", "stub"),  # type: ignore
-            project_id=env.get_string("GOOGLE_CLOUD_PROJECT", required=False),
-            topic_name=env.get_string("PUBSUB_HOROSCOPE_TOPIC", required=False),
+            mode=env.get_string("EVENT_PUBLISHER_MODE", "stub"),
+            project_id=env.get_string("GOOGLE_CLOUD_PROJECT"),
+            topic_name=env.get_string("PUBSUB_HOROSCOPE_TOPIC"),
         )
 
 
@@ -150,10 +204,8 @@ class RateLimitConfig:
             rate_limiter_type=env.get_string(
                 "RATE_LIMITER_TYPE",
                 default="actual",
-            ),  # type: ignore
-            rate_limit_file=env.get_string(
-                "RATE_LIMIT_FILE", required=False
-            ),  # type: ignore
+            ),
+            rate_limit_file=env.get_string("RATE_LIMIT_FILE"),
         )
 
 
@@ -164,12 +216,17 @@ class TelegramConfig:
 
     @classmethod
     def from_env(cls, env: Env) -> Self:
+        token = env.get_string("TELEGRAM_TOKEN")
+
+        if not token:
+            raise ValueError("Missing Telegram token")
+
         return cls(
-            enabled_chats=env.get_int_list(  # type:ignore
+            enabled_chats=env.get_int_list(
                 "TELEGRAM_ENABLED_CHATS",
                 [133399998],
             ),
-            token=env.get_string("TELEGRAM_API_KEY"),  # type:ignore
+            token=token,
         )
 
 
@@ -186,14 +243,14 @@ class Config:
     @classmethod
     def from_env(cls, env: Env) -> Self:
         return cls(
-            app_version=env.get_string("BUILD_SHA", "debug"),  # type: ignore
-            timezone_name=env.get_string(  # type: ignore
+            app_version=env.get_string("BUILD_SHA", "debug"),
+            timezone_name=env.get_string(
                 "TIMEZONE_NAME",
                 "Europe/Berlin",
             ),
             horoscope=HoroscopeConfig.from_env(env),
             event_publisher=EventPublisherConfig.from_env(env),
             rate_limit=RateLimitConfig.from_env(env),
-            sentry_dsn=env.get_string("SENTRY_DSN", required=False),
+            sentry_dsn=env.get_string("SENTRY_DSN"),
             telegram=TelegramConfig.from_env(env),
         )

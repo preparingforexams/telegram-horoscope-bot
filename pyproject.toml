@@ -19,7 +19,7 @@ openai = "^0.28.0"
 pendulum = "^2.0.0"
 python = "~3.11"
 python-dotenv = "^1.0.0"
-rate_limit = { version = "1.4.0", source = "internal" }
+rate_limit = { version = "1.5.1", source = "internal" }
 sentry-sdk = "^1.14.0"
 
 [tool.poetry.group.dev.dependencies]

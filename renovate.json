@@ -11,8 +11,15 @@
         "poetry"
       ],
       "registryUrls": [
-        "https://pypi.bjoernpetersen.net"
+        "https://pypi.blindfolded.surgery"
       ]
+    },
+    {
+      "matchPackageNames": [
+        "rate_limit",
+        "ghcr.io/preparingforexams/rate-limiter-migrations"
+      ],
+      "groupName": "rate_limiters"
     }
   ]
 }

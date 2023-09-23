@@ -46,17 +46,9 @@ spec:
             items:
               - key: GSA_JSON
                 path: ./gsa.json
+      securityContext:
+        fsGroup: 500
       initContainers:
-        - name: fix-volume-permissions
-          image: alpine:3
-          command:
-            - chmod
-            - -R
-            - "777"
-            - /state
-          volumeMounts:
-            - mountPath: /state
-              name: state
         - name: flyway
           image: ghcr.io/preparingforexams/rate-limiter-migrations:1.4.0
           args:
@@ -97,3 +89,4 @@ spec:
                 name: {{ .Release.Name }}-gcp
             - secretRef:
                 name: {{ .Release.Name }}
+

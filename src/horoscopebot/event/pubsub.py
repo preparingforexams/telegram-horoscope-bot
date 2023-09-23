@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import logging
 from concurrent import futures
 
@@ -12,14 +10,14 @@ _LOG = logging.getLogger(__name__)
 
 
 class PubSubEventPublisher(EventPublisher):
-    def __init__(self, config: EventPublisherConfig):
+    def __init__(self, config: EventPublisherConfig) -> None:
         if not config.project_id or not config.topic_name:
             raise ValueError("Missing project_id or topic_name")
 
         self.client = PublisherClient()
         self.topic = f"projects/{config.project_id}/topics/{config.topic_name}"
 
-    def publish(self, event: Event):
+    def publish(self, event: Event) -> None:
         _LOG.debug("Publishing event %s", event)
         future = self.client.publish(
             topic=self.topic,

@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Self, Tuple, Union
 
 from dotenv import dotenv_values
 
@@ -86,36 +84,25 @@ def load_env(names: Union[str, Tuple[str, ...]]) -> Env:
     return Env(result)
 
 
-@dataclass
-class Config:
-    app_version: str
-    timezone_name: str
-    horoscope: HoroscopeConfig
-    event_publisher: EventPublisherConfig
-    rate_limit: RateLimitConfig
-    sentry_dsn: Optional[str]
-    telegram: TelegramConfig
-
-    @classmethod
-    def from_env(cls, env: Env) -> Config:
-        return cls(
-            app_version=env.get_string("BUILD_SHA", "debug"),  # type: ignore
-            timezone_name=env.get_string(  # type: ignore
-                "TIMEZONE_NAME",
-                "Europe/Berlin",
-            ),
-            horoscope=HoroscopeConfig.from_env(env),
-            event_publisher=EventPublisherConfig.from_env(env),
-            rate_limit=RateLimitConfig.from_env(env),
-            sentry_dsn=env.get_string("SENTRY_DSN", required=False),
-            telegram=TelegramConfig.from_env(env),
-        )
-
-
 class HoroscopeMode(Enum):
     OpenAi = "openai"
     OpenAiChat = "openai_chat"
     Steffen = "steffen"
+
+
+@dataclass
+class OpenAiConfig:
+    debug_mode: bool
+    model_name: str
+    token: str
+
+    @classmethod
+    def from_env(cls, env: Env) -> Self:
+        return cls(
+            debug_mode=env.get_string("OPENAI_DEBUG", "false") == "true",
+            token=env.get_string("OPENAI_TOKEN"),  # type: ignore
+            model_name=env.get_string("OPENAI_MODEL"),  # type: ignore
+        )
 
 
 @dataclass
@@ -124,7 +111,7 @@ class HoroscopeConfig:
     openai: Optional[OpenAiConfig]
 
     @classmethod
-    def from_env(cls, env: Env) -> HoroscopeConfig:
+    def from_env(cls, env: Env) -> Self:
         mode = HoroscopeMode(env.get_string("HOROSCOPE_MODE", default="steffen"))
         if mode in (HoroscopeMode.OpenAi, HoroscopeMode.OpenAiChat):
             openai = OpenAiConfig.from_env(env)
@@ -138,28 +125,13 @@ class HoroscopeConfig:
 
 
 @dataclass
-class OpenAiConfig:
-    debug_mode: bool
-    model_name: str
-    token: str
-
-    @classmethod
-    def from_env(cls, env: Env) -> OpenAiConfig:
-        return cls(
-            debug_mode=env.get_string("OPENAI_DEBUG", "false") == "true",
-            token=env.get_string("OPENAI_TOKEN"),  # type: ignore
-            model_name=env.get_string("OPENAI_MODEL"),  # type: ignore
-        )
-
-
-@dataclass
 class EventPublisherConfig:
     mode: str
     project_id: str | None
     topic_name: str | None
 
     @classmethod
-    def from_env(cls, env: Env) -> EventPublisherConfig:
+    def from_env(cls, env: Env) -> Self:
         return cls(
             mode=env.get_string("EVENT_PUBLISHER_MODE", "stub"),  # type: ignore
             project_id=env.get_string("GOOGLE_CLOUD_PROJECT", required=False),
@@ -173,7 +145,7 @@ class RateLimitConfig:
     rate_limit_file: str | None
 
     @classmethod
-    def from_env(cls, env: Env) -> RateLimitConfig:
+    def from_env(cls, env: Env) -> Self:
         return cls(
             rate_limiter_type=env.get_string(
                 "RATE_LIMITER_TYPE",
@@ -191,11 +163,37 @@ class TelegramConfig:
     token: str
 
     @classmethod
-    def from_env(cls, env: Env) -> TelegramConfig:
+    def from_env(cls, env: Env) -> Self:
         return cls(
             enabled_chats=env.get_int_list(  # type:ignore
                 "TELEGRAM_ENABLED_CHATS",
                 [133399998],
             ),
             token=env.get_string("TELEGRAM_API_KEY"),  # type:ignore
+        )
+
+
+@dataclass
+class Config:
+    app_version: str
+    timezone_name: str
+    horoscope: HoroscopeConfig
+    event_publisher: EventPublisherConfig
+    rate_limit: RateLimitConfig
+    sentry_dsn: Optional[str]
+    telegram: TelegramConfig
+
+    @classmethod
+    def from_env(cls, env: Env) -> Self:
+        return cls(
+            app_version=env.get_string("BUILD_SHA", "debug"),  # type: ignore
+            timezone_name=env.get_string(  # type: ignore
+                "TIMEZONE_NAME",
+                "Europe/Berlin",
+            ),
+            horoscope=HoroscopeConfig.from_env(env),
+            event_publisher=EventPublisherConfig.from_env(env),
+            rate_limit=RateLimitConfig.from_env(env),
+            sentry_dsn=env.get_string("SENTRY_DSN", required=False),
+            telegram=TelegramConfig.from_env(env),
         )

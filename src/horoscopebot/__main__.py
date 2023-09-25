@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Optional
 
 import sentry_sdk
+from bs_config import Env
 from pendulum import DateTime, tz
 from pendulum.tz.timezone import Timezone
 from rate_limit import (
@@ -21,7 +22,6 @@ from horoscopebot.config import (
     HoroscopeConfig,
     HoroscopeMode,
     RateLimitConfig,
-    load_env,
 )
 from horoscopebot.event.publisher import EventPublisher
 from horoscopebot.event.pubsub import PubSubEventPublisher
@@ -111,7 +111,7 @@ def _load_rate_limiter(timezone: Timezone, config: RateLimitConfig) -> RateLimit
 def main():
     _setup_logging()
 
-    config = Config.from_env(load_env(""))
+    config = Config.from_env(Env.load(include_default_dotenv=True))
     _setup_sentry(config.sentry_dsn, release=config.app_version)
 
     timezone = tz.timezone("Europe/Berlin")

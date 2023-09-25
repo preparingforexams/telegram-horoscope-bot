@@ -11,6 +11,7 @@ url = "https://pypi.blindfolded.surgery"
 priority = "explicit"
 
 [tool.poetry.dependencies]
+bs-config = { version = "0.1.0", extras = ["dotenv"], source = "internal" }
 certifi = "2023.7.22"
 Deprecated = "^1.2.13"
 google-cloud-pubsub = "^2.0.0"
@@ -18,7 +19,6 @@ httpx = "^0.24.0"
 openai = "^0.28.0"
 pendulum = "^2.0.0"
 python = "~3.11"
-python-dotenv = "^1.0.0"
 rate_limit = { version = "1.5.1", source = "internal" }
 sentry-sdk = "^1.14.0"
 

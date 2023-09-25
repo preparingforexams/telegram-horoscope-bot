@@ -1,135 +1,8 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import List, Optional, Self, Tuple, Union, overload
+from typing import Self
 
-from dotenv import dotenv_values
-
-
-class Env:
-    def __init__(self, values: dict[str, str]):
-        self._values = values
-
-    @overload
-    def get_string(
-        self,
-        key: str,
-        default: str,
-    ) -> str:
-        pass
-
-    @overload
-    def get_string(
-        self,
-        key: str,
-        default: None = None,
-    ) -> str | None:
-        pass
-
-    def get_string(
-        self,
-        key: str,
-        default: str | None = None,
-    ) -> str | None:
-        value = self._values.get(key)
-        if value is None or not value.strip():
-            return default
-
-        return value
-
-    def get_bool(
-        self,
-        key: str,
-        default: bool,
-    ) -> bool:
-        value = self._values.get(key)
-        if value is None:
-            return default
-
-        stripped = value.strip()
-        if not stripped:
-            return default
-
-        return stripped == "true"
-
-    @overload
-    def get_int(
-        self,
-        key: str,
-        default: int,
-    ) -> int:
-        pass
-
-    @overload
-    def get_int(
-        self,
-        key: str,
-        default: None = None,
-    ) -> int | None:
-        pass
-
-    def get_int(
-        self,
-        key: str,
-        default: int | None = None,
-    ) -> int | None:
-        value = self._values.get(key)
-        if value is None or not value.strip():
-            return default
-
-        return int(value)
-
-    @overload
-    def get_int_list(
-        self,
-        key: str,
-        default: list[int],
-    ) -> list[int]:
-        pass
-
-    @overload
-    def get_int_list(
-        self,
-        key: str,
-        default: None = None,
-    ) -> list[int] | None:
-        pass
-
-    def get_int_list(
-        self,
-        key: str,
-        default: list[int] | None = None,
-    ) -> list[int] | None:
-        values = self._values.get(key)
-
-        if values is None or not values.strip():
-            return default
-
-        return [int(value) for value in values.split(",")]
-
-
-def _load_env(name: str) -> dict:
-    if not name:
-        return dotenv_values(".env")
-    else:
-        return dotenv_values(f".env.{name}")
-
-
-def load_env(names: Union[str, Tuple[str, ...]]) -> Env:
-    result = {}
-
-    if isinstance(names, str):
-        result.update(_load_env(names))
-    elif isinstance(names, tuple):
-        for name in names:
-            result.update(_load_env(name))
-    else:
-        raise ValueError(f"Invalid .env names: {names}")
-
-    from os import environ
-
-    result.update(environ)
-
-    return Env(result)
+from bs_config import Env
 
 
 class HoroscopeMode(Enum):
@@ -153,7 +26,7 @@ class OpenAiConfig:
             raise ValueError("Missing config values")
 
         return cls(
-            debug_mode=env.get_bool("OPENAI_DEBUG", False),
+            debug_mode=env.get_bool("OPENAI_DEBUG", default=False),
             token=token,
             model_name=model_name,
         )
@@ -162,7 +35,7 @@ class OpenAiConfig:
 @dataclass
 class HoroscopeConfig:
     mode: HoroscopeMode
-    openai: Optional[OpenAiConfig]
+    openai: OpenAiConfig | None
 
     @classmethod
     def from_env(cls, env: Env) -> Self:
@@ -187,7 +60,7 @@ class EventPublisherConfig:
     @classmethod
     def from_env(cls, env: Env) -> Self:
         return cls(
-            mode=env.get_string("EVENT_PUBLISHER_MODE", "stub"),
+            mode=env.get_string("EVENT_PUBLISHER_MODE", default="stub"),
             project_id=env.get_string("GOOGLE_CLOUD_PROJECT"),
             topic_name=env.get_string("PUBSUB_HOROSCOPE_TOPIC"),
         )
@@ -211,7 +84,7 @@ class RateLimitConfig:
 
 @dataclass
 class TelegramConfig:
-    enabled_chats: List[int]
+    enabled_chats: list[int]
     token: str
 
     @classmethod
@@ -224,7 +97,7 @@ class TelegramConfig:
         return cls(
             enabled_chats=env.get_int_list(
                 "TELEGRAM_ENABLED_CHATS",
-                [133399998],
+                default=[133399998],
             ),
             token=token,
         )
@@ -237,16 +110,19 @@ class Config:
     horoscope: HoroscopeConfig
     event_publisher: EventPublisherConfig
     rate_limit: RateLimitConfig
-    sentry_dsn: Optional[str]
+    sentry_dsn: str | None
     telegram: TelegramConfig
 
     @classmethod
     def from_env(cls, env: Env) -> Self:
         return cls(
-            app_version=env.get_string("BUILD_SHA", "debug"),
+            app_version=env.get_string(
+                "BUILD_SHA",
+                default="debug",
+            ),
             timezone_name=env.get_string(
                 "TIMEZONE_NAME",
-                "Europe/Berlin",
+                default="Europe/Berlin",
             ),
             horoscope=HoroscopeConfig.from_env(env),
             event_publisher=EventPublisherConfig.from_env(env),

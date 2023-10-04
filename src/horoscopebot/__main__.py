@@ -1,11 +1,10 @@
 import logging
+from datetime import datetime, tzinfo
 from pathlib import Path
 from typing import Optional
 
 import sentry_sdk
 from bs_config import Env
-from pendulum import DateTime, tz
-from pendulum.tz.timezone import Timezone
 from rate_limit import (
     RateLimiter,
     RateLimitingPolicy,
@@ -14,6 +13,7 @@ from rate_limit import (
     policy,
     repo,
 )
+from zoneinfo import ZoneInfo
 
 from horoscopebot.bot import Bot
 from horoscopebot.config import (
@@ -78,13 +78,13 @@ class _StubRateLimitPolicy(RateLimitingPolicy):
 
     def get_offending_usage(
         self,
-        at_time: DateTime,
+        at_time: datetime,
         last_usages: list[Usage],
     ) -> Usage | None:
         return None
 
 
-def _load_rate_limiter(timezone: Timezone, config: RateLimitConfig) -> RateLimiter:
+def _load_rate_limiter(timezone: tzinfo, config: RateLimitConfig) -> RateLimiter:
     match config.rate_limiter_type:
         case "stub":
             return RateLimiter(
@@ -114,7 +114,7 @@ def main():
     config = Config.from_env(Env.load(include_default_dotenv=True))
     _setup_sentry(config.sentry_dsn, release=config.app_version)
 
-    timezone = tz.timezone("Europe/Berlin")
+    timezone = ZoneInfo("Europe/Berlin")
 
     horoscope = _load_horoscope(config.horoscope)
     event_publisher = _load_event_publisher(config.event_publisher)

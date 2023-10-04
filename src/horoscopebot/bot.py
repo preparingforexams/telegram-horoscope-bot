@@ -2,11 +2,11 @@ import logging
 import signal
 import time
 from dataclasses import dataclass
+from datetime import datetime, tzinfo
+from datetime import timezone as dt_timezone
 from typing import Callable, List, Optional, Self
 
-import pendulum
 from httpx import Client, HTTPStatusError, Response, TimeoutException
-from pendulum.tz.timezone import Timezone
 from rate_limit import RateLimiter
 
 from horoscopebot.config import TelegramConfig
@@ -44,7 +44,7 @@ class Bot:
         horoscope: Horoscope,
         event_publisher: EventPublisher,
         rate_limiter: RateLimiter,
-        timezone: Timezone,
+        timezone: tzinfo,
     ):
         self.config = config
         self.horoscope = horoscope
@@ -149,7 +149,9 @@ class Bot:
             return
 
         timestamp = message["date"]
-        time = pendulum.from_timestamp(timestamp).in_timezone(self._timezone)
+        time = datetime.fromtimestamp(timestamp, tz=dt_timezone.utc).astimezone(
+            self._timezone
+        )
         user_id = message["from"]["id"]
         message_id = message["message_id"]
         dice_value = dice["value"]

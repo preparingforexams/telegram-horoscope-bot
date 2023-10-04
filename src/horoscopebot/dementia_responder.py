@@ -1,7 +1,7 @@
 import logging
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 
-from pendulum import DateTime
 from rate_limit import Usage
 
 _LOG = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ class DementiaResponder:
     def create_response(
         self,
         current_message_id: int,
-        current_message_time: DateTime,
+        current_message_time: datetime,
         usage: Usage,
     ) -> Response:
         reference_id = usage.reference_id
@@ -29,8 +29,8 @@ class DementiaResponder:
         if message_id == current_message_id - 2:
             return Response("Dein Horoskop steht direkt über deiner Slot Machine 🎰!")
 
-        time_diff = current_message_time.diff(usage.time)
-        if time_diff.in_minutes() < 10:
+        time_diff = abs(current_message_time - usage.time)
+        if time_diff < timedelta(minutes=10):
             return Response(
                 "Ich habe dir dein Horoskop vor nicht mal zehn Minuten gegeben."
                 " Wirst du alt?"
@@ -45,7 +45,7 @@ class DementiaResponder:
                     "Hast du nen Filmriss?"
                     " Dein Horoskop hast du gestern Nacht schon erfragt!"
                 )
-            elif time_diff.in_hours() > 4 and usage.time.hour < 11:
+            elif time_diff > timedelta(hours=4) and usage.time.hour < 11:
                 text = "Du hast dein Schicksal doch heute Morgen schon erfahren!"
             elif usage.time.hour < 15 and current_message_time.hour > 18:
                 text = "Es wird auch abends nicht besser."

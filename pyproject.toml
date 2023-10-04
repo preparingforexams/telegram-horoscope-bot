@@ -19,8 +19,9 @@ httpx = "^0.25.0"
 openai = "^0.28.0"
 pendulum = "^2.0.0"
 python = "~3.11"
-rate_limit = { version = "2.0.0", source = "internal" }
+rate_limit = { version = "2.0.1", source = "internal" }
 sentry-sdk = "^1.14.0"
+tzdata = "2023.3"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.0.0"

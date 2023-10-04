@@ -1,4 +1,4 @@
-from pendulum import DateTime
+from datetime import datetime
 
 from .horoscope import SLOT_MACHINE_VALUES, Horoscope, HoroscopeResult, Slot
 
@@ -129,7 +129,7 @@ class SteffenHoroscope(Horoscope):
         context_id: int,
         user_id: int,
         message_id: int,
-        message_time: DateTime,
+        message_time: datetime,
     ) -> HoroscopeResult | None:
         slots = SLOT_MACHINE_VALUES[dice]
         message = _HOROSCOPE_BY_COMBINATION.get(slots)

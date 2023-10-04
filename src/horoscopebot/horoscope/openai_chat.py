@@ -9,7 +9,6 @@ import httpx
 import openai
 from httpx import RequestError
 from openai import InvalidRequestError, OpenAIError
-from pendulum import DateTime
 
 from horoscopebot.config import OpenAiConfig
 
@@ -194,7 +193,7 @@ class OpenAiChatHoroscope(Horoscope):
         context_id: int,
         user_id: int,
         message_id: int,
-        message_time: DateTime,
+        message_time: datetime,
     ) -> HoroscopeResult | None:
         slots = SLOT_MACHINE_VALUES[dice]
         return self._create_horoscope(user_id, slots, message_time)

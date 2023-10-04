@@ -1,8 +1,7 @@
 import abc
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum, auto
-
-from pendulum import DateTime
 
 
 @dataclass
@@ -30,7 +29,7 @@ class Horoscope(abc.ABC):
         context_id: int,
         user_id: int,
         message_id: int,
-        message_time: DateTime,
+        message_time: datetime,
     ) -> HoroscopeResult | None:
         pass
 

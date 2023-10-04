@@ -1,7 +1,6 @@
 import dataclasses
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 
-import pendulum
 import pytest
 from rate_limit import Usage
 
@@ -18,14 +17,14 @@ def usage() -> Usage:
     return Usage(
         context_id="context",
         user_id="user",
-        time=pendulum.now(),
+        time=datetime.now(timezone.utc),
         reference_id="2",
         response_id="5",
     )
 
 
 def test_ten_minute_rule(responder: DementiaResponder, usage):
-    now = pendulum.now()
+    now = datetime.now(timezone.utc)
     usage = dataclasses.replace(usage, time=usage.time - timedelta(minutes=5))
     response = responder.create_response(
         10,
@@ -37,7 +36,7 @@ def test_ten_minute_rule(responder: DementiaResponder, usage):
 
 
 def test_ten_minute_rule_too_long(responder: DementiaResponder, usage):
-    now = pendulum.now()
+    now = datetime.now(timezone.utc)
     usage = dataclasses.replace(usage, time=usage.time - timedelta(minutes=11))
     response = responder.create_response(
         10,

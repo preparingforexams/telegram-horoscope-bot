@@ -1089,18 +1089,18 @@ files = [
 
 [[package]]
 name = "rate-limit"
-version = "1.5.1"
+version = "2.0.0"
 description = "Provides scaffolding for rate limited features"
 optional = false
-python-versions = ">=3.9,<3.12"
+python-versions = ">=3.9,<3.13"
 files = [
-    {file = "rate_limit-1.5.1-py3-none-any.whl", hash = "sha256:9497cddf63aa75b2a917b0821dc38d56f3cbaf765bd297ca090da47f3131b1d0"},
-    {file = "rate_limit-1.5.1.tar.gz", hash = "sha256:01789e0f109bedcea42817a9acc9b0bdc5a4cdfe859497c9b3fd75b4676a1ff8"},
+    {file = "rate_limit-2.0.0-py3-none-any.whl", hash = "sha256:9b5ef256ed00ba92dbfaeec1119febaf806846bfbfa71b8819280d65b051a8eb"},
+    {file = "rate_limit-2.0.0.tar.gz", hash = "sha256:4eb1f444aa078fae1e6747b981665f94d2335094cd72f2593cadf82a0929c4cc"},
 ]
 
 [package.dependencies]
 Deprecated = ">=1.2.13,<2.0.0"
-pendulum = ">=2.0.0,<3.0.0"
+tzdata = "2023.3"
 
 [package.source]
 type = "legacy"
@@ -1303,6 +1303,17 @@ files = [
 ]
 
 [[package]]
+name = "tzdata"
+version = "2023.3"
+description = "Provider of IANA time zone data"
+optional = false
+python-versions = ">=2"
+files = [
+    {file = "tzdata-2023.3-py2.py3-none-any.whl", hash = "sha256:7e65763eef3120314099b6939b5546db7adce1e7d6f2e179e3df563c70511eda"},
+    {file = "tzdata-2023.3.tar.gz", hash = "sha256:11ef1e08e54acb0d4f95bdb1be05da659673de4acbd21bf9c69e94cc5e907a3a"},
+]
+
+[[package]]
 name = "urllib3"
 version = "2.0.5"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
@@ -1493,4 +1504,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "25285f85bb28a29b7503707f4d8417ae7be9bfbf93bcab6b07a056cda71ffe78"
+content-hash = "8bdb8d8984df3f2743a7477dead6300ae5532b9dc2c768db5b7ce93e59877471"

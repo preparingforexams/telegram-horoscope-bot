@@ -15,7 +15,7 @@ bs-config = { version = "0.2.0", extras = ["dotenv"], source = "internal" }
 certifi = "2023.7.22"
 Deprecated = "^1.2.13"
 google-cloud-pubsub = "^2.0.0"
-httpx = "^0.25.0"
+httpx = "^0.24.0"
 openai = "^0.28.0"
 python = "~3.11"
 rate_limit = { version = "2.0.1", source = "internal" }

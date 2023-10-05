@@ -10,6 +10,16 @@
       ],
       "customChangelogUrl": "github.com/preparingforexams/rate_limiter",
       "groupName": "rate_limit"
+    },
+    {
+      "description": "Newer versions of httpx break OpenAI",
+      "matchCategories": [
+        "python"
+      ],
+      "matchDepNames": [
+        "httpx"
+      ],
+      "enabled": false
     }
   ]
 }

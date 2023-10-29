@@ -225,7 +225,7 @@ class Bot:
 
     def _request_updates(self, last_update_id: Optional[int]) -> List[dict]:
         body = {
-            "timeout": 10,
+            "timeout": 2,
         }
         if last_update_id:
             body["offset"] = last_update_id + 1
@@ -235,7 +235,7 @@ class Bot:
                 self._session.post(
                     self._build_url("getUpdates"),
                     json=body,
-                    timeout=15,
+                    timeout=4,
                 )
             )
         except TimeoutException as e:

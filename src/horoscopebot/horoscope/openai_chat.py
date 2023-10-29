@@ -55,7 +55,7 @@ class Avenue:
             if random.random() <= variation.probability
         ]
 
-        return "\n\n".join([self.base_prompt, *active_variation_prompts, "Horoskop:"])
+        return "\n\n".join([self.base_prompt, *active_variation_prompts])
 
 
 _AVENUE_BY_FIRST_SLOT: dict[Slot, Avenue] = {
@@ -223,6 +223,7 @@ class OpenAiChatHoroscope(Horoscope):
         return None
 
     def _create_completion(self, user_id: int, prompt: str) -> HoroscopeResult:
+        _LOG.debug("\n\n***Prompt:***\n%s\n\n", prompt)
         messages = [ChatMessage(role=ChatRole.USER, content=prompt)]
         response = openai.ChatCompletion.create(
             model=self._model_name,
@@ -264,6 +265,9 @@ class OpenAiChatHoroscope(Horoscope):
             return None
 
     def _create_image(self, messages: list[ChatMessage]) -> bytes | None:
+        if True:
+            return None
+
         improvement_message = self._improve_image_prompt(messages) or messages[-1]
         prompt = improvement_message["content"]
 

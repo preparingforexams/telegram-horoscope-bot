@@ -36,7 +36,7 @@ _LOG = logging.getLogger(__package__)
 
 def _setup_logging():
     logging.basicConfig()
-    _LOG.level = logging.INFO
+    _LOG.level = logging.DEBUG
 
 
 def _setup_sentry(dsn: Optional[str], release: str):

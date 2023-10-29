@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from datetime import datetime, tzinfo
 from datetime import timezone as dt_timezone
 from typing import Callable, List, Optional, Self
+from zoneinfo import ZoneInfo
 
 from httpx import Client, HTTPStatusError, Response, TimeoutException
 from rate_limit import RateLimiter
@@ -81,6 +82,13 @@ class Bot:
             return body["result"]
         raise ValueError(f"Body was not ok! {body}")
 
+    def _get_timezone(self, user_id: int) -> tzinfo:
+        if user_id == 0:
+            # TODO: Find user_id of T
+            return ZoneInfo("America/Vancouver")
+
+        return self._timezone
+
     def _send_message(
         self,
         chat_id: int,
@@ -148,11 +156,11 @@ class Bot:
             _LOG.debug("Skipping non-slot-machine message")
             return
 
+        user_id = message["from"]["id"]
         timestamp = message["date"]
         time = datetime.fromtimestamp(timestamp, tz=dt_timezone.utc).astimezone(
-            self._timezone
+            self._get_timezone(user_id),
         )
-        user_id = message["from"]["id"]
         message_id = message["message_id"]
         dice_value = dice["value"]
 

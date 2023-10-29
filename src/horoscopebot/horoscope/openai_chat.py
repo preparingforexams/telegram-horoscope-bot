@@ -1,9 +1,9 @@
 import logging
 import random
 from dataclasses import dataclass
-from datetime import datetime
-from enum import Enum
-from typing import TypedDict
+from datetime import datetime, time
+from enum import Enum, auto
+from typing import TypedDict, Self
 
 import httpx
 import openai
@@ -11,7 +11,6 @@ from httpx import RequestError
 from openai import InvalidRequestError, OpenAIError
 
 from horoscopebot.config import OpenAiConfig
-
 from .horoscope import SLOT_MACHINE_VALUES, Horoscope, HoroscopeResult, Slot
 
 _LOG = logging.getLogger(__name__)
@@ -181,6 +180,85 @@ Eine Liste guter Beispiele:
 }
 
 
+@dataclass
+class Prompt:
+    user: str
+    system: str | None = None
+
+
+class TimeOfDay(Enum):
+    MORNING = auto()
+    DAY = auto()
+    EVENING = auto()
+    NIGHT = auto()
+
+    @classmethod
+    def from_time(cls, timestamp: datetime) -> Self:
+        time_of_day = timestamp.time()
+        if time(hour=4) < time_of_day <= time(hour=12):
+            return cls.MORNING
+        elif time(hour=12) < time_of_day <= time(hour=18):
+            return cls.DAY
+        elif time(hour=18) < time_of_day <= time(hour=22):
+            return cls.EVENING
+        else:
+            return cls.NIGHT
+
+
+def bar_tone(message_time: datetime) -> str:
+    day_of_week = message_time.weekday()
+    time_of_day = TimeOfDay.from_time(message_time)
+
+    if time_of_day in (TimeOfDay.EVENING, TimeOfDay.NIGHT):
+        return (
+            "Du bist ein ehrenloser Trinkkumpane."
+            " Du möchtest unbedingt, dass alle um dich herum Alkohol trinken."
+        )
+
+    if day_of_week <= 5:
+        # Mo-Fr
+        if time_of_day == TimeOfDay.MORNING:
+            return (
+                "Du bist extrem verkatert von den Exzessen der letzten Nacht und"
+                " dementsprechend schlecht gelaunt."
+            )
+        elif time_of_day == TimeOfDay.DAY:
+            return (
+                "Du spürst noch den Kater von gestern Abend und probierst einfach nur"
+                " den Tag zu überstehen."
+            )
+    else:
+        # Weekend
+        if time_of_day == TimeOfDay.MORNING:
+            return (
+                "Du siehst die Welt mit den Augen eines Alkoholikers."
+            )
+        elif time_of_day == TimeOfDay.DAY:
+            return "Du stehst in den Startlöchern für eine Partynacht."
+
+
+def determine_tone(slot: Slot, message_time: datetime) -> str:
+    match slot:
+        case Slot.BAR:
+            return bar_tone(message_time)
+        case Slot.GRAPE:
+            return (
+                "Du liebst das Chaos. Dein Ziel ist es nicht, Leuten zu helfen,"
+                " sondern einfach nur zu reden."
+                " Lasse bei deinen Antworten keinen Zusammenhang zur Frage erkennen."
+                    )
+        case Slot.LEMON:
+            return "Du bist der Meinung, dass die Welt schlecht ist."
+        case Slot.SEVEN:
+            return "Du hast einen sehr positiven Blick auf die Zukunft."
+
+
+def build_prompt(basic_direction: str, spin:str, tone:str):
+    # TODO: prepend "Deine Antworten bleiben unter dreißig Worten." to system prompt
+    # TODO: use tone as system prompt
+    pass
+
+
 class OpenAiChatHoroscope(Horoscope):
     def __init__(self, config: OpenAiConfig):
         self._debug_mode = config.debug_mode
@@ -211,8 +289,12 @@ class OpenAiChatHoroscope(Horoscope):
         if geggo:
             return HoroscopeResult(message=geggo)
 
-        avenue = _AVENUE_BY_FIRST_SLOT[slots[0]]
-        prompt = avenue.build_prompt()
+        basic_direction = determine_direction(slots[0], time)
+        spin = determine_spin(slots[1])
+        tone = determine_tone(slots[2], time)
+
+        prompt = build_prompt(basic_direction, spin, tone)
+
         completion = self._create_completion(user_id, prompt)
         return completion
 

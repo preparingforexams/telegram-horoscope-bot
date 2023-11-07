@@ -27,7 +27,6 @@ from horoscopebot.event.publisher import EventPublisher
 from horoscopebot.event.pubsub import PubSubEventPublisher
 from horoscopebot.event.stub import StubEventPublisher
 from horoscopebot.horoscope.horoscope import Horoscope
-from horoscopebot.horoscope.openai import OpenAiHoroscope
 from horoscopebot.horoscope.openai_chat import OpenAiChatHoroscope
 from horoscopebot.horoscope.steffen import SteffenHoroscope
 
@@ -53,8 +52,6 @@ def _setup_sentry(dsn: Optional[str], release: str):
 def _load_horoscope(config: HoroscopeConfig) -> Horoscope:
     if config.mode == HoroscopeMode.Steffen:
         return SteffenHoroscope()
-    elif config.mode == HoroscopeMode.OpenAi:
-        return OpenAiHoroscope(config.openai)  # type:ignore
     elif config.mode == HoroscopeMode.OpenAiChat:
         return OpenAiChatHoroscope(config.openai)  # type:ignore
     else:

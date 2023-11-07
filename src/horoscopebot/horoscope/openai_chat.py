@@ -2,13 +2,12 @@ import logging
 import random
 from dataclasses import dataclass
 from datetime import datetime
-from enum import Enum
-from typing import TypedDict
+from typing import Sequence, cast
 
 import httpx
-import openai
 from httpx import RequestError
-from openai import InvalidRequestError, OpenAIError
+from openai import BadRequestError, OpenAI, OpenAIError
+from openai.types.chat import ChatCompletionMessageParam
 
 from horoscopebot.config import OpenAiConfig
 
@@ -24,17 +23,6 @@ _BASE_PROMPT = (
 _IMAGE_IMPROVEMENT_PROMPT = (
     "Beschreibe in wenigen Worten ein Bild, das deine Vorhersage illustriert."
 )
-
-
-class ChatRole(str, Enum):
-    USER = "user"
-    SYSTEM = "system"
-    ASSISTANT = "assistant"
-
-
-class ChatMessage(TypedDict):
-    role: ChatRole
-    content: str
 
 
 @dataclass
@@ -185,7 +173,9 @@ class OpenAiChatHoroscope(Horoscope):
     def __init__(self, config: OpenAiConfig):
         self._debug_mode = config.debug_mode
         self._model_name = config.model_name
-        openai.api_key = config.token
+        self._open_ai = OpenAI(
+            api_key=config.token,
+        )
 
     def provide_horoscope(
         self,
@@ -223,8 +213,8 @@ class OpenAiChatHoroscope(Horoscope):
         return None
 
     def _create_completion(self, user_id: int, prompt: str) -> HoroscopeResult:
-        messages = [ChatMessage(role=ChatRole.USER, content=prompt)]
-        response = openai.ChatCompletion.create(
+        messages: list[ChatCompletionMessageParam] = [dict(role="user", content=prompt)]
+        response = self._open_ai.chat.completions.create(
             model=self._model_name,
             max_tokens=100,
             frequency_penalty=0.35,
@@ -233,20 +223,28 @@ class OpenAiChatHoroscope(Horoscope):
             messages=messages,
         )
         message = response.choices[0].message
-        image = self._create_image([*messages, message])
+        image = self._create_image(
+            [
+                *messages,
+                dict(role=message.role, content=message.content),
+            ]
+        )
         return HoroscopeResult(
-            message=message.content,
+            message=cast(str, message.content),
             image=image,
         )
 
-    def _improve_image_prompt(self, messages: list[ChatMessage]) -> ChatMessage | None:
+    def _improve_image_prompt(
+        self,
+        messages: Sequence[ChatCompletionMessageParam],
+    ) -> ChatCompletionMessageParam | None:
         try:
-            response = openai.ChatCompletion.create(
+            response = self._open_ai.chat.completions.create(
                 model=self._model_name,
                 messages=[
                     *messages,
-                    ChatMessage(
-                        role=ChatRole.USER,
+                    dict(
+                        role="user",
                         content=_IMAGE_IMPROVEMENT_PROMPT,
                     ),
                 ],
@@ -256,25 +254,32 @@ class OpenAiChatHoroscope(Horoscope):
             _LOG.info(
                 "Improved prompt from '%s'\nto '%s'",
                 messages[-1]["content"],
-                message["content"],
+                message.content,
             )
-            return message
+            return dict(role=message.role, content=message.content)
         except OpenAIError as e:
             _LOG.error("Could not improve image generation prompt", exc_info=e)
             return None
 
-    def _create_image(self, messages: list[ChatMessage]) -> bytes | None:
+    def _create_image(self, messages: list[ChatCompletionMessageParam]) -> bytes | None:
         improvement_message = self._improve_image_prompt(messages) or messages[-1]
         prompt = improvement_message["content"]
 
+        if not prompt:
+            _LOG.error("Can't generate image because prompt is missing")
+            return None
+        elif not isinstance(prompt, str):
+            _LOG.error("Prompt is not a str, but a %s", type(prompt))
+            return None
+
         try:
-            response = openai.Image.create(
+            ai_response = self._open_ai.images.generate(
+                model="dall-e-3",
                 prompt=prompt,
-                n=1,
-                size="512x512",
+                size="1024x1024",
                 response_format="url",
             )
-        except InvalidRequestError as e:
+        except BadRequestError as e:
             # Only ever saw this because of their profanity filter. Of course the error
             # code was fucking None, so I would have to check the message to make sure
             # that the error is actually about their "safety system", but I won't.
@@ -284,7 +289,10 @@ class OpenAiChatHoroscope(Horoscope):
             _LOG.error("An error occurred during image generation", exc_info=e)
             return None
 
-        url = response["data"][0]["url"]
+        url = ai_response.data[0].url
+
+        if not url:
+            raise ValueError("Did not receive URL as response")
 
         try:
             response = httpx.get(url, timeout=60)

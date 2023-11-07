@@ -6,7 +6,6 @@ from bs_config import Env
 
 
 class HoroscopeMode(Enum):
-    OpenAi = "openai"
     OpenAiChat = "openai_chat"
     Steffen = "steffen"
 
@@ -40,7 +39,8 @@ class HoroscopeConfig:
     @classmethod
     def from_env(cls, env: Env) -> Self:
         mode = HoroscopeMode(env.get_string("HOROSCOPE_MODE", default="steffen"))
-        if mode in (HoroscopeMode.OpenAi, HoroscopeMode.OpenAiChat):
+
+        if mode == HoroscopeMode.OpenAiChat:
             openai = OpenAiConfig.from_env(env)
         else:
             openai = None

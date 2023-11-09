@@ -213,6 +213,7 @@ class OpenAiChatHoroscope(Horoscope):
         return None
 
     def _create_completion(self, user_id: int, prompt: str) -> HoroscopeResult:
+        _LOG.info("Requesting chat completion")
         messages: list[ChatCompletionMessageParam] = [dict(role="user", content=prompt)]
         response = self._open_ai.chat.completions.create(
             model=self._model_name,
@@ -238,6 +239,7 @@ class OpenAiChatHoroscope(Horoscope):
         self,
         messages: Sequence[ChatCompletionMessageParam],
     ) -> ChatCompletionMessageParam | None:
+        _LOG.info("Improving image prompt")
         try:
             response = self._open_ai.chat.completions.create(
                 model=self._model_name,
@@ -251,11 +253,6 @@ class OpenAiChatHoroscope(Horoscope):
                 max_tokens=128,
             )
             message = response.choices[0].message
-            _LOG.info(
-                "Improved prompt from '%s'\nto '%s'",
-                messages[-1]["content"],
-                message.content,
-            )
             return dict(role=message.role, content=message.content)
         except OpenAIError as e:
             _LOG.error("Could not improve image generation prompt", exc_info=e)
@@ -272,6 +269,7 @@ class OpenAiChatHoroscope(Horoscope):
             _LOG.error("Prompt is not a str, but a %s", type(prompt))
             return None
 
+        _LOG.info("Requesting image with prompt %s", prompt)
         try:
             ai_response = self._open_ai.images.generate(
                 model="dall-e-3",

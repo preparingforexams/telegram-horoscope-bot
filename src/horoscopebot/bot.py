@@ -7,7 +7,7 @@ from datetime import timezone as dt_timezone
 from typing import Callable, List, Optional, Self
 
 from httpx import Client, HTTPStatusError, Response, TimeoutException
-from rate_limit import RateLimiter
+from rate_limiter import RateLimiter
 
 from horoscopebot.config import TelegramConfig
 from horoscopebot.dementia_responder import DementiaResponder

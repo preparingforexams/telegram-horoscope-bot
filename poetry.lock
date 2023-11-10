@@ -660,6 +660,26 @@ dev = ["pre-commit", "tox"]
 testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
+name = "prep-rate-limiter"
+version = "4.0.0"
+description = "Provides scaffolding for rate limited features"
+optional = false
+python-versions = ">=3.11,<3.13"
+files = [
+    {file = "prep_rate_limiter-4.0.0-py3-none-any.whl", hash = "sha256:1b809388c0919039eeb5509508ec3220d117a5b346ccee62667562c29561af77"},
+    {file = "prep_rate_limiter-4.0.0.tar.gz", hash = "sha256:9c0504422db68b0d4de8319646366c1e6955535ca7ee63080816450376eb4f98"},
+]
+
+[package.dependencies]
+Deprecated = ">=1.2.13,<2.0.0"
+tzdata = "2023.3"
+
+[package.source]
+type = "legacy"
+url = "https://pypi.blindfolded.surgery"
+reference = "internal"
+
+[[package]]
 name = "proto-plus"
 version = "1.22.3"
 description = "Beautiful, Pythonic protocol buffers."
@@ -891,26 +911,6 @@ files = [
 
 [package.extras]
 cli = ["click (>=5.0)"]
-
-[[package]]
-name = "rate-limit"
-version = "2.1.0"
-description = "Provides scaffolding for rate limited features"
-optional = false
-python-versions = ">=3.9,<3.13"
-files = [
-    {file = "rate_limit-2.1.0-py3-none-any.whl", hash = "sha256:7ed5febd495ff7047d59592389ee78d2faa97c4232dfd9a20f4e3fd2149b59ad"},
-    {file = "rate_limit-2.1.0.tar.gz", hash = "sha256:b92926af96faf740fb2dd41ccc79bbc04e420607bbfa1cd83d750179eaf68e65"},
-]
-
-[package.dependencies]
-Deprecated = ">=1.2.13,<2.0.0"
-tzdata = "2023.3"
-
-[package.source]
-type = "legacy"
-url = "https://pypi.blindfolded.surgery"
-reference = "internal"
 
 [[package]]
 name = "requests"
@@ -1195,4 +1195,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.12"
-content-hash = "12441348ce0e390cf0b0331087b58d691ca03d8fb85c625c3925b3e74a15d03c"
+content-hash = "5c83cb527c9a60104f66108421df6b966a8c11cac60f64db01b65ddeb5b9d8c5"

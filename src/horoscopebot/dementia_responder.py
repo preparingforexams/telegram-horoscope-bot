@@ -2,7 +2,7 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
-from rate_limit import Usage
+from rate_limiter import Usage
 
 _LOG = logging.getLogger(__name__)
 

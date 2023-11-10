@@ -5,7 +5,7 @@ from typing import Optional
 
 import sentry_sdk
 from bs_config import Env
-from rate_limit import (
+from rate_limiter import (
     RateLimiter,
     RateLimitingPolicy,
     RateLimitingRepo,

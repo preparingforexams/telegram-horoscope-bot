@@ -2,7 +2,7 @@ import dataclasses
 from datetime import datetime, timedelta, timezone
 
 import pytest
-from rate_limit import Usage
+from rate_limiter import Usage
 
 from horoscopebot.dementia_responder import DementiaResponder
 

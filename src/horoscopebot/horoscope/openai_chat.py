@@ -174,10 +174,7 @@ class OpenAiChatHoroscope(Horoscope):
         self._debug_mode = config.debug_mode
         self._model_name = config.model_name
         self._http_client = httpx.Client(timeout=20)
-        self._open_ai = OpenAI(
-            api_key=config.token,
-            http_client=self._http_client
-        )
+        self._open_ai = OpenAI(api_key=config.token, http_client=self._http_client)
 
     def provide_horoscope(
         self,

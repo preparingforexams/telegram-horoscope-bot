@@ -173,8 +173,10 @@ class OpenAiChatHoroscope(Horoscope):
     def __init__(self, config: OpenAiConfig):
         self._debug_mode = config.debug_mode
         self._model_name = config.model_name
+        self._http_client = httpx.Client(timeout=20)
         self._open_ai = OpenAI(
             api_key=config.token,
+            http_client=self._http_client
         )
 
     def provide_horoscope(
@@ -293,7 +295,7 @@ class OpenAiChatHoroscope(Horoscope):
             raise ValueError("Did not receive URL as response")
 
         try:
-            response = httpx.get(url, timeout=60)
+            response = self._http_client.get(url, timeout=60)
         except RequestError as e:
             _LOG.error("Could not request generated image", exc_info=e)
             return None

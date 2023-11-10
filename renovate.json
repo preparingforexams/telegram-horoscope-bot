@@ -6,10 +6,10 @@
     {
       "matchPackageNames": [
         "rate_limit",
+        "prep-rate-limiter",
         "ghcr.io/preparingforexams/rate-limiter-migrations"
       ],
-      "customChangelogUrl": "github.com/preparingforexams/rate_limiter",
-      "groupName": "rate_limit"
+      "groupName": "rate_limiter"
     },
     {
       "description": "Newer versions of httpx break OpenAI",

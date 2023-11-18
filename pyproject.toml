@@ -12,7 +12,7 @@ priority = "explicit"
 
 [tool.poetry.dependencies]
 bs-config = { version = "1.0.0", extras = ["dotenv"], source = "internal" }
-certifi = "2023.7.22"
+certifi = "2023.11.17"
 Deprecated = "^1.2.13"
 google-cloud-pubsub = "^2.0.0"
 httpx = "^0.24.0"

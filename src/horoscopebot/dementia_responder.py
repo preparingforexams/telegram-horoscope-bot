@@ -26,7 +26,7 @@ class DementiaResponder:
         response_id = usage.response_id
         response_message_id = None if response_id is None else int(response_id)
 
-        if message_id == current_message_id - 2:
+        if response_message_id == current_message_id - 1:
             return Response("Dein Horoskop steht direkt über deiner Slot Machine 🎰!")
 
         time_diff = abs(current_message_time - usage.time)

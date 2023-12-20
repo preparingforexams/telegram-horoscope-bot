@@ -10,16 +10,6 @@
         "ghcr.io/preparingforexams/rate-limiter-migrations"
       ],
       "groupName": "rate_limiter"
-    },
-    {
-      "description": "Newer versions of httpx break OpenAI",
-      "matchCategories": [
-        "python"
-      ],
-      "matchDepNames": [
-        "httpx"
-      ],
-      "enabled": false
     }
   ]
 }

@@ -196,29 +196,58 @@ class OpenAiChatHoroscope(Horoscope):
         if self._debug_mode:
             return HoroscopeResult(message="debug mode is turned on")
 
-        geggo = self._make_geggo(user_id, time)
-        if geggo:
-            return HoroscopeResult(message=geggo)
+        if geggo := self._make_geggo(user_id, time):
+            return geggo
 
         avenue = _AVENUE_BY_FIRST_SLOT[slots[0]]
         prompt = avenue.build_prompt()
         completion = self._create_completion(user_id, prompt)
         return completion
 
-    def _make_geggo(self, user_id: int, time: datetime) -> str | None:
+    def _make_geggo(self, user_id: int, time: datetime) -> HoroscopeResult | None:
         if time.hour == 0 and time.minute == 18:
-            return "Um 0:18 Uhr schmeckt der Traubensaft am herrlichsten."
+            return HoroscopeResult(
+                "Um 0:18 Uhr schmeckt der Traubensaft am herrlichsten."
+            )
+
+        if time.month == 1 and time.day == 1:
+            prompt = (
+                "Sag mir den Verlauf meines Jahres voraus. Es ist egal, ob die"
+                " Vorhersage realistisch oder akkurat ist, Hauptsache sie ist"
+                " unterhaltsam und liest sich nicht wie ein übliches Horoskop."
+                " Vermeide die Wörter"
+                ' "Herausforderung" und "Chance". Sei nicht vage, sondern erwähne'
+                " mindestens ein konkretes Ereignis.\n\n"
+                "Die Antwort sollte kurz und prägnant sein."
+            )
+            return self._create_completion(
+                user_id,
+                prompt,
+                temperature=1.1,
+                max_tokens=200,
+                frequency_penalty=0,
+                presence_penalty=0,
+            )
 
         return None
 
-    def _create_completion(self, user_id: int, prompt: str) -> HoroscopeResult:
+    def _create_completion(
+        self,
+        user_id: int,
+        prompt: str,
+        temperature: float = 1.0,
+        max_tokens: int = 100,
+        frequency_penalty: float = 0.35,
+        presence_penalty: float = 0.75,
+    ) -> HoroscopeResult:
         _LOG.info("Requesting chat completion")
         messages: list[ChatCompletionMessageParam] = [dict(role="user", content=prompt)]
         response = self._open_ai.chat.completions.create(
             model=self._model_name,
-            max_tokens=100,
-            frequency_penalty=0.35,
-            presence_penalty=0.75,
+            max_tokens=max_tokens,
+            frequency_penalty=frequency_penalty,
+            presence_penalty=presence_penalty,
+            temperature=temperature,
             user=str(user_id),
             messages=messages,
         )

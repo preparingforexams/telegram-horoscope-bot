@@ -886,13 +886,13 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "prep-rate-limiter"
-version = "4.1.0"
+version = "4.1.1"
 description = "Provides scaffolding for rate limited features"
 optional = false
 python-versions = ">=3.11,<3.13"
 files = [
-    {file = "prep_rate_limiter-4.1.0-py3-none-any.whl", hash = "sha256:9c7d6c811959755a034c11502f22c25aa1adb48524316135b58ed17e101bc628"},
-    {file = "prep_rate_limiter-4.1.0.tar.gz", hash = "sha256:a335cc2a374ee3e563e5b0bdecbc6212f57f8b913d7c73ee7a46d19e9a54263c"},
+    {file = "prep_rate_limiter-4.1.1-py3-none-any.whl", hash = "sha256:a198b5504064711ca0dbb58ffe687850fa98ed1b62a80a2a904471e80ce4ce5b"},
+    {file = "prep_rate_limiter-4.1.1.tar.gz", hash = "sha256:b8b8fcc96e37b7bf5a400b84861c8ae2d57a461ed79e14cf1681018ed5fc7169"},
 ]
 
 [package.dependencies]
@@ -1454,4 +1454,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.12"
-content-hash = "8b10b7f09860296ead0727f61c8563512ab5cea395cae3c0c887fbac122ec534"
+content-hash = "4c8c0618bd8e376c71ef2b5305c9e900312063ec5e3e6af32968eadb119c7f5f"

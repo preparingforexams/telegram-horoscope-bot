@@ -135,7 +135,7 @@ class Bot:
         with tracer.start_as_current_span("handle_update") as span:
             span = cast(trace.Span, span)
             span.set_attribute("telegram.update_keys", list(update.keys()))
-            span.set_attribute("telegram.update_id", update["id"])
+            span.set_attribute("telegram.update_id", update["update_id"])
             span.set_attribute("is_processed", False)
 
             message = update.get("message")

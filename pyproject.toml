@@ -17,6 +17,11 @@ Deprecated = "^1.2.13"
 google-cloud-pubsub = "^2.0.0"
 httpx = "^0.26.0"
 openai = "^1.0.0"
+opentelemetry-api = "~1.22"
+opentelemetry-sdk = "~1.22"
+opentelemetry-exporter-otlp-proto-grpc = "~1.22"
+opentelemetry-instrumentation-httpx = "*"
+opentelemetry-instrumentation-logging = "*"
 python = "~3.12"
 prep-rate-limiter = { version = "4.0.0", source = "internal" }
 sentry-sdk = "^1.14.0"
@@ -33,6 +38,9 @@ types-requests = "^2.31.0.1"
 [build-system]
 requires = ["poetry-core>=1.2.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+namespace_packages = true
 
 [[tool.mypy.overrides]]
 module = "google.cloud.*"

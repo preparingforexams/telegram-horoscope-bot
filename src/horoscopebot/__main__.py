@@ -5,6 +5,7 @@ from typing import Optional
 
 import sentry_sdk
 from bs_config import Env
+from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from rate_limiter import (
     RateLimiter,
     RateLimitingPolicy,
@@ -29,12 +30,13 @@ from horoscopebot.event.stub import StubEventPublisher
 from horoscopebot.horoscope.horoscope import Horoscope
 from horoscopebot.horoscope.openai_chat import OpenAiChatHoroscope
 from horoscopebot.horoscope.steffen import SteffenHoroscope
+from horoscopebot.tracing import setup_tracing
 
 _LOG = logging.getLogger(__package__)
 
 
 def _setup_logging():
-    logging.basicConfig()
+    LoggingInstrumentor().instrument(set_logging_format=True)
     _LOG.level = logging.INFO
 
 
@@ -110,6 +112,7 @@ def main():
 
     config = Config.from_env(Env.load(include_default_dotenv=True))
     _setup_sentry(config.sentry_dsn, release=config.app_version)
+    setup_tracing(config)
 
     timezone = ZoneInfo("Europe/Berlin")
 

@@ -4,9 +4,11 @@ import time
 from dataclasses import dataclass
 from datetime import datetime, tzinfo
 from datetime import timezone as dt_timezone
-from typing import Callable, List, Optional, Self
+from typing import Any, Callable, List, Optional, Self, cast
 
 from httpx import Client, HTTPStatusError, Response, TimeoutException
+from opentelemetry import trace
+from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor
 from rate_limiter import RateLimiter
 
 from horoscopebot.config import TelegramConfig
@@ -15,6 +17,7 @@ from horoscopebot.event.publisher import Event, EventPublisher, EventPublishingE
 from horoscopebot.horoscope.horoscope import Horoscope, HoroscopeResult
 
 _LOG = logging.getLogger(__name__)
+tracer = trace.get_tracer(__name__)
 
 
 class RateLimitException(Exception):
@@ -53,6 +56,7 @@ class Bot:
         self._timezone = timezone
         self._dementia_responder = DementiaResponder()
         self._session = Client()
+        HTTPXClientInstrumentor().instrument_client(self._session)
         self._should_terminate = False
 
     def run(self):
@@ -127,103 +131,119 @@ class Bot:
     def _is_lemons(dice: int) -> bool:
         return dice == 43
 
-    def _handle_update(self, update: dict):
-        message = update.get("message")
+    def _handle_update(self, update: dict[str, Any]):
+        with tracer.start_as_current_span("handle_update") as span:
+            span = cast(trace.Span, span)
+            span.set_attribute("telegram.update_keys", list(update.keys()))
+            span.set_attribute("telegram.update_id", update["id"])
+            span.set_attribute("is_processed", False)
 
-        if not message:
-            _LOG.debug("Skipping non-message update")
-            return
+            message = update.get("message")
 
-        chat_id = message["chat"]["id"]
-        if chat_id not in self.config.enabled_chats:
-            _LOG.debug("Not enabled in chat %d", chat_id)
-            return
-
-        dice: Optional[dict] = message.get("dice")
-        if not dice:
-            _LOG.debug("Skipping non-dice message")
-            return
-
-        if dice["emoji"] != "🎰":
-            _LOG.debug("Skipping non-slot-machine message")
-            return
-
-        timestamp = message["date"]
-        time = datetime.fromtimestamp(timestamp, tz=dt_timezone.utc).astimezone(
-            self._timezone
-        )
-        user_id = message["from"]["id"]
-        message_id = message["message_id"]
-        dice_value = dice["value"]
-
-        conflicting_usage = self._rate_limiter.get_offending_usage(
-            context_id=chat_id,
-            user_id=user_id,
-            at_time=time,
-        )
-
-        if conflicting_usage is not None:
-            if self._is_lemons(dice_value):
-                # The other bot will send the picture anyway, so we'll be quiet
+            if not message:
+                _LOG.debug("Skipping non-message update")
                 return
 
-            response = self._dementia_responder.create_response(
-                current_message_id=message_id,
-                current_message_time=time,
-                usage=conflicting_usage,
-            )
-            reply_message_id = response.reply_message_id or message_id
-            self._send_message(
-                chat_id=chat_id,
-                reply_to_message_id=reply_message_id,
-                text=response.text,
-            )
-            return
+            chat_id = message["chat"]["id"]
+            span.set_attribute("telegram.chat_id", chat_id)
+            user_id = message["from"]["id"]
+            span.set_attribute("telegram.user_id", user_id)
+            time = datetime.fromtimestamp(
+                message["date"],
+                tz=dt_timezone.utc,
+            ).astimezone(self._timezone)
+            span.set_attribute("telegram.message_timestamp", time.isoformat())
+            message_id = message["message_id"]
+            span.set_attribute("telegram.message_id", message_id)
 
-        horoscope_result: HoroscopeResult | None = None
-        if not self._is_lemons(dice_value):
-            horoscope_result = self.horoscope.provide_horoscope(
-                dice=dice_value,
+            if chat_id not in self.config.enabled_chats:
+                _LOG.debug("Not enabled in chat %d", chat_id)
+                return
+
+            dice: Optional[dict] = message.get("dice")
+            if not dice:
+                _LOG.debug("Skipping non-dice message")
+                return
+
+            if dice["emoji"] != "🎰":
+                _LOG.debug("Skipping non-slot-machine message")
+                return
+
+            span.set_attribute("is_processed", True)
+
+            dice_value = dice["value"]
+
+            conflicting_usage = self._rate_limiter.get_offending_usage(
                 context_id=chat_id,
                 user_id=user_id,
-                message_id=message_id,
-                message_time=time,
+                at_time=time,
             )
 
-        response_id: str | None = None
-        if horoscope_result is None:
-            _LOG.debug(
-                "Not sending horoscope because horoscope returned None for %d",
-                dice["value"],
-            )
-        else:
-            response_message = self._send_message(
-                chat_id=chat_id,
-                text=horoscope_result.formatted_message,
-                image=horoscope_result.image,
-                use_html_parsing=horoscope_result.should_use_html_parsing,
-                reply_to_message_id=message_id,
-            )
-            response_message_id = response_message["message_id"]
-            response_id = str(response_message_id)
-            self._publish_horoscope_event(
-                HoroscopeEvent(
-                    chat_id=chat_id,
-                    user_id=user_id,
-                    message_id=response_message_id,
-                    horoscope=horoscope_result.message,
+            if conflicting_usage is not None:
+                if self._is_lemons(dice_value):
+                    # The other bot will send the picture anyway, so we'll be quiet
+                    return
+
+                response = self._dementia_responder.create_response(
+                    current_message_id=message_id,
+                    current_message_time=time,
+                    usage=conflicting_usage,
                 )
+                reply_message_id = response.reply_message_id or message_id
+                self._send_message(
+                    chat_id=chat_id,
+                    reply_to_message_id=reply_message_id,
+                    text=response.text,
+                )
+                return
+
+            horoscope_result: HoroscopeResult | None = None
+            if not self._is_lemons(dice_value):
+                with tracer.start_as_current_span("provide_horoscope"):
+                    horoscope_result = self.horoscope.provide_horoscope(
+                        dice=dice_value,
+                        context_id=chat_id,
+                        user_id=user_id,
+                        message_id=message_id,
+                        message_time=time,
+                    )
+
+            response_id: str | None = None
+            if horoscope_result is None:
+                _LOG.debug(
+                    "Not sending horoscope because horoscope returned None for %d",
+                    dice["value"],
+                )
+            else:
+                response_message = self._send_message(
+                    chat_id=chat_id,
+                    text=horoscope_result.formatted_message,
+                    image=horoscope_result.image,
+                    use_html_parsing=horoscope_result.should_use_html_parsing,
+                    reply_to_message_id=message_id,
+                )
+                response_message_id = response_message["message_id"]
+                response_id = str(response_message_id)
+                self._publish_horoscope_event(
+                    HoroscopeEvent(
+                        chat_id=chat_id,
+                        user_id=user_id,
+                        message_id=response_message_id,
+                        horoscope=horoscope_result.message,
+                    )
+                )
+
+            self._rate_limiter.add_usage(
+                context_id=chat_id,
+                user_id=user_id,
+                time=time,
+                reference_id=str(message_id),
+                response_id=response_id,
             )
 
-        self._rate_limiter.add_usage(
-            context_id=chat_id,
-            user_id=user_id,
-            time=time,
-            reference_id=str(message_id),
-            response_id=response_id,
-        )
-
-    def _request_updates(self, last_update_id: Optional[int]) -> List[dict]:
+    def _request_updates(
+        self, client: Client, last_update_id: Optional[int]
+    ) -> List[dict]:
         body = {
             "timeout": 10,
         }
@@ -232,7 +252,7 @@ class Bot:
 
         try:
             return self._get_actual_body(
-                self._session.post(
+                client.post(
                     self._build_url("getUpdates"),
                     json=body,
                     timeout=15,
@@ -254,13 +274,18 @@ class Bot:
 
     def _handle_updates(self, handler: Callable[[dict], None]):
         last_update_id: Optional[int] = None
-        while not self._should_terminate:
-            updates = self._request_updates(last_update_id)
-            try:
-                for update in updates:
-                    _LOG.info(f"Received update: {update}")
-                    handler(update)
-                    last_update_id = update["update_id"]
-            except Exception as e:
-                _LOG.error("Could not handle update", exc_info=e)
-        _LOG.info("Stopping update handling because of terminate signal")
+        client = Client()
+        try:
+            while not self._should_terminate:
+                updates = self._request_updates(client, last_update_id)
+                try:
+                    for update in updates:
+                        _LOG.info(f"Received update: {update}")
+                        handler(update)
+                        last_update_id = update["update_id"]
+                except Exception as e:
+                    _LOG.error("Could not handle update", exc_info=e)
+            _LOG.info("Stopping update handling because of terminate signal")
+        finally:
+            client.close()
+            self._session.close()

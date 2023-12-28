@@ -2,6 +2,8 @@ image:
   app: ${IMAGE_NAME}:${GITHUB_SHA}
 gcp:
   gsaJson: ${GSA_JSON}
+honeycomb:
+  team: ${HONEYCOMB_API_TOKEN}
 telegram:
   apiKey: ${TELEGRAM_TOKEN}
   enabledChats:

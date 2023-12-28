@@ -89,10 +89,7 @@ class TelegramConfig:
 
     @classmethod
     def from_env(cls, env: Env) -> Self:
-        token = env.get_string("TELEGRAM_TOKEN")
-
-        if not token:
-            raise ValueError("Missing Telegram token")
+        token = env.get_string("TELEGRAM_TOKEN", required=True)
 
         return cls(
             enabled_chats=env.get_int_list(
@@ -106,6 +103,7 @@ class TelegramConfig:
 @dataclass
 class Config:
     app_version: str
+    enable_telemetry: bool
     timezone_name: str
     horoscope: HoroscopeConfig
     event_publisher: EventPublisherConfig
@@ -119,6 +117,10 @@ class Config:
             app_version=env.get_string(
                 "BUILD_SHA",
                 default="debug",
+            ),
+            enable_telemetry=env.get_bool(
+                "ENABLE_TELEMETRY",
+                default=False,
             ),
             timezone_name=env.get_string(
                 "TIMEZONE_NAME",

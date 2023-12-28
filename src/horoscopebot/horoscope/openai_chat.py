@@ -8,6 +8,7 @@ import httpx
 from httpx import RequestError
 from openai import BadRequestError, OpenAI, OpenAIError
 from openai.types.chat import ChatCompletionMessageParam
+from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor
 
 from horoscopebot.config import OpenAiConfig
 
@@ -174,6 +175,7 @@ class OpenAiChatHoroscope(Horoscope):
         self._debug_mode = config.debug_mode
         self._model_name = config.model_name
         self._http_client = httpx.Client(timeout=20)
+        HTTPXClientInstrumentor().instrument_client(self._http_client)
         self._open_ai = OpenAI(api_key=config.token, http_client=self._http_client)
 
     def provide_horoscope(

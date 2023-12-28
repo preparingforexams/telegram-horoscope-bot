@@ -38,6 +38,7 @@ jobs:
       - name: Substitute environment variables in values.yaml
         env:
           GSA_JSON: ${{ secrets.GSA_JSON }}
+          HONEYCOMB_API_TOKEN: ${{ secrets.HONEYCOMB_API_TOKEN }}
           IMAGE_NAME: "ghcr.io/${{ env.GITHUB_REPOSITORY_OWNER_PART_SLUG }}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}"
           OPENAI_TOKEN: ${{ secrets.OPENAI_TOKEN }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}

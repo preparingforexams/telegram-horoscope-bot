@@ -847,18 +847,22 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "prep-rate-limiter"
-version = "4.0.0"
+version = "4.1.0"
 description = "Provides scaffolding for rate limited features"
 optional = false
 python-versions = ">=3.11,<3.13"
 files = [
-    {file = "prep_rate_limiter-4.0.0-py3-none-any.whl", hash = "sha256:1b809388c0919039eeb5509508ec3220d117a5b346ccee62667562c29561af77"},
-    {file = "prep_rate_limiter-4.0.0.tar.gz", hash = "sha256:9c0504422db68b0d4de8319646366c1e6955535ca7ee63080816450376eb4f98"},
+    {file = "prep_rate_limiter-4.1.0-py3-none-any.whl", hash = "sha256:9c7d6c811959755a034c11502f22c25aa1adb48524316135b58ed17e101bc628"},
+    {file = "prep_rate_limiter-4.1.0.tar.gz", hash = "sha256:a335cc2a374ee3e563e5b0bdecbc6212f57f8b913d7c73ee7a46d19e9a54263c"},
 ]
 
 [package.dependencies]
 Deprecated = ">=1.2.13,<2.0.0"
+opentelemetry-api = ">=1.22.0,<2.0.0"
 tzdata = "2023.3"
+
+[package.extras]
+opentelemetry = ["opentelemetry-instrumentation-sqlite3"]
 
 [package.source]
 type = "legacy"
@@ -1410,4 +1414,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.12"
-content-hash = "31d80748c54c95aa50064f02e6e73bdaa03be74b4d77c6ec3bc680503055c777"
+content-hash = "e6c44230916d0df41fa849340731706191369ce14e47789e1c358e328abac40e"

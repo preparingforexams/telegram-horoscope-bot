@@ -25,7 +25,7 @@ opentelemetry-instrumentation-logging = "*"
 python = "~3.12"
 prep-rate-limiter = { version = "4.1.3", source = "internal", extras = ["opentelemetry"] }
 sentry-sdk = "^1.14.0"
-tzdata = "2023.4"
+tzdata = "2024.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.0.0"

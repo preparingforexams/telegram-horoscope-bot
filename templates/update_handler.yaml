@@ -15,7 +15,7 @@ metadata:
     app: {{ .Release.Name }}-update-handler
 spec:
   revisionHistoryLimit: 1
-  replicas: 0
+  replicas: 1
   serviceName: {{ .Release.Name }}-update-handler
   selector:
     matchLabels:

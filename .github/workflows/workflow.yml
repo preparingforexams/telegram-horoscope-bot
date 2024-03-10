@@ -46,7 +46,7 @@ jobs:
         run: "envsubst < values.yaml > values_sub.yaml && mv values_sub.yaml values.yaml"
       - uses: WyriHaximus/github-action-helm3@v4
         with:
-          exec: helm upgrade horoscope . --install --namespace=telegram-bots --atomic
+          exec: helm upgrade horoscope . --install --namespace=horoscope-bot --atomic
           kubeconfig: '${{ secrets.KUBECONFIG_RAW }}'
 
   clean:

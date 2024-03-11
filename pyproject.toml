@@ -11,7 +11,7 @@ url = "https://pypi.blindfolded.surgery"
 priority = "explicit"
 
 [tool.poetry.dependencies]
-bs-config = { version = "1.0.1", extras = ["dotenv"], source = "internal" }
+bs-config = { tag = "v1.0.1", extras = ["dotenv"], git = "https://github.com/BlindfoldedSurgery/bs-config.git" }
 certifi = "2024.2.2"
 Deprecated = "^1.2.13"
 google-cloud-pubsub = "^2.0.0"
@@ -23,7 +23,7 @@ opentelemetry-exporter-otlp-proto-grpc = "~1.23"
 opentelemetry-instrumentation-httpx = "*"
 opentelemetry-instrumentation-logging = "*"
 python = "~3.12"
-prep-rate-limiter = { version = "4.2.0", source = "internal", extras = ["opentelemetry"] }
+prep-rate-limiter = { tag = "v4.2.0", extras = ["opentelemetry"], git = "https://github.com/preparingforexams/rate_limiter.git" }
 sentry-sdk = "^1.14.0"
 tzdata = "2024.1"
 

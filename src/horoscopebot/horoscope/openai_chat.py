@@ -54,13 +54,6 @@ _AVENUE_BY_FIRST_SLOT: dict[Slot, Avenue] = {
         ),
         variations=[
             Variation(
-                probability=0.15,
-                prompt=(
-                    "Referenziere Torbens exzessiven Alkoholismus. Beachte dabei,"
-                    " dass Torben keinen Wein trinkt."
-                ),
-            ),
-            Variation(
                 probability=0.05,
                 prompt="Schlage vor, Dousnbier zu trinken",
             ),
@@ -75,10 +68,6 @@ _AVENUE_BY_FIRST_SLOT: dict[Slot, Avenue] = {
             Variation(
                 probability=0.05,
                 prompt="Schlage vor, Dream Jizz zu trinken",
-            ),
-            Variation(
-                probability=0.05,
-                prompt="Schlage vor Eiersaft zu trinken",
             ),
             Variation(
                 probability=0.1,

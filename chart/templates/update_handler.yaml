@@ -76,7 +76,7 @@ spec:
             - name: HOROSCOPE_MODE
               value: openai_chat
             - name: OPENAI_MODEL
-              value: gpt-3.5-turbo-1106
+              value: {{ .Values.openai.gptModel }}
             - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
               value: https://api.honeycomb.io
             - name: RATE_LIMIT_FILE

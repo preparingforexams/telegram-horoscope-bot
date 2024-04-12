@@ -1,6 +1,8 @@
 appVersion: "latest"
 image:
   app: ${IMAGE_NAME}
+openai:
+  gptModel: gpt-3.5-turbo-1106
 telegram:
   enabledChats:
     - "133399998"

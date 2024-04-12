@@ -190,11 +190,17 @@ class Bot:
                     usage=conflicting_usage,
                 )
                 reply_message_id = response.reply_message_id or message_id
-                self._send_message(
-                    chat_id=chat_id,
-                    reply_to_message_id=reply_message_id,
-                    text=response.text,
-                )
+                try:
+                    self._send_message(
+                        chat_id=chat_id,
+                        reply_to_message_id=reply_message_id,
+                        text=response.text,
+                    )
+                except HTTPStatusError as e:
+                    if e.response.status_code != 400:
+                        # If it's 400, the replied-to message is probably gone
+                        raise e
+
                 return
 
             horoscope_result: HoroscopeResult | None = None

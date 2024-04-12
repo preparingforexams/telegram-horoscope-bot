@@ -58,7 +58,7 @@ spec:
               value: jdbc:sqlite:/state/usages.db
       containers:
         - name: app
-          image: {{ .Values.image.app }}
+          image: {{ .Values.image.app }}:{{ .Values.appVersion }}
           resources:
             limits:
               cpu: 200m

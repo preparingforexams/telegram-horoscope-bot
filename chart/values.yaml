@@ -1,0 +1,10 @@
+appVersion: "latest"
+image:
+  app: ${IMAGE_NAME}
+telegram:
+  enabledChats:
+    - "133399998"
+    - "-1001725586482"
+rateLimiter:
+  # renovate: datasource=docker
+  image: ghcr.io/preparingforexams/rate-limiter-migrations:4.2.0

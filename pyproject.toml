@@ -46,10 +46,10 @@ namespace_packages = true
 module = "google.cloud.*"
 ignore_missing_imports = true
 
-[tool.ruff]
+[tool.ruff.lint]
 extend-select = [
     "I001",
 ]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["horoscopebot"]

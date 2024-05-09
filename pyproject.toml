@@ -24,7 +24,7 @@ opentelemetry-instrumentation-httpx = "*"
 opentelemetry-instrumentation-logging = "*"
 python = "~3.12"
 prep-rate-limiter = { tag = "v4.2.0", extras = ["opentelemetry"], git = "https://github.com/preparingforexams/rate_limiter.git" }
-sentry-sdk = "^1.14.0"
+sentry-sdk = "^2.0.0"
 tzdata = "2024.1"
 
 [tool.poetry.group.dev.dependencies]

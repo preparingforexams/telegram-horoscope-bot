@@ -10,7 +10,7 @@ class UserPassPolicy(RateLimitingPolicy):
 
     def __init__(self, fallback: RateLimitingPolicy, user_id: int):
         self.fallback = fallback
-        self.user_id = user_id
+        self.user_id = str(user_id)
 
     @property
     def requested_history(self) -> int:
@@ -23,12 +23,11 @@ class UserPassPolicy(RateLimitingPolicy):
     ) -> Usage | None:
         if last_usages:
             usage = last_usages[0]
-            _LOG.info(
-                f"PROCESSING: Found usage with user ID {repr(usage.user_id)} and context {repr(usage.context_id)}"
-            )
-            if usage.user_id == self.user_id and usage.context_id == str(self.user_id):
+            if usage.user_id == self.user_id and usage.context_id == self.user_id:
                 _LOG.info("ALLOW: Found usage with matching user ID and context ID")
                 return None
+
+            _LOG.warning("INDECISION: Usage found, but no match")
         else:
             _LOG.info("INDECISION: No usages found. Falling back.")
 

@@ -26,6 +26,7 @@ jobs:
     with:
       runner-name-build: warp-ubuntu-latest-arm64-2x
       push-image: ${{ github.ref_name == github.event.repository.default_branch }}
+      timeout-minutes: 5
 
   deploy:
     runs-on: ubuntu-latest

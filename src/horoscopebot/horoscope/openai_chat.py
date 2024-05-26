@@ -229,7 +229,7 @@ class OpenAiChatHoroscope(Horoscope):
                     dict(role="user", content="Gib Horoskop."),
                     dict(
                         role="assistant",
-                        content="Baron Münchhausen reitet eine Kanonenkugel in Richtung Akropolis.",
+                        content="Baron Münchhausen reitet eine Kanonenkugel durch die Luft in Richtung Akropolis.",
                     ),
                 ],
                 improve_prompt=False,

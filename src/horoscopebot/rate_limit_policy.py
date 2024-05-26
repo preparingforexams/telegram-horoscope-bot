@@ -18,7 +18,9 @@ class UserPassPolicy(RateLimitingPolicy):
         at_time: datetime,
         last_usages: list[Usage],
     ) -> Usage | None:
-        if last_usages and last_usages[0].user_id == self.user_id:
-            return None
+        if last_usages:
+            usage = last_usages[0]
+            if usage.user_id == self.user_id and usage.context_id == str(self.user_id):
+                return None
 
         return self.fallback.get_offending_usage(at_time, last_usages)

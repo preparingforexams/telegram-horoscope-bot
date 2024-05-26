@@ -228,7 +228,8 @@ class OpenAiChatHoroscope(Horoscope):
                 [
                     dict(role="user", content="Gib Horoskop."),
                     dict(role="assistant", content="Baron Münchhausen in Italien."),
-                ]
+                ],
+                improve_prompt=False,
             )
             return HoroscopeResult(
                 message=message,
@@ -292,8 +293,17 @@ class OpenAiChatHoroscope(Horoscope):
             _LOG.error("Could not improve image generation prompt", exc_info=e)
             return None
 
-    def _create_image(self, messages: list[ChatCompletionMessageParam]) -> bytes | None:
-        improvement_message = self._improve_image_prompt(messages) or messages[-1]
+    def _create_image(
+        self,
+        messages: list[ChatCompletionMessageParam],
+        *,
+        improve_prompt: bool = True,
+    ) -> bytes | None:
+        if improve_prompt:
+            improvement_message = self._improve_image_prompt(messages) or messages[-1]
+        else:
+            improvement_message = messages[-1]
+
         prompt = improvement_message["content"]
 
         if not prompt:

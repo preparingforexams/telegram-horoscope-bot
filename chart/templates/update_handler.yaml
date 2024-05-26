@@ -61,7 +61,7 @@ spec:
           image: {{ .Values.image.app }}:{{ .Values.appVersion }}
           resources:
             limits:
-              cpu: 200m
+              cpu: 1000m
             requests:
               cpu: 10m
               memory: 128Mi

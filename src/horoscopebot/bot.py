@@ -33,6 +33,10 @@ class RateLimitException(Exception):
         return cls(retry_after=60.0)
 
 
+class ReplyMessageGoneException(Exception):
+    pass
+
+
 @dataclass
 class HoroscopeEvent(Event):
     message_id: int
@@ -119,6 +123,9 @@ class Bot:
                 timeout=20,
             )
 
+        if reply_to_message_id is not None and response.status_code == 400:
+            raise ReplyMessageGoneException(reply_to_message_id)
+
         return self._get_actual_body(response)
 
     def _publish_horoscope_event(self, event: HoroscopeEvent):
@@ -196,10 +203,8 @@ class Bot:
                         reply_to_message_id=reply_message_id,
                         text=response.text,
                     )
-                except HTTPStatusError as e:
-                    if e.response.status_code != 400:
-                        # If it's 400, the replied-to message is probably gone
-                        raise e
+                except ReplyMessageGoneException as e:
+                    _LOG.error("Could not reply to message", exc_info=e)
 
                 return
 
@@ -221,13 +226,18 @@ class Bot:
                     dice["value"],
                 )
             else:
-                response_message = self._send_message(
-                    chat_id=chat_id,
-                    text=horoscope_result.formatted_message,
-                    image=horoscope_result.image,
-                    use_html_parsing=horoscope_result.should_use_html_parsing,
-                    reply_to_message_id=message_id,
-                )
+                try:
+                    response_message = self._send_message(
+                        chat_id=chat_id,
+                        text=horoscope_result.formatted_message,
+                        image=horoscope_result.image,
+                        use_html_parsing=horoscope_result.should_use_html_parsing,
+                        reply_to_message_id=message_id,
+                    )
+                except ReplyMessageGoneException as e:
+                    _LOG.error("Could not reply to message", exc_info=e)
+                    return
+
                 response_message_id = response_message["message_id"]
                 response_id = str(response_message_id)
                 self._publish_horoscope_event(

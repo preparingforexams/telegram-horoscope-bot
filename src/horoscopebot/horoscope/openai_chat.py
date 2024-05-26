@@ -220,6 +220,21 @@ class OpenAiChatHoroscope(Horoscope):
                 presence_penalty=0,
             )
 
+        if user_id == 133399998 or (
+            user_id == 167930454 and time.month == 5 and time.day == 27
+        ):
+            message = "Du musst Steuern sparen."
+            image = self._create_image(
+                [
+                    dict(role="user", content="Gib Horoskop."),
+                    dict(role="assistant", content=message),
+                ]
+            )
+            return HoroscopeResult(
+                message=message,
+                image=image,
+            )
+
         return None
 
     def _create_completion(

@@ -1,6 +1,9 @@
+import logging
 from datetime import datetime
 
 from rate_limiter import RateLimitingPolicy, Usage
+
+_LOG = logging.getLogger(__name__)
 
 
 class UserPassPolicy(RateLimitingPolicy):
@@ -21,6 +24,8 @@ class UserPassPolicy(RateLimitingPolicy):
         if last_usages:
             usage = last_usages[0]
             if usage.user_id == self.user_id and usage.context_id == str(self.user_id):
+                _LOG.info("ALLOW: Found usage with matching user ID and context ID")
                 return None
 
+        _LOG.info("INDECISION: Falling back to delegated implementation")
         return self.fallback.get_offending_usage(at_time, last_usages)

@@ -227,7 +227,10 @@ class OpenAiChatHoroscope(Horoscope):
             image = self._create_image(
                 [
                     dict(role="user", content="Gib Horoskop."),
-                    dict(role="assistant", content="Baron Münchhausen in Italien."),
+                    dict(
+                        role="assistant",
+                        content="Baron Münchhausen reitet eine Kanonenkugel in Richtung Akropolis.",
+                    ),
                 ],
                 improve_prompt=False,
             )

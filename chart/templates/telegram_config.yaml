@@ -3,4 +3,5 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-telegram
 data:
+  RATE_LIMIT_ADMIN_PASS: "true"
   TELEGRAM_ENABLED_CHATS: "{{ join "," .Values.telegram.enabledChats }}"

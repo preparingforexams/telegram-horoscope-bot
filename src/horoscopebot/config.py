@@ -70,6 +70,7 @@ class EventPublisherConfig:
 class RateLimitConfig:
     rate_limiter_type: str
     rate_limit_file: str | None
+    admin_pass: bool
 
     @classmethod
     def from_env(cls, env: Env) -> Self:
@@ -79,6 +80,7 @@ class RateLimitConfig:
                 default="actual",
             ),
             rate_limit_file=env.get_string("RATE_LIMIT_FILE"),
+            admin_pass=env.get_bool("RATE_LIMIT_ADMIN_PASS", default=True),
         )
 
 

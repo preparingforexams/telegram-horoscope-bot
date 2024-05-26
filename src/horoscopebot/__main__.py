@@ -30,6 +30,7 @@ from horoscopebot.event.stub import StubEventPublisher
 from horoscopebot.horoscope.horoscope import Horoscope
 from horoscopebot.horoscope.openai_chat import OpenAiChatHoroscope
 from horoscopebot.horoscope.steffen import SteffenHoroscope
+from horoscopebot.rate_limit_policy import UserPassPolicy
 from horoscopebot.tracing import setup_tracing
 
 _LOG = logging.getLogger(__package__)
@@ -100,8 +101,12 @@ def _load_rate_limiter(timezone: tzinfo, config: RateLimitConfig) -> RateLimiter
     else:
         repository = repo.SqliteRateLimitingRepo.connect(Path(rate_limit_file))
 
+    rate_policy: RateLimitingPolicy = policy.DailyLimitRateLimitingPolicy(limit=1)
+    if config.admin_pass:
+        rate_policy = UserPassPolicy(fallback=rate_policy, user_id=133399998)
+
     return RateLimiter(
-        policy=policy.DailyLimitRateLimitingPolicy(limit=1),
+        policy=rate_policy,
         repo=repository,
         timezone=timezone,
     )

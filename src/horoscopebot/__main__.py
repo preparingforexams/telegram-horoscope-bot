@@ -103,6 +103,7 @@ def _load_rate_limiter(timezone: tzinfo, config: RateLimitConfig) -> RateLimiter
 
     rate_policy: RateLimitingPolicy = policy.DailyLimitRateLimitingPolicy(limit=1)
     if config.admin_pass:
+        _LOG.info("Admin pass is enabled")
         rate_policy = UserPassPolicy(fallback=rate_policy, user_id=133399998)
 
     return RateLimiter(

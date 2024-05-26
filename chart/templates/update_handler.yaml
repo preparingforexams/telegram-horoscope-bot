@@ -81,6 +81,8 @@ spec:
               value: https://api.honeycomb.io
             - name: RATE_LIMIT_FILE
               value: /state/usages.db
+            - name: RATE_LIMIT_ADMIN_PASS
+              value: "true"
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /gcp/gsa.json
           envFrom:

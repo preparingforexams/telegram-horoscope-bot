@@ -227,7 +227,7 @@ class OpenAiChatHoroscope(Horoscope):
             image = self._create_image(
                 [
                     dict(role="user", content="Gib Horoskop."),
-                    dict(role="assistant", content=message),
+                    dict(role="assistant", content="Baron Münchhausen in Italien."),
                 ]
             )
             return HoroscopeResult(

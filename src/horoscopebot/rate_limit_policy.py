@@ -26,6 +26,7 @@ class UserPassPolicy(RateLimitingPolicy):
             if usage.user_id == self.user_id and usage.context_id == str(self.user_id):
                 _LOG.info("ALLOW: Found usage with matching user ID and context ID")
                 return None
+        else:
+            _LOG.info("INDECISION: No usages found. Falling back.")
 
-        _LOG.info("INDECISION: Falling back to delegated implementation")
         return self.fallback.get_offending_usage(at_time, last_usages)

@@ -23,6 +23,9 @@ class UserPassPolicy(RateLimitingPolicy):
     ) -> Usage | None:
         if last_usages:
             usage = last_usages[0]
+            _LOG.info(
+                f"PROCESSING: Found usage with user ID {repr(usage.user_id)} and context {repr(usage.context_id)}"
+            )
             if usage.user_id == self.user_id and usage.context_id == str(self.user_id):
                 _LOG.info("ALLOW: Found usage with matching user ID and context ID")
                 return None

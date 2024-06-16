@@ -243,7 +243,7 @@ class OpenAiChatHoroscope(Horoscope):
         self,
         user_id: int,
         prompt: str,
-        temperature: float = 1.0,
+        temperature: float = 1.2,
         max_tokens: int = 100,
         frequency_penalty: float = 0.35,
         presence_penalty: float = 0.75,
@@ -287,6 +287,7 @@ class OpenAiChatHoroscope(Horoscope):
                     ),
                 ],
                 max_tokens=128,
+                temperature=1.8,
             )
             message = response.choices[0].message
             return dict(role=message.role, content=message.content)

@@ -243,7 +243,7 @@ class OpenAiChatHoroscope(Horoscope):
         self,
         user_id: int,
         prompt: str,
-        temperature: float = 1.2,
+        temperature: float = 1.4,
         max_tokens: int = 100,
         frequency_penalty: float = 0.35,
         presence_penalty: float = 0.75,

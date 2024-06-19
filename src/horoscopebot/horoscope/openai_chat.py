@@ -287,7 +287,7 @@ class OpenAiChatHoroscope(Horoscope):
                     ),
                 ],
                 max_tokens=128,
-                temperature=1.6,
+                temperature=1.4,
             )
             message = response.choices[0].message
             return dict(role=message.role, content=message.content)

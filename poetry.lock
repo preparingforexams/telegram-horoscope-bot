@@ -870,27 +870,28 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "prep-rate-limiter"
-version = "4.2.0"
+version = "4.2.1"
 description = "Provides scaffolding for rate limited features"
 optional = false
-python-versions = ">=3.11 <3.13"
-files = []
-develop = false
+python-versions = ">=3.11,<3.13"
+files = [
+    {file = "prep_rate_limiter-4.2.1-py3-none-any.whl", hash = "sha256:92337bf1d826c3b95365b79fef46f8f2f8107322223fa526a78e8531ce143417"},
+    {file = "prep_rate_limiter-4.2.1.tar.gz", hash = "sha256:7fd2207e2c15714dccc8861b8c317e7242c38ee189c8c753e1021938b112b465"},
+]
 
 [package.dependencies]
-Deprecated = "^1.2.13"
-opentelemetry-api = "^1.22.0"
-opentelemetry-instrumentation-sqlite3 = {version = "*", optional = true}
+Deprecated = ">=1.2.13,<2.0.0"
+opentelemetry-api = ">=1.22.0,<2.0.0"
+opentelemetry-instrumentation-sqlite3 = {version = "*", optional = true, markers = "extra == \"opentelemetry\""}
 tzdata = "*"
 
 [package.extras]
 opentelemetry = ["opentelemetry-instrumentation-sqlite3"]
 
 [package.source]
-type = "git"
-url = "https://github.com/preparingforexams/rate_limiter.git"
-reference = "v4.2.0"
-resolved_reference = "72234fd99216c06b2e248eef11ca01ec00a63da8"
+type = "legacy"
+url = "https://pypi.bjoernpetersen.net"
+reference = "internal"
 
 [[package]]
 name = "proto-plus"
@@ -1416,4 +1417,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.12"
-content-hash = "59c237ef39acbc4ce2b509eef6a32f4f26d3213cd0279aabd0f99d89984fc07c"
+content-hash = "3002726db927558ab0eed3a6c61aadcea6736058c09837cda997c780192f0dc7"

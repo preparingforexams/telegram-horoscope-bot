@@ -23,7 +23,7 @@ opentelemetry-exporter-otlp-proto-grpc = "~1.25"
 opentelemetry-instrumentation-httpx = "*"
 opentelemetry-instrumentation-logging = "*"
 python = "~3.12"
-prep-rate-limiter = { tag = "v4.2.0", extras = ["opentelemetry"], git = "https://github.com/preparingforexams/rate_limiter.git" }
+prep-rate-limiter = { version = "4.2.1", extras = ["opentelemetry"], source = "internal" }
 sentry-sdk = "^2.0.0"
 tzdata = "2024.1"
 

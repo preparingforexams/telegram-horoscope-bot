@@ -7,7 +7,6 @@ _LOG = logging.getLogger(__name__)
 
 
 class UserPassPolicy(RateLimitingPolicy):
-
     def __init__(self, fallback: RateLimitingPolicy, user_id: int):
         self.fallback = fallback
         self.user_id = str(user_id)

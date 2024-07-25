@@ -30,7 +30,7 @@ tzdata = "2024.1"
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.4.0"
 pytest = "^8.0.0"
-ruff = "0.5.4"
+ruff = "0.5.5"
 types-Deprecated = "^1.2.9"
 types-requests = "^2.31.0.1"
 

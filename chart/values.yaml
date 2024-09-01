@@ -9,4 +9,4 @@ telegram:
     - "-1001725586482"
 rateLimiter:
   # renovate: datasource=docker
-  image: ghcr.io/preparingforexams/rate-limiter-migrations-sqlite:5.0.4
+  image: ghcr.io/preparingforexams/rate-limiter-migrations-sqlite:5.0.5

@@ -858,13 +858,13 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "prep-rate-limiter"
-version = "5.0.4"
+version = "5.0.5"
 description = "Provides scaffolding for rate limited features"
 optional = false
 python-versions = ">=3.11,<3.13"
 files = [
-    {file = "prep_rate_limiter-5.0.4-py3-none-any.whl", hash = "sha256:ce2664a79940de4c6130428b44e10ab856affd2c71a6a0b9086a02a2b73f3cc4"},
-    {file = "prep_rate_limiter-5.0.4.tar.gz", hash = "sha256:70422087e6c7a16461495200a8e00f25cc7f59e71c2d674516e62c419c12a569"},
+    {file = "prep_rate_limiter-5.0.5-py3-none-any.whl", hash = "sha256:412adbd9769c0b1f61288ec20749a0002da25f1f2fa559eace680978d1b39f84"},
+    {file = "prep_rate_limiter-5.0.5.tar.gz", hash = "sha256:67a0ef25102c63e57f3f11f77dc86ffdb363f521ee421c421561fd28957aaa46"},
 ]
 
 [package.dependencies]
@@ -1428,4 +1428,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.12"
-content-hash = "7537b401cad3a8a8e71333b36988703d6c64dc3ed496e2888d5e79ad24e4f2d0"
+content-hash = "2c42d84c063b3c5e666089f10279b5e84f81d2f34a297b70b81fa64a0b891b5f"

@@ -7,7 +7,7 @@
       "matchPackageNames": [
         "rate_limit",
         "prep-rate-limiter",
-        "ghcr.io/preparingforexams/rate-limiter-migrations"
+        "ghcr.io/preparingforexams/rate-limiter-migrations-*"
       ],
       "groupName": "rate_limiter"
     }

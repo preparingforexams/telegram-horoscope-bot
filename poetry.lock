@@ -707,23 +707,6 @@ setuptools = ">=16.0"
 wrapt = ">=1.0.0,<2.0.0"
 
 [[package]]
-name = "opentelemetry-instrumentation-dbapi"
-version = "0.48b0"
-description = "OpenTelemetry Database API instrumentation"
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "opentelemetry_instrumentation_dbapi-0.48b0-py3-none-any.whl", hash = "sha256:0d11a73ecbf55b11e8fbc93e9e97366958b98ccb4b691c776b32e4b20b3ce8bb"},
-    {file = "opentelemetry_instrumentation_dbapi-0.48b0.tar.gz", hash = "sha256:89821288199f4f5225e74543bf14addf9b1824b8b5f1e83ad0d9dafa844f33b0"},
-]
-
-[package.dependencies]
-opentelemetry-api = ">=1.12,<2.0"
-opentelemetry-instrumentation = "0.48b0"
-opentelemetry-semantic-conventions = "0.48b0"
-wrapt = ">=1.0.0,<2.0.0"
-
-[[package]]
 name = "opentelemetry-instrumentation-httpx"
 version = "0.48b0"
 description = "OpenTelemetry HTTPX Instrumentation"
@@ -757,22 +740,6 @@ files = [
 [package.dependencies]
 opentelemetry-api = ">=1.12,<2.0"
 opentelemetry-instrumentation = "0.48b0"
-
-[[package]]
-name = "opentelemetry-instrumentation-sqlite3"
-version = "0.48b0"
-description = "OpenTelemetry SQLite3 instrumentation"
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "opentelemetry_instrumentation_sqlite3-0.48b0-py3-none-any.whl", hash = "sha256:558ff8e7b78d0647cdffb1496c5e92f72d1f459e9ae9c6d3ae9eab3517d481e5"},
-    {file = "opentelemetry_instrumentation_sqlite3-0.48b0.tar.gz", hash = "sha256:483b973a197890d69a25d17956d6fa66c540fc0f9f73190c93c98d2dabb3188b"},
-]
-
-[package.dependencies]
-opentelemetry-api = ">=1.12,<2.0"
-opentelemetry-instrumentation = "0.48b0"
-opentelemetry-instrumentation-dbapi = "0.48b0"
 
 [[package]]
 name = "opentelemetry-proto"
@@ -858,23 +825,24 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "prep-rate-limiter"
-version = "4.2.1"
+version = "5.0.2"
 description = "Provides scaffolding for rate limited features"
 optional = false
 python-versions = ">=3.11,<3.13"
 files = [
-    {file = "prep_rate_limiter-4.2.1-py3-none-any.whl", hash = "sha256:92337bf1d826c3b95365b79fef46f8f2f8107322223fa526a78e8531ce143417"},
-    {file = "prep_rate_limiter-4.2.1.tar.gz", hash = "sha256:7fd2207e2c15714dccc8861b8c317e7242c38ee189c8c753e1021938b112b465"},
+    {file = "prep_rate_limiter-5.0.2-py3-none-any.whl", hash = "sha256:6703fde4ebea67b0a9e34577cb56214023765e99763731afe9d7b2649c490d65"},
+    {file = "prep_rate_limiter-5.0.2.tar.gz", hash = "sha256:3e502cca3e6f4eae902a076d4e70db8465eed69df9e3e27b4d3fe967eda31c7d"},
 ]
 
 [package.dependencies]
 Deprecated = ">=1.2.13,<2.0.0"
 opentelemetry-api = ">=1.22.0,<2.0.0"
-opentelemetry-instrumentation-sqlite3 = {version = "*", optional = true, markers = "extra == \"opentelemetry\""}
 tzdata = "*"
 
 [package.extras]
-opentelemetry = ["opentelemetry-instrumentation-sqlite3"]
+opentelemetry-postgres = ["opentelemetry-instrumentation-psycopg"]
+opentelemetry-sqlite3 = ["opentelemetry-instrumentation-sqlite3"]
+postgres = ["psycopg[binary] (>=3.2,<3.3)", "psycopg_pool[binary] (>=3.2,<3.3)"]
 
 [package.source]
 type = "legacy"
@@ -1426,4 +1394,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.12"
-content-hash = "7d23a096f1ddd3f6c118f422d83256d4870c5560d21762cb8bc5ed26ef5dc93a"
+content-hash = "5e71de84e55a2828a01fcf5659fb76978130d80cddd71ece49219a8009039f9d"

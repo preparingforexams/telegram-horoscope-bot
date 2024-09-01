@@ -48,8 +48,6 @@ spec:
       initContainers:
         - name: flyway
           image: {{ .Values.rateLimiter.image }}
-          args:
-            - migrate
           volumeMounts:
             - mountPath: /state
               name: state

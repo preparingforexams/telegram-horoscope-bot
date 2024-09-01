@@ -17,6 +17,7 @@ class UserPassPolicy(RateLimitingPolicy):
 
     def get_offending_usage(
         self,
+        *,
         at_time: datetime,
         last_usages: list[Usage],
     ) -> Usage | None:
@@ -30,4 +31,7 @@ class UserPassPolicy(RateLimitingPolicy):
         else:
             _LOG.info("INDECISION: No usages found. Falling back.")
 
-        return self.fallback.get_offending_usage(at_time, last_usages)
+        return self.fallback.get_offending_usage(
+            at_time=at_time,
+            last_usages=last_usages,
+        )

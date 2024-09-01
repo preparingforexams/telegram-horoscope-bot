@@ -858,23 +858,25 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "prep-rate-limiter"
-version = "4.2.1"
+version = "5.0.2"
 description = "Provides scaffolding for rate limited features"
 optional = false
 python-versions = ">=3.11,<3.13"
 files = [
-    {file = "prep_rate_limiter-4.2.1-py3-none-any.whl", hash = "sha256:92337bf1d826c3b95365b79fef46f8f2f8107322223fa526a78e8531ce143417"},
-    {file = "prep_rate_limiter-4.2.1.tar.gz", hash = "sha256:7fd2207e2c15714dccc8861b8c317e7242c38ee189c8c753e1021938b112b465"},
+    {file = "prep_rate_limiter-5.0.2-py3-none-any.whl", hash = "sha256:6703fde4ebea67b0a9e34577cb56214023765e99763731afe9d7b2649c490d65"},
+    {file = "prep_rate_limiter-5.0.2.tar.gz", hash = "sha256:3e502cca3e6f4eae902a076d4e70db8465eed69df9e3e27b4d3fe967eda31c7d"},
 ]
 
 [package.dependencies]
 Deprecated = ">=1.2.13,<2.0.0"
 opentelemetry-api = ">=1.22.0,<2.0.0"
-opentelemetry-instrumentation-sqlite3 = {version = "*", optional = true, markers = "extra == \"opentelemetry\""}
+opentelemetry-instrumentation-sqlite3 = {version = "*", optional = true, markers = "extra == \"opentelemetry-sqlite3\""}
 tzdata = "*"
 
 [package.extras]
-opentelemetry = ["opentelemetry-instrumentation-sqlite3"]
+opentelemetry-postgres = ["opentelemetry-instrumentation-psycopg"]
+opentelemetry-sqlite3 = ["opentelemetry-instrumentation-sqlite3"]
+postgres = ["psycopg[binary] (>=3.2,<3.3)", "psycopg_pool[binary] (>=3.2,<3.3)"]
 
 [package.source]
 type = "legacy"
@@ -1426,4 +1428,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.12"
-content-hash = "7d23a096f1ddd3f6c118f422d83256d4870c5560d21762cb8bc5ed26ef5dc93a"
+content-hash = "dfdd89b329765baeb8c42d766211f9ee2970db61f0e4d3766d0fbb09b78474fa"

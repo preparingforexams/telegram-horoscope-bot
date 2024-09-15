@@ -1,10 +1,10 @@
 import logging
 import signal
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import datetime, tzinfo
-from datetime import timezone as dt_timezone
-from typing import Any, Callable, List, Optional, Self, cast
+from datetime import UTC, datetime, tzinfo
+from typing import Any, Self, cast
 
 from httpx import Client, HTTPStatusError, Response, TimeoutException
 from opentelemetry import trace
@@ -157,7 +157,7 @@ class Bot:
             span.set_attribute("telegram.user_id", user_id)
             time = datetime.fromtimestamp(
                 message["date"],
-                tz=dt_timezone.utc,
+                tz=UTC,
             ).astimezone(self._timezone)
             span.set_attribute("telegram.message_timestamp", time.isoformat())
             message_id = message["message_id"]
@@ -167,7 +167,7 @@ class Bot:
                 _LOG.debug("Not enabled in chat %d", chat_id)
                 return
 
-            dice: Optional[dict] = message.get("dice")
+            dice: dict | None = message.get("dice")
             if not dice:
                 _LOG.debug("Skipping non-dice message")
                 return
@@ -258,8 +258,8 @@ class Bot:
             )
 
     def _request_updates(
-        self, client: Client, last_update_id: Optional[int]
-    ) -> List[dict]:
+        self, client: Client, last_update_id: int | None
+    ) -> list[dict]:
         body = {
             "timeout": 10,
         }
@@ -289,7 +289,7 @@ class Bot:
             return []
 
     def _handle_updates(self, handler: Callable[[dict], None]):
-        last_update_id: Optional[int] = None
+        last_update_id: int | None = None
         client = Client()
         try:
             while not self._should_terminate:

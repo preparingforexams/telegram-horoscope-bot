@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime, tzinfo
 from pathlib import Path
-from typing import Optional
+from zoneinfo import ZoneInfo
 
 import sentry_sdk
 from bs_config import Env
@@ -14,7 +14,6 @@ from rate_limiter import (
     policy,
     repo,
 )
-from zoneinfo import ZoneInfo
 
 from horoscopebot.bot import Bot
 from horoscopebot.config import (
@@ -41,7 +40,7 @@ def _setup_logging():
     _LOG.level = logging.INFO
 
 
-def _setup_sentry(dsn: Optional[str], release: str):
+def _setup_sentry(dsn: str | None, release: str):
     if not dsn:
         _LOG.warning("Sentry DSN not found")
         return

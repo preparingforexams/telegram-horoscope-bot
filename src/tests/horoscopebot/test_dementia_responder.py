@@ -1,5 +1,5 @@
 import dataclasses
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import pytest
 from rate_limiter import Usage
@@ -17,14 +17,14 @@ def usage() -> Usage:
     return Usage(
         context_id="context",
         user_id="user",
-        time=datetime.now(timezone.utc),
+        time=datetime.now(UTC),
         reference_id="2",
         response_id="5",
     )
 
 
 def test_ten_minute_rule(responder: DementiaResponder, usage):
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     usage = dataclasses.replace(usage, time=usage.time - timedelta(minutes=5))
     response = responder.create_response(
         10,
@@ -36,7 +36,7 @@ def test_ten_minute_rule(responder: DementiaResponder, usage):
 
 
 def test_ten_minute_rule_too_long(responder: DementiaResponder, usage):
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     usage = dataclasses.replace(usage, time=usage.time - timedelta(minutes=11))
     response = responder.create_response(
         10,

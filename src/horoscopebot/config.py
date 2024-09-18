@@ -1,8 +1,32 @@
+import logging
 from dataclasses import dataclass
 from enum import Enum
 from typing import Self
 
 from bs_config import Env
+
+_LOG = logging.getLogger(__name__)
+
+
+@dataclass
+class DatabaseConfig:
+    db_host: str
+    db_name: str
+    db_user: str
+    db_password: str
+
+    @classmethod
+    def from_env(cls, env: Env) -> Self | None:
+        try:
+            return cls(
+                db_host=env.get_string("HOST", required=True),
+                db_name=env.get_string("NAME", required=True),
+                db_user=env.get_string("USER", required=True),
+                db_password=env.get_string("PASSWORD", required=True),
+            )
+        except ValueError as e:
+            _LOG.warning("Could not load database config: %s", e)
+            return None
 
 
 class HoroscopeMode(Enum):
@@ -69,7 +93,7 @@ class EventPublisherConfig:
 @dataclass
 class RateLimitConfig:
     rate_limiter_type: str
-    rate_limit_file: str | None
+    db_config: DatabaseConfig | None
     admin_pass: bool
 
     @classmethod
@@ -79,7 +103,7 @@ class RateLimitConfig:
                 "RATE_LIMITER_TYPE",
                 default="actual",
             ),
-            rate_limit_file=env.get_string("RATE_LIMIT_FILE"),
+            db_config=DatabaseConfig.from_env(env.scoped("DB_")),
             admin_pass=env.get_bool("RATE_LIMIT_ADMIN_PASS", default=True),
         )
 

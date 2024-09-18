@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime, tzinfo
-from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import sentry_sdk
@@ -91,14 +90,21 @@ def _load_rate_limiter(timezone: tzinfo, config: RateLimitConfig) -> RateLimiter
                 repo=repo.InMemoryRateLimitingRepo(),
             )
 
-    rate_limit_file = config.rate_limit_file
+    db_config = config.db_config
     repository: RateLimitingRepo
 
-    if rate_limit_file is None:
+    if db_config is None:
         _LOG.warning("Using in-memory rate limiting repo")
         repository = repo.InMemoryRateLimitingRepo()
     else:
-        repository = repo.SqliteRateLimitingRepo.connect(Path(rate_limit_file))
+        repository = repo.PostgresRateLimitingRepo.connect(
+            host=db_config.db_host,
+            database=db_config.db_name,
+            username=db_config.db_user,
+            password=db_config.db_password,
+            min_connections=1,
+            max_connections=2,
+        )
 
     rate_policy: RateLimitingPolicy = policy.DailyLimitRateLimitingPolicy(limit=1)
     if config.admin_pass:

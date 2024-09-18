@@ -10,3 +10,8 @@ telegram:
 rateLimiter:
   # renovate: datasource=docker
   image: ghcr.io/preparingforexams/rate-limiter-migrations-sqlite:5.0.5
+postgres:
+  database: horoscope
+  user: prep-horoscope-bot.horoscope
+  service: born-postgres
+  namespace: born-postgres

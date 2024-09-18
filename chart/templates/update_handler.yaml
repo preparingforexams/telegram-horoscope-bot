@@ -20,17 +20,6 @@ spec:
   selector:
     matchLabels:
       app: {{ .Release.Name }}-update-handler
-  volumeClaimTemplates:
-    - apiVersion: v1
-      kind: PersistentVolumeClaim
-      metadata:
-        name: state
-      spec:
-        accessModes:
-          - ReadWriteOnce
-        resources:
-          requests:
-            storage: 1Gi
   template:
     metadata:
       labels:
@@ -48,12 +37,19 @@ spec:
       initContainers:
         - name: flyway
           image: {{ .Values.rateLimiter.image }}
-          volumeMounts:
-            - mountPath: /state
-              name: state
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-db-config
           env:
             - name: FLYWAY_URL
-              value: jdbc:sqlite:/state/usages.db
+              value: jdbc:postgresql://$(DB_HOST):5432/$(DB_NAME)
+            - name: FLYWAY_USER
+              value: $(DB_USER)
+            - name: FLYWAY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgres.user }}.{{ .Values.postgres.service }}.credentials.postgresql.acid.zalan.do
+                  key: password
       containers:
         - name: app
           image: {{ .Values.image.app }}:{{ .Values.appVersion }}
@@ -64,8 +60,6 @@ spec:
               cpu: 10m
               memory: 128Mi
           volumeMounts:
-            - mountPath: /state
-              name: state
             - mountPath: /gcp
               name: service-account
           env:
@@ -77,8 +71,11 @@ spec:
               value: {{ .Values.openai.gptModel }}
             - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
               value: https://api.honeycomb.io
-            - name: RATE_LIMIT_FILE
-              value: /state/usages.db
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgres.user }}.{{ .Values.postgres.service }}.credentials.postgresql.acid.zalan.do
+                  key: password
             - name: RATE_LIMIT_ADMIN_PASS
               value: "true"
             - name: GOOGLE_APPLICATION_CREDENTIALS
@@ -88,6 +85,8 @@ spec:
                 name: {{ .Release.Name }}-telegram
             - configMapRef:
                 name: {{ .Release.Name }}-gcp
+            - configMapRef:
+                name: {{ .Release.Name }}-db-config
             - secretRef:
                 name: {{ .Release.Name }}
 

@@ -106,10 +106,15 @@ def _load_rate_limiter(timezone: tzinfo, config: RateLimitConfig) -> RateLimiter
             max_connections=2,
         )
 
-    rate_policy: RateLimitingPolicy = policy.DailyLimitRateLimitingPolicy(limit=1)
-    if config.admin_pass:
-        _LOG.info("Admin pass is enabled")
-        rate_policy = UserPassPolicy(fallback=rate_policy, user_id=133399998)
+    _LOG.info(
+        "Admin pass is %s",
+        "enabled" if config.admin_pass else "disabled",
+    )
+    rate_policy: RateLimitingPolicy = UserPassPolicy(
+        fallback=policy.DailyLimitRateLimitingPolicy(limit=1),
+        user_id=133399998,
+        direct_chat_only=not config.admin_pass,
+    )
 
     return RateLimiter(
         policy=rate_policy,

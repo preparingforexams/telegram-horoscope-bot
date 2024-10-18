@@ -25,7 +25,7 @@ opentelemetry-sdk = "~1.27"
 opentelemetry-exporter-otlp-proto-grpc = "~1.27"
 opentelemetry-instrumentation-httpx = "*"
 opentelemetry-instrumentation-logging = "*"
-python = "~3.13"
+python = "~3.12"
 prep-rate-limiter = { version = "5.1.0", extras = ["postgres", "opentelemetry-postgres"], source = "internal" }
 sentry-sdk = "^2.0.0"
 tzdata = "2024.2"

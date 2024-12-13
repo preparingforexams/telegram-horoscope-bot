@@ -141,7 +141,7 @@ class Config:
     def from_env(cls, env: Env) -> Self:
         return cls(
             app_version=env.get_string(
-                "BUILD_SHA",
+                "APP_VERSION",
                 default="debug",
             ),
             enable_telemetry=env.get_bool(

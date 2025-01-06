@@ -20,7 +20,7 @@ dependencies = [
     "opentelemetry-exporter-otlp-proto-grpc ==1.29.*",
     "opentelemetry-instrumentation-httpx",
     "opentelemetry-instrumentation-logging",
-    "prep-rate-limiter [postgres,opentelemetry-postgres] ==6.1.0",
+    "prep-rate-limiter [postgres,opentelemetry-postgres] ==7.0.0",
     "sentry-sdk >=2.0.0, <3.0.0",
     "tzdata ==2024.2",
 ]

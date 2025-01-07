@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, tzinfo
+from datetime import datetime, tzinfo, timedelta
 from zoneinfo import ZoneInfo
 
 import sentry_sdk
@@ -120,6 +120,7 @@ def _load_rate_limiter(timezone: tzinfo, config: RateLimitConfig) -> RateLimiter
         policy=rate_policy,
         repo=repository,
         timezone=timezone,
+        retention_time=timedelta(days=7),
     )
 
 
@@ -136,6 +137,10 @@ def main():
     event_publisher = _load_event_publisher(config.event_publisher)
     rate_limiter = _load_rate_limiter(timezone, config.rate_limit)
 
+    _LOG.info("Doing housekeeping of rate limiter DB")
+    rate_limiter.do_housekeeping()
+
+    _LOG.info("Launching bot")
     bot = Bot(
         config.telegram,
         horoscope=horoscope,
@@ -143,7 +148,6 @@ def main():
         rate_limiter=rate_limiter,
         timezone=timezone,
     )
-    _LOG.info("Launching bot...")
     bot.run()
 
 

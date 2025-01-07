@@ -15,7 +15,7 @@ metadata:
     app: {{ .Release.Name }}-update-handler
 spec:
   replicas: 1
-  revisionHistoryLimit: 1
+  revisionHistoryLimit: 0
   serviceName: {{ .Release.Name }}-update-handler
   selector:
     matchLabels:
@@ -25,6 +25,7 @@ spec:
       labels:
         app: {{ .Release.Name }}-update-handler
     spec:
+      serviceAccountName: {{ .Release.Name }}
       volumes:
         - name: service-account
           secret:
@@ -33,10 +34,17 @@ spec:
               - key: GSA_JSON
                 path: ./gsa.json
       securityContext:
-        fsGroup: 500
+        runAsNonRoot: true
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       initContainers:
         - name: flyway
           image: {{ .Values.rateLimiter.image }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
           envFrom:
             - configMapRef:
                 name: {{ .Release.Name }}-db-config
@@ -53,6 +61,10 @@ spec:
       containers:
         - name: app
           image: {{ .Values.image.app }}:{{ .Values.appVersion }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ ALL ]
           resources:
             limits:
               cpu: 1000m
@@ -62,6 +74,7 @@ spec:
           volumeMounts:
             - mountPath: /gcp
               name: service-account
+              readOnly: true
           env:
             - name: ENABLE_TELEMETRY
               value: "true"

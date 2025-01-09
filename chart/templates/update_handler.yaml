@@ -46,18 +46,15 @@ spec:
             capabilities:
               drop: [ALL]
           envFrom:
-            - configMapRef:
-                name: {{ .Release.Name }}-db-config
+            - secretRef:
+                name: {{ .Release.Name }}-db-secrets
           env:
             - name: FLYWAY_URL
               value: jdbc:postgresql://$(DB_HOST):5432/$(DB_NAME)
             - name: FLYWAY_USER
               value: $(DB_USER)
             - name: FLYWAY_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.postgres.user }}.{{ .Values.postgres.service }}.credentials.postgresql.acid.zalan.do
-                  key: password
+              value: $(DB_PASSWORD)
       containers:
         - name: app
           image: {{ .Values.image.app }}:{{ .Values.appVersion }}
@@ -84,11 +81,6 @@ spec:
               value: {{ .Values.openai.gptModel }}
             - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
               value: https://api.honeycomb.io
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.postgres.user }}.{{ .Values.postgres.service }}.credentials.postgresql.acid.zalan.do
-                  key: password
             - name: RATE_LIMIT_ADMIN_PASS
               value: "false"
             - name: GOOGLE_APPLICATION_CREDENTIALS
@@ -98,8 +90,8 @@ spec:
                 name: {{ .Release.Name }}-telegram
             - configMapRef:
                 name: {{ .Release.Name }}-gcp
-            - configMapRef:
-                name: {{ .Release.Name }}-db-config
+            - secretRef:
+                name: {{ .Release.Name }}-db-secrets
             - secretRef:
                 name: {{ .Release.Name }}
 

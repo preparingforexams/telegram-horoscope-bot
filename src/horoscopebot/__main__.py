@@ -22,14 +22,19 @@ from horoscopebot.config import (
     HoroscopeMode,
     RateLimitConfig,
 )
-from horoscopebot.dementia_responder import DayDementiaResponder, DementiaResponder
+from horoscopebot.dementia_responder import (
+    DayDementiaResponder,
+    DementiaResponder,
+    WeekDementiaResponder,
+)
 from horoscopebot.event.publisher import EventPublisher
 from horoscopebot.event.pubsub import PubSubEventPublisher
 from horoscopebot.event.stub import StubEventPublisher
 from horoscopebot.horoscope.horoscope import Horoscope
 from horoscopebot.horoscope.openai_chat import OpenAiChatHoroscope
 from horoscopebot.horoscope.steffen import SteffenHoroscope
-from horoscopebot.rate_limit_policy import UserPassPolicy
+from horoscopebot.horoscope.weekly_openai import WeeklyOpenAiHoroscope
+from horoscopebot.rate_limit_policy import UserPassPolicy, WeeklyLimitPolicy
 from horoscopebot.tracing import setup_tracing
 
 _LOG = logging.getLogger(__package__)
@@ -56,6 +61,8 @@ def _load_horoscope(config: HoroscopeConfig) -> Horoscope:
         return SteffenHoroscope()
     elif config.mode == HoroscopeMode.OpenAiChat:
         return OpenAiChatHoroscope(config.openai)  # type:ignore
+    elif config.mode == HoroscopeMode.OpenAiWeekly:
+        return WeeklyOpenAiHoroscope(config.openai)  # type: ignore
     else:
         raise ValueError()
 
@@ -84,7 +91,9 @@ class _StubRateLimitPolicy(RateLimitingPolicy):
 
 
 def _load_rate_limiter(
-    timezone: tzinfo, config: RateLimitConfig
+    timezone: tzinfo,
+    config: RateLimitConfig,
+    is_weekly: bool,
 ) -> tuple[RateLimiter, DementiaResponder]:
     match config.rate_limiter_type:
         case "stub":
@@ -113,18 +122,30 @@ def _load_rate_limiter(
         "Admin pass is %s",
         "enabled" if config.admin_pass else "disabled",
     )
-    rate_policy: RateLimitingPolicy = UserPassPolicy(
-        fallback=policy.DailyLimitRateLimitingPolicy(limit=1),
+    rate_policy: RateLimitingPolicy
+    if is_weekly:
+        rate_policy = WeeklyLimitPolicy()
+    else:
+        rate_policy = policy.DailyLimitRateLimitingPolicy(limit=1)
+
+    rate_policy = UserPassPolicy(
+        fallback=rate_policy,
         user_id=133399998,
         direct_chat_only=not config.admin_pass,
     )
+
+    dementia_responder: DementiaResponder
+    if is_weekly:
+        dementia_responder = WeekDementiaResponder()
+    else:
+        dementia_responder = DayDementiaResponder()
 
     return RateLimiter(
         policy=rate_policy,
         repo=repository,
         timezone=timezone,
         retention_time=timedelta(days=7),
-    ), DayDementiaResponder()
+    ), dementia_responder
 
 
 def main():
@@ -138,7 +159,11 @@ def main():
 
     horoscope = _load_horoscope(config.horoscope)
     event_publisher = _load_event_publisher(config.event_publisher)
-    rate_limiter, dementia_responder = _load_rate_limiter(timezone, config.rate_limit)
+    rate_limiter, dementia_responder = _load_rate_limiter(
+        timezone,
+        config.rate_limit,
+        is_weekly=config.horoscope == HoroscopeMode.OpenAiWeekly,
+    )
 
     _LOG.info("Doing housekeeping of rate limiter DB")
     rate_limiter.do_housekeeping()

@@ -124,7 +124,7 @@ class WeeklyOpenAiHoroscope(Horoscope):
                 user_id,
                 prompt,
                 temperature=1.1,
-                max_tokens=200,
+                max_tokens=300,
                 frequency_penalty=0,
                 presence_penalty=0,
             )

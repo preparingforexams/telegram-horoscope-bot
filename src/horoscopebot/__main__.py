@@ -22,6 +22,7 @@ from horoscopebot.config import (
     HoroscopeMode,
     RateLimitConfig,
 )
+from horoscopebot.dementia_responder import DayDementiaResponder, DementiaResponder
 from horoscopebot.event.publisher import EventPublisher
 from horoscopebot.event.pubsub import PubSubEventPublisher
 from horoscopebot.event.stub import StubEventPublisher
@@ -82,13 +83,15 @@ class _StubRateLimitPolicy(RateLimitingPolicy):
         return None
 
 
-def _load_rate_limiter(timezone: tzinfo, config: RateLimitConfig) -> RateLimiter:
+def _load_rate_limiter(
+    timezone: tzinfo, config: RateLimitConfig
+) -> tuple[RateLimiter, DementiaResponder]:
     match config.rate_limiter_type:
         case "stub":
             return RateLimiter(
                 policy=_StubRateLimitPolicy(),
                 repo=repo.InMemoryRateLimitingRepo(),
-            )
+            ), DayDementiaResponder()
 
     db_config = config.db_config
     repository: RateLimitingRepo
@@ -121,7 +124,7 @@ def _load_rate_limiter(timezone: tzinfo, config: RateLimitConfig) -> RateLimiter
         repo=repository,
         timezone=timezone,
         retention_time=timedelta(days=7),
-    )
+    ), DayDementiaResponder()
 
 
 def main():
@@ -135,7 +138,7 @@ def main():
 
     horoscope = _load_horoscope(config.horoscope)
     event_publisher = _load_event_publisher(config.event_publisher)
-    rate_limiter = _load_rate_limiter(timezone, config.rate_limit)
+    rate_limiter, dementia_responder = _load_rate_limiter(timezone, config.rate_limit)
 
     _LOG.info("Doing housekeeping of rate limiter DB")
     rate_limiter.do_housekeeping()
@@ -146,6 +149,7 @@ def main():
         horoscope=horoscope,
         event_publisher=event_publisher,
         rate_limiter=rate_limiter,
+        dementia_responder=dementia_responder,
         timezone=timezone,
     )
     bot.run()

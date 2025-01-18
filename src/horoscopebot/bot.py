@@ -12,7 +12,7 @@ from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor
 from rate_limiter import RateLimiter
 
 from horoscopebot.config import TelegramConfig
-from horoscopebot.dementia_responder import DementiaResponder
+from horoscopebot.dementia_responder import DayDementiaResponder, DementiaResponder
 from horoscopebot.event.publisher import Event, EventPublisher, EventPublishingException
 from horoscopebot.horoscope.horoscope import Horoscope, HoroscopeResult
 
@@ -58,7 +58,7 @@ class Bot:
         self._event_publisher = event_publisher
         self._rate_limiter = rate_limiter
         self._timezone = timezone
-        self._dementia_responder = DementiaResponder()
+        self._dementia_responder: DementiaResponder = DayDementiaResponder()
         self._session = Client()
         HTTPXClientInstrumentor().instrument_client(self._session)
         self._should_terminate = False

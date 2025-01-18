@@ -1,4 +1,5 @@
 import logging
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
@@ -13,7 +14,18 @@ class Response:
     reply_message_id: int | None = None
 
 
-class DementiaResponder:
+class DementiaResponder(ABC):
+    @abstractmethod
+    def create_response(
+        self,
+        current_message_id: int,
+        current_message_time: datetime,
+        usage: Usage,
+    ) -> Response:
+        pass
+
+
+class DayDementiaResponder(DementiaResponder):
     def create_response(
         self,
         current_message_id: int,

@@ -144,7 +144,7 @@ def _load_rate_limiter(
         policy=rate_policy,
         repo=repository,
         timezone=timezone,
-        retention_time=timedelta(days=7),
+        retention_time=timedelta(days=14),
     ), dementia_responder
 
 

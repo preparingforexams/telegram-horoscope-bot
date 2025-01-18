@@ -76,7 +76,7 @@ spec:
             - name: ENABLE_TELEMETRY
               value: "true"
             - name: HOROSCOPE_MODE
-              value: openai_chat
+              value: openai_weekly
             - name: OPENAI_MODEL
               value: {{ .Values.openai.gptModel }}
             - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT

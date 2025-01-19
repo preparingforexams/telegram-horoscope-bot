@@ -162,7 +162,7 @@ def main():
     rate_limiter, dementia_responder = _load_rate_limiter(
         timezone,
         config.rate_limit,
-        is_weekly=config.horoscope == HoroscopeMode.OpenAiWeekly,
+        is_weekly=config.horoscope.mode == HoroscopeMode.OpenAiWeekly,
     )
 
     _LOG.info("Doing housekeeping of rate limiter DB")

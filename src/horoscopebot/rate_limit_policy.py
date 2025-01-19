@@ -37,7 +37,7 @@ class WeeklyLimitPolicy(RateLimitingPolicy):
 
         monday = (at_time - timedelta(days=at_time.weekday())).date()
         for usage in last_usages:
-            if usage.time >= monday:
+            if usage.time.date() >= monday:
                 _LOG.info("DENY: Usage within this week")
                 return usage
 

@@ -99,6 +99,7 @@ class Bot:
         image: bytes | None = None,
     ) -> dict:
         parsing_conf = {"parse_mode": "HTML"} if use_html_parsing else {}
+        _LOG.info("Sending message with text length %d", len(text))
         if image is None:
             response = self._session.post(
                 self._build_url("sendMessage"),

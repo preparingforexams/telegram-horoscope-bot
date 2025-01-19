@@ -7,6 +7,16 @@ from rate_limiter import Usage
 
 _LOG = logging.getLogger(__name__)
 
+_DAY_NAMES = [
+    "Montag",
+    "Dienstag",
+    "Mittwoch",
+    "Donnerstag",
+    "Freitag",
+    "Samstag",
+    "Sonntag",
+]
+
 
 @dataclass
 class Response:
@@ -47,7 +57,21 @@ class WeekDementiaResponder(DementiaResponder):
 
         reply_message_id = response_message_id or message_id
         if reply_message_id:
-            text = "Du hast dein Schicksal für diese Woche schon erfahren!"
+            weekday = usage.time.weekday()
+            day_name = _DAY_NAMES[weekday]
+            text = (
+                f"Du hast dein Schicksal für diese Woche schon am {day_name} erfahren!"
+            )
+
+            match current_message_time.weekday() - weekday:
+                case 0:
+                    text = (
+                        "Du hast dein Schicksal für diese Woche vorhin schon erfahren!"
+                    )
+                case 1:
+                    text = (
+                        "Du hast dein Schicksal für diese Woche gestern schon erfahren!"
+                    )
 
             return Response(
                 text,

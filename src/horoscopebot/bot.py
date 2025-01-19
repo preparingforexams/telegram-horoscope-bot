@@ -90,6 +90,25 @@ class Bot:
             return body["result"]
         raise ValueError(f"Body was not ok! {body}")
 
+    @staticmethod
+    def _split_text(text: str, first_limit: int) -> list[str]:
+        chunks = []
+        remaining = text
+        limit = first_limit
+        while remaining:
+            if len(remaining) <= limit:
+                chunks.append(remaining)
+                break
+
+            end_index = limit
+            while not remaining[end_index - 1].isspace():
+                end_index -= 1
+            chunks.append(remaining[:end_index])
+            remaining = remaining[end_index:]
+            limit = 4096
+
+        return chunks
+
     def _send_message(
         self,
         chat_id: int,
@@ -100,11 +119,15 @@ class Bot:
     ) -> dict:
         parsing_conf = {"parse_mode": "HTML"} if use_html_parsing else {}
         _LOG.info("Sending message with text length %d", len(text))
+
+        text_limit = 4096 if image is None else 1024
+        text_parts = self._split_text(text, first_limit=text_limit)
+
         if image is None:
             response = self._session.post(
                 self._build_url("sendMessage"),
                 json={
-                    "text": text,
+                    "text": text_parts[0],
                     "chat_id": chat_id,
                     "reply_to_message_id": reply_to_message_id,
                     **parsing_conf,
@@ -114,7 +137,7 @@ class Bot:
             response = self._session.post(
                 self._build_url("sendPhoto"),
                 data={
-                    "caption": text,
+                    "caption": text_parts[0],
                     "chat_id": chat_id,
                     "reply_to_message_id": reply_to_message_id,
                     **parsing_conf,
@@ -127,6 +150,17 @@ class Bot:
 
         if reply_to_message_id is not None and response.status_code == 400:
             raise ReplyMessageGoneException(reply_to_message_id)
+
+        if response.is_success:
+            for text_part in text_parts[1:]:
+                self._session.post(
+                    self._build_url("sendMessage"),
+                    json={
+                        "text": text_part,
+                        "chat_id": chat_id,
+                        **parsing_conf,
+                    },
+                )
 
         return self._get_actual_body(response)
 

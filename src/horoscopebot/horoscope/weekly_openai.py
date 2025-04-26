@@ -242,7 +242,11 @@ class WeeklyOpenAiHoroscope(Horoscope):
             _LOG.error("An error occurred during image generation", exc_info=e)
             return None
 
-        url = ai_response.data[0].url
+        data = ai_response.data
+        if data is None:
+            raise ValueError("Did not receive data as response")
+
+        url = data[0].url
 
         if not url:
             raise ValueError("Did not receive URL as response")

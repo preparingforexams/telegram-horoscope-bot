@@ -38,21 +38,17 @@ class HoroscopeMode(Enum):
 @dataclass
 class OpenAiConfig:
     debug_mode: bool
+    image_model_name: str
     model_name: str
     token: str
 
     @classmethod
     def from_env(cls, env: Env) -> Self:
-        token = env.get_string("OPENAI_TOKEN")
-        model_name = env.get_string("OPENAI_MODEL")
-
-        if not (token and model_name):
-            raise ValueError("Missing config values")
-
         return cls(
-            debug_mode=env.get_bool("OPENAI_DEBUG", default=False),
-            token=token,
-            model_name=model_name,
+            debug_mode=env.get_bool("DEBUG", default=False),
+            token=env.get_string("TOKEN", required=True),
+            image_model_name=env.get_string("IMAGE_MODEL", required=True),
+            model_name=env.get_string("MODEL", required=True),
         )
 
 
@@ -66,7 +62,7 @@ class HoroscopeConfig:
         mode = HoroscopeMode(env.get_string("HOROSCOPE_MODE", default="steffen"))
 
         if mode in [HoroscopeMode.OpenAiChat, HoroscopeMode.OpenAiWeekly]:
-            openai = OpenAiConfig.from_env(env)
+            openai = OpenAiConfig.from_env(env.scoped("OPENAI_"))
         else:
             openai = None
 

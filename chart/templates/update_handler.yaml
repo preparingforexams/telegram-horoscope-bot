@@ -79,6 +79,8 @@ spec:
               value: openai_weekly
             - name: OPENAI_MODEL
               value: {{ .Values.openai.gptModel }}
+            - name: OPENAI_IMAGE_MODEL
+              value: {{ .Values.openai.imageModel }}
             - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
               value: https://api.honeycomb.io
             - name: RATE_LIMIT_ADMIN_PASS

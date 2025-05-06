@@ -77,6 +77,7 @@ class WeeklyOpenAiHoroscope(Horoscope):
     def __init__(self, config: OpenAiConfig):
         self._debug_mode = config.debug_mode
         self._model_name = config.model_name
+        self._image_model_name = config.image_model_name
         self._http_client = httpx.Client(timeout=20)
         HTTPXClientInstrumentor().instrument_client(self._http_client)
         self._open_ai = OpenAI(api_key=config.token, http_client=self._http_client)
@@ -227,7 +228,7 @@ class WeeklyOpenAiHoroscope(Horoscope):
         _LOG.info("Requesting image with prompt %s", prompt)
         try:
             ai_response = self._open_ai.images.generate(
-                model="dall-e-3",
+                model=self._image_model_name,
                 prompt=prompt,
                 size="1024x1024",
                 response_format="url",

@@ -3,6 +3,7 @@ image:
   app: ghcr.io/preparingforexams/telegram-horoscope-bot
 openai:
   gptModel: gpt-4.1-2025-04-14
+  imageModel: dall-e-3
 telegram:
   enabledChats:
     - "133399998"

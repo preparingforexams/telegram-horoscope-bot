@@ -1,3 +1,4 @@
+import base64
 import logging
 from collections.abc import Sequence
 from dataclasses import dataclass
@@ -5,7 +6,6 @@ from datetime import datetime
 from typing import cast
 
 import httpx
-from httpx import RequestError
 from openai import BadRequestError, OpenAI, OpenAIError
 from openai.types.chat import ChatCompletionMessageParam
 from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor
@@ -77,7 +77,9 @@ class WeeklyOpenAiHoroscope(Horoscope):
     def __init__(self, config: OpenAiConfig):
         self._debug_mode = config.debug_mode
         self._model_name = config.model_name
+        self._image_moderation_level = config.image_moderation_level
         self._image_model_name = config.image_model_name
+        self._image_quality = config.image_quality
         self._http_client = httpx.Client(timeout=20)
         HTTPXClientInstrumentor().instrument_client(self._http_client)
         self._open_ai = OpenAI(api_key=config.token, http_client=self._http_client)
@@ -229,9 +231,10 @@ class WeeklyOpenAiHoroscope(Horoscope):
         try:
             ai_response = self._open_ai.images.generate(
                 model=self._image_model_name,
+                quality=self._image_quality,
+                moderation=self._image_moderation_level,
                 prompt=prompt,
                 size="1024x1024",
-                response_format="url",
             )
         except BadRequestError as e:
             # Only ever saw this because of their profanity filter. Of course the error
@@ -247,22 +250,9 @@ class WeeklyOpenAiHoroscope(Horoscope):
         if data is None:
             raise ValueError("Did not receive data as response")
 
-        url = data[0].url
+        base64_data = data[0].b64_json
 
-        if not url:
-            raise ValueError("Did not receive URL as response")
+        if not base64_data:
+            raise ValueError("Did not receive image in response")
 
-        try:
-            response = self._http_client.get(url, timeout=60)
-        except RequestError as e:
-            _LOG.error("Could not request generated image", exc_info=e)
-            return None
-
-        if response.status_code >= 400:
-            _LOG.error(
-                "Got unsuccessful response %d when trying to get image",
-                response.status_code,
-            )
-            return None
-
-        return response.content
+        return base64.b64decode(base64_data)

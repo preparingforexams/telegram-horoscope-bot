@@ -1,7 +1,7 @@
 import logging
 from dataclasses import dataclass
 from enum import Enum
-from typing import Self
+from typing import Literal, Self, cast
 
 from bs_config import Env
 
@@ -35,12 +35,30 @@ class HoroscopeMode(Enum):
     Steffen = "steffen"
 
 
+type OpenAiImageQuality = Literal["low", "medium", "high"]
+type OpenAiModerationLevel = Literal["auto", "low"]
+
+
 @dataclass
 class OpenAiConfig:
     debug_mode: bool
     image_model_name: str
+    image_moderation_level: OpenAiModerationLevel
+    image_quality: OpenAiImageQuality
     model_name: str
     token: str
+
+    @staticmethod
+    def _validate_image_quality(value: str) -> OpenAiImageQuality:
+        if value not in ["low", "medium", "high"]:
+            raise ValueError(f"Invalid image quality: {value}")
+        return cast(OpenAiImageQuality, value)
+
+    @staticmethod
+    def _validate_image_moderation_level(value: str) -> OpenAiModerationLevel:
+        if value not in ["low", "auto"]:
+            raise ValueError(f"Invalid image moderation level: {value}")
+        return cast(OpenAiModerationLevel, value)
 
     @classmethod
     def from_env(cls, env: Env) -> Self:
@@ -48,6 +66,12 @@ class OpenAiConfig:
             debug_mode=env.get_bool("DEBUG", default=False),
             token=env.get_string("TOKEN", required=True),
             image_model_name=env.get_string("IMAGE_MODEL", required=True),
+            image_moderation_level=cls._validate_image_moderation_level(
+                env.get_string("IMAGE_MODERATION_LEVEL", default="low"),
+            ),
+            image_quality=cls._validate_image_quality(
+                env.get_string("IMAGE_QUALITY", default="medium"),
+            ),
             model_name=env.get_string("MODEL", required=True),
         )
 

@@ -10,7 +10,7 @@ telegram:
     - "-1001725586482"
 rateLimiter:
   # renovate: datasource=docker
-  image: ghcr.io/preparingforexams/rate-limiter-migrations-postgres:7.0.5
+  image: ghcr.io/preparingforexams/rate-limiter-migrations-postgres:7.0.6
 postgres:
   database: horoscope
   user: prep-horoscope-bot.horoscope

@@ -97,21 +97,6 @@ class HoroscopeConfig:
 
 
 @dataclass
-class EventPublisherConfig:
-    mode: str
-    project_id: str | None
-    topic_name: str | None
-
-    @classmethod
-    def from_env(cls, env: Env) -> Self:
-        return cls(
-            mode=env.get_string("EVENT_PUBLISHER_MODE", default="stub"),
-            project_id=env.get_string("GOOGLE_CLOUD_PROJECT"),
-            topic_name=env.get_string("PUBSUB_HOROSCOPE_TOPIC"),
-        )
-
-
-@dataclass
 class RateLimitConfig:
     rate_limiter_type: str
     db_config: DatabaseConfig | None
@@ -153,7 +138,6 @@ class Config:
     enable_telemetry: bool
     timezone_name: str
     horoscope: HoroscopeConfig
-    event_publisher: EventPublisherConfig
     rate_limit: RateLimitConfig
     sentry_dsn: str | None
     telegram: TelegramConfig
@@ -174,7 +158,6 @@ class Config:
                 default="Europe/Berlin",
             ),
             horoscope=HoroscopeConfig.from_env(env),
-            event_publisher=EventPublisherConfig.from_env(env),
             rate_limit=RateLimitConfig.from_env(env),
             sentry_dsn=env.get_string("SENTRY_DSN"),
             telegram=TelegramConfig.from_env(env),

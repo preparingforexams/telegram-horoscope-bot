@@ -17,7 +17,6 @@ from rate_limiter import (
 from horoscopebot.bot import Bot
 from horoscopebot.config import (
     Config,
-    EventPublisherConfig,
     HoroscopeConfig,
     HoroscopeMode,
     RateLimitConfig,
@@ -27,9 +26,6 @@ from horoscopebot.dementia_responder import (
     DementiaResponder,
     WeekDementiaResponder,
 )
-from horoscopebot.event.publisher import EventPublisher
-from horoscopebot.event.pubsub import PubSubEventPublisher
-from horoscopebot.event.stub import StubEventPublisher
 from horoscopebot.horoscope.horoscope import Horoscope
 from horoscopebot.horoscope.openai_chat import OpenAiChatHoroscope
 from horoscopebot.horoscope.steffen import SteffenHoroscope
@@ -65,16 +61,6 @@ def _load_horoscope(config: HoroscopeConfig) -> Horoscope:
         return WeeklyOpenAiHoroscope(config.openai)  # type: ignore
     else:
         raise ValueError()
-
-
-def _load_event_publisher(config: EventPublisherConfig) -> EventPublisher:
-    if config.mode == "stub":
-        _LOG.warning("Using stub event publisher")
-        return StubEventPublisher()
-    elif config.mode == "pubsub":
-        return PubSubEventPublisher(config)
-    else:
-        raise ValueError(f"Unknown mode {config.mode}")
 
 
 class _StubRateLimitPolicy(RateLimitingPolicy):
@@ -158,7 +144,6 @@ def main():
     timezone = ZoneInfo("Europe/Berlin")
 
     horoscope = _load_horoscope(config.horoscope)
-    event_publisher = _load_event_publisher(config.event_publisher)
     rate_limiter, dementia_responder = _load_rate_limiter(
         timezone,
         config.rate_limit,
@@ -172,7 +157,6 @@ def main():
     bot = Bot(
         config.telegram,
         horoscope=horoscope,
-        event_publisher=event_publisher,
         rate_limiter=rate_limiter,
         dementia_responder=dementia_responder,
         timezone=timezone,

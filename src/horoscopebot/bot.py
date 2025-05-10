@@ -2,7 +2,6 @@ import logging
 import signal
 import time
 from collections.abc import Callable
-from dataclasses import dataclass
 from datetime import UTC, datetime, tzinfo
 from typing import Any, Self, cast
 
@@ -13,7 +12,6 @@ from rate_limiter import RateLimiter
 
 from horoscopebot.config import TelegramConfig
 from horoscopebot.dementia_responder import DementiaResponder
-from horoscopebot.event.publisher import Event, EventPublisher, EventPublishingException
 from horoscopebot.horoscope.horoscope import Horoscope, HoroscopeResult
 
 _LOG = logging.getLogger(__name__)
@@ -37,26 +35,17 @@ class ReplyMessageGoneException(Exception):
     pass
 
 
-@dataclass
-class HoroscopeEvent(Event):
-    message_id: int
-    user_id: int
-    horoscope: str
-
-
 class Bot:
     def __init__(
         self,
         config: TelegramConfig,
         horoscope: Horoscope,
-        event_publisher: EventPublisher,
         rate_limiter: RateLimiter,
         dementia_responder: DementiaResponder,
         timezone: tzinfo,
     ):
         self.config = config
         self.horoscope = horoscope
-        self._event_publisher = event_publisher
         self._rate_limiter = rate_limiter
         self._timezone = timezone
         self._dementia_responder = dementia_responder
@@ -164,12 +153,6 @@ class Bot:
 
         return self._get_actual_body(response)
 
-    def _publish_horoscope_event(self, event: HoroscopeEvent):
-        try:
-            self._event_publisher.publish(event)
-        except EventPublishingException as e:
-            _LOG.error("Could not publish event", exc_info=e)
-
     @staticmethod
     def _is_lemons(dice: int) -> bool:
         return dice == 43
@@ -276,14 +259,6 @@ class Bot:
 
                 response_message_id = response_message["message_id"]
                 response_id = str(response_message_id)
-                self._publish_horoscope_event(
-                    HoroscopeEvent(
-                        chat_id=chat_id,
-                        user_id=user_id,
-                        message_id=response_message_id,
-                        horoscope=horoscope_result.message,
-                    )
-                )
 
             self._rate_limiter.add_usage(
                 context_id=chat_id,

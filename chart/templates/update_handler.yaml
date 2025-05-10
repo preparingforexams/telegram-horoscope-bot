@@ -26,10 +26,6 @@ spec:
         app: {{ .Release.Name }}-update-handler
     spec:
       serviceAccountName: {{ .Release.Name }}
-      volumes:
-        - name: service-account
-          secret:
-            secretName: {{ .Release.Name }}-gcp
       securityContext:
         runAsNonRoot: true
         fsGroup: 1000
@@ -65,10 +61,6 @@ spec:
             requests:
               cpu: 10m
               memory: 128Mi
-          volumeMounts:
-            - mountPath: /gcp
-              name: service-account
-              readOnly: true
           env:
             - name: ENABLE_TELEMETRY
               value: "true"
@@ -82,13 +74,9 @@ spec:
               value: https://api.honeycomb.io
             - name: RATE_LIMIT_ADMIN_PASS
               value: "false"
-            - name: GOOGLE_APPLICATION_CREDENTIALS
-              value: /gcp/gsa.json
           envFrom:
             - configMapRef:
                 name: {{ .Release.Name }}-telegram
-            - configMapRef:
-                name: {{ .Release.Name }}-gcp
             - secretRef:
                 name: {{ .Release.Name }}-db-secrets
             - secretRef:

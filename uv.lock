@@ -149,7 +149,7 @@ requires-dist = [
     { name = "bs-config", extras = ["dotenv"], specifier = "==1.1.1", index = "https://pypi.bjoernpetersen.net/" },
     { name = "deprecated", specifier = ">=1.0.0,<2.0.0" },
     { name = "httpx", specifier = "==0.28.*" },
-    { name = "openai", specifier = "==1.79.*" },
+    { name = "openai", specifier = "==1.80.*" },
     { name = "opentelemetry-api", specifier = "==1.33.*" },
     { name = "opentelemetry-exporter-otlp-proto-grpc", specifier = "==1.33.*" },
     { name = "opentelemetry-instrumentation-httpx" },
@@ -280,7 +280,7 @@ wheels = [
 
 [[package]]
 name = "openai"
-version = "1.79.0"
+version = "1.80.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -292,9 +292,9 @@ dependencies = [
     { name = "tqdm" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/52/cf/4901077dbbfd0d82a814d721600fa0c3a61a093d7f0bf84d0e4732448dc9/openai-1.79.0.tar.gz", hash = "sha256:e3b627aa82858d3e42d16616edc22aa9f7477ee5eb3e6819e9f44a961d899a4c", size = 444736, upload-time = "2025-05-16T19:49:59.738Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/23/9a/b47f1b91a030e8f7d1a37fbfb1c123b81e0a8896579cf80e17599434dcef/openai-1.80.0.tar.gz", hash = "sha256:65b9b0442e8d3bee49857e92ee7b873dfcebbac52b9451fe80d451adfac98b90", size = 450620, upload-time = "2025-05-21T16:40:45.778Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/81/d2/e3992bb7c6641b765c1008e3c96e076e0b50381be2cce344e6ff177bad80/openai-1.79.0-py3-none-any.whl", hash = "sha256:d5050b92d5ef83f869cb8dcd0aca0b2291c3413412500eec40c66981b3966992", size = 683334, upload-time = "2025-05-16T19:49:57.445Z" },
+    { url = "https://files.pythonhosted.org/packages/a6/bd/e01b0a2bef27addbe521b505fbea0f416ff3408fba7afb66236aee1f8bf0/openai-1.80.0-py3-none-any.whl", hash = "sha256:c436bf636327245ebae3246a78c7adc5adf81c04ae8699fec580c7fd21b08cdf", size = 701430, upload-time = "2025-05-21T16:40:43.569Z" },
 ]
 
 [[package]]

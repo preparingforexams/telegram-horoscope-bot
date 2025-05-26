@@ -27,8 +27,6 @@ from horoscopebot.dementia_responder import (
     WeekDementiaResponder,
 )
 from horoscopebot.horoscope.horoscope import Horoscope
-from horoscopebot.horoscope.openai_chat import OpenAiChatHoroscope
-from horoscopebot.horoscope.steffen import SteffenHoroscope
 from horoscopebot.horoscope.weekly_openai import WeeklyOpenAiHoroscope
 from horoscopebot.rate_limit_policy import UserPassPolicy, WeeklyLimitPolicy
 from horoscopebot.tracing import setup_tracing
@@ -53,14 +51,11 @@ def _setup_sentry(dsn: str | None, release: str):
 
 
 def _load_horoscope(config: HoroscopeConfig) -> Horoscope:
-    if config.mode == HoroscopeMode.Steffen:
-        return SteffenHoroscope()
-    elif config.mode == HoroscopeMode.OpenAiChat:
-        return OpenAiChatHoroscope(config.openai)  # type:ignore
-    elif config.mode == HoroscopeMode.OpenAiWeekly:
-        return WeeklyOpenAiHoroscope(config.openai)  # type: ignore
-    else:
-        raise ValueError()
+    match config.mode:
+        case HoroscopeMode.OpenAiWeekly:
+            return WeeklyOpenAiHoroscope(config.openai)  # type: ignore
+        case invalid:
+            raise ValueError(f"Invalid horoscope mode: {invalid}")
 
 
 class _StubRateLimitPolicy(RateLimitingPolicy):

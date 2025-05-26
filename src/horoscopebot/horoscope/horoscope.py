@@ -30,7 +30,7 @@ class Horoscope(abc.ABC):
         user_id: int,
         message_id: int,
         message_time: datetime,
-    ) -> HoroscopeResult | None:
+    ) -> list[HoroscopeResult]:
         pass
 
 

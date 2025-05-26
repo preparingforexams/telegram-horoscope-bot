@@ -30,9 +30,7 @@ class DatabaseConfig:
 
 
 class HoroscopeMode(Enum):
-    OpenAiChat = "openai_chat"
     OpenAiWeekly = "openai_weekly"
-    Steffen = "steffen"
 
 
 type OpenAiImageQuality = Literal["low", "medium", "high"]
@@ -83,9 +81,9 @@ class HoroscopeConfig:
 
     @classmethod
     def from_env(cls, env: Env) -> Self:
-        mode = HoroscopeMode(env.get_string("HOROSCOPE_MODE", default="steffen"))
+        mode = HoroscopeMode(env.get_string("HOROSCOPE_MODE", default="openai_weekly"))
 
-        if mode in [HoroscopeMode.OpenAiChat, HoroscopeMode.OpenAiWeekly]:
+        if mode in [HoroscopeMode.OpenAiWeekly]:
             openai = OpenAiConfig.from_env(env.scoped("OPENAI_"))
         else:
             openai = None

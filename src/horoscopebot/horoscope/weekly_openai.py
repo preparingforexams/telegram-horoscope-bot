@@ -55,6 +55,12 @@ class Variant:
         return "\n\n".join([self.base_prompt, slot_refinement, "Horoskop:"])
 
 
+@dataclass
+class Geggo:
+    messages: list[HoroscopeResult]
+    add_real_horoscope: bool
+
+
 _VARIANT_BY_FIRST_SLOT: dict[Slot, Variant] = {
     Slot.BAR: Variant(
         base_prompt=(
@@ -91,7 +97,7 @@ class WeeklyOpenAiHoroscope(Horoscope):
         user_id: int,
         message_id: int,
         message_time: datetime,
-    ) -> HoroscopeResult | None:
+    ) -> list[HoroscopeResult]:
         slots = SLOT_MACHINE_VALUES[dice]
         return self._create_horoscope(user_id, slots, message_time)
 
@@ -100,19 +106,26 @@ class WeeklyOpenAiHoroscope(Horoscope):
         user_id: int,
         slots: tuple[Slot, Slot, Slot],
         time: datetime,
-    ) -> HoroscopeResult | None:
+    ) -> list[HoroscopeResult]:
         if self._debug_mode:
-            return HoroscopeResult(message="debug mode is turned on")
+            return [HoroscopeResult(message="debug mode is turned on")]
 
-        if geggo := self._make_geggo(user_id, time):
-            return geggo
+        geggo = self._make_geggo(user_id, time)
+        if geggo and geggo.add_real_horoscope:
+            result = geggo.messages
+        elif geggo and not geggo.add_real_horoscope:
+            return geggo.messages
+        else:
+            result = []
 
         variant = _VARIANT_BY_FIRST_SLOT[slots[0]]
         prompt = variant.build_prompt(slots[1], slots[2])
         completion = self._create_completion(user_id, prompt)
-        return completion
+        result.append(completion)
 
-    def _make_geggo(self, user_id: int, time: datetime) -> HoroscopeResult | None:
+        return result
+
+    def _make_geggo(self, user_id: int, time: datetime) -> Geggo | None:
         if time.month == 1 and time.day == 1:
             prompt = (
                 "Sag mir den Verlauf meines Jahres voraus. Es ist egal, ob die"
@@ -123,16 +136,21 @@ class WeeklyOpenAiHoroscope(Horoscope):
                 " mindestens ein konkretes Ereignis.\n\n"
                 "Die Antwort sollte kurz und prägnant sein."
             )
-            return self._create_completion(
-                user_id,
-                prompt,
-                temperature=1.1,
-                max_tokens=200,
-                frequency_penalty=0,
-                presence_penalty=0,
+            return Geggo(
+                messages=[
+                    self._create_completion(
+                        user_id,
+                        prompt,
+                        temperature=1.1,
+                        max_tokens=200,
+                        frequency_penalty=0,
+                        presence_penalty=0,
+                    )
+                ],
+                add_real_horoscope=False,
             )
 
-        if user_id == 167930454 and time.month == 2 and time.day < 7:
+        if user_id == 167930454 and time.month == 5 and time.day > 25:
             message = "Du musst Steuern sparen."
             image = self._create_image(
                 [
@@ -144,9 +162,15 @@ class WeeklyOpenAiHoroscope(Horoscope):
                 ],
                 improve_prompt=False,
             )
-            return HoroscopeResult(
-                message=message,
-                image=image,
+            return Geggo(
+                messages=[
+                    HoroscopeResult(
+                        message=message,
+                        image=image,
+                    ),
+                    HoroscopeResult(message="Spaß"),
+                ],
+                add_real_horoscope=True,
             )
 
         return None

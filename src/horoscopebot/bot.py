@@ -3,6 +3,7 @@ import signal
 import time
 from collections.abc import Callable
 from datetime import UTC, datetime, tzinfo
+from time import sleep
 from typing import Any, Self, cast
 
 from httpx import Client, HTTPStatusError, Response, TimeoutException
@@ -227,10 +228,10 @@ class Bot:
 
                 return
 
-            horoscope_result: HoroscopeResult | None = None
+            horoscope_results: list[HoroscopeResult] = []
             if not self._is_lemons(dice_value):
                 with tracer.start_as_current_span("provide_horoscope"):
-                    horoscope_result = self.horoscope.provide_horoscope(
+                    horoscope_results = self.horoscope.provide_horoscope(
                         dice=dice_value,
                         context_id=chat_id,
                         user_id=user_id,
@@ -239,23 +240,34 @@ class Bot:
                     )
 
             response_id: str | None = None
-            if horoscope_result is None:
+            if not horoscope_results:
                 _LOG.debug(
                     "Not sending horoscope because horoscope returned None for %d",
                     dice["value"],
                 )
             else:
+                first_result = horoscope_results[0]
                 try:
                     response_message = self._send_message(
                         chat_id=chat_id,
-                        text=horoscope_result.formatted_message,
-                        image=horoscope_result.image,
-                        use_html_parsing=horoscope_result.should_use_html_parsing,
+                        text=first_result.formatted_message,
+                        image=first_result.image,
+                        use_html_parsing=first_result.should_use_html_parsing,
                         reply_to_message_id=message_id,
                     )
                 except ReplyMessageGoneException as e:
                     _LOG.error("Could not reply to message", exc_info=e)
                     return
+
+                for result in horoscope_results[1:]:
+                    sleep(2)
+                    response_message = self._send_message(
+                        chat_id=chat_id,
+                        text=result.formatted_message,
+                        image=result.image,
+                        use_html_parsing=result.should_use_html_parsing,
+                        reply_to_message_id=None,
+                    )
 
                 response_message_id = response_message["message_id"]
                 response_id = str(response_message_id)

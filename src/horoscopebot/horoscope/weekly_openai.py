@@ -259,6 +259,7 @@ class WeeklyOpenAiHoroscope(Horoscope):
                 moderation=self._image_moderation_level,
                 prompt=prompt,
                 size="1024x1024",
+                timeout=60,
             )
         except BadRequestError as e:
             # Only ever saw this because of their profanity filter. Of course the error

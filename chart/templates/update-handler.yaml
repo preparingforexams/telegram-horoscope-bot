@@ -59,7 +59,7 @@ spec:
               value: {{ .Values.openai.gptModel }}
             - name: OPENAI_IMAGE_MODEL
               value: {{ .Values.openai.imageModel }}
-            - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
               value: http://collector.opentelemetry-system:4317
             - name: RATE_LIMIT_ADMIN_PASS
               value: "false"

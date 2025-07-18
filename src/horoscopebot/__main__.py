@@ -29,7 +29,7 @@ from horoscopebot.dementia_responder import (
 from horoscopebot.horoscope.horoscope import Horoscope
 from horoscopebot.horoscope.weekly_openai import WeeklyOpenAiHoroscope
 from horoscopebot.rate_limit_policy import UserPassPolicy, WeeklyLimitPolicy
-from horoscopebot.tracing import setup_tracing
+from horoscopebot.telemetry import setup_telemetry
 
 _LOG = logging.getLogger(__package__)
 
@@ -134,7 +134,7 @@ def main():
 
     config = Config.from_env(Env.load(include_default_dotenv=True))
     _setup_sentry(config.sentry_dsn, release=config.app_version)
-    setup_tracing(config)
+    setup_telemetry(config)
 
     timezone = ZoneInfo("Europe/Berlin")
 

@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import signal
 import time
@@ -6,10 +7,11 @@ from datetime import UTC, datetime, tzinfo
 from time import sleep
 from typing import Any, Self, cast
 
-from httpx import Client, HTTPStatusError, Response, TimeoutException
+from httpx import Client, HTTPStatusError, Response, TimeoutException, AsyncClient
 from opentelemetry import trace
 from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor
 from rate_limiter import RateLimiter
+from telegram.ext import Application, Updater, ExtBot
 
 from horoscopebot.config import TelegramConfig
 from horoscopebot.dementia_responder import DementiaResponder
@@ -50,21 +52,50 @@ class Bot:
         self._rate_limiter = rate_limiter
         self._timezone = timezone
         self._dementia_responder = dementia_responder
-        self._session = Client()
+        self._session = AsyncClient()
         HTTPXClientInstrumentor().instrument_client(self._session)
         self._should_terminate = False
 
-    def run(self):
-        signal.signal(signal.SIGTERM, self._on_kill)
-        signal.signal(signal.SIGINT, self._on_kill)
-        self._handle_updates(self._handle_update)
+    async def run(self):
+        bot = ExtBot(token=self.config.token)
+        updater = Updater(bot, asyncio.Queue())
 
-    def _on_kill(self, kill_signal: int, _):
-        _LOG.info(
-            "Received %s signal, requesting termination...",
-            signal.Signals(kill_signal).name,
+        app: Application = (
+            Application.builder()
+            .updater(updater)  # type: ignore[arg-type]
+            .build()
         )
-        self._should_terminate = True
+
+        app.add_handler(
+            MessageHandler(
+                filters=filters.ALL,
+                callback=self._on_message,
+            )
+        )
+
+        async with app:
+            _LOG.info("Running bot")
+            await app.start()
+            await updater.start_polling()
+
+            finish_line = asyncio.Event()
+            loop = asyncio.get_running_loop()
+            for sig in [signal.SIGTERM, signal.SIGINT]:
+                loop.add_signal_handler(
+                    sig,
+                    finish_line.set,
+                )
+
+            _LOG.info("Waiting for exit signal")
+            await finish_line.wait()
+            _LOG.info("Exit signal received.")
+
+            _LOG.debug("Stopping updater")
+            await updater.stop()
+            _LOG.debug("Stopping application")
+            await app.stop()
+            _LOG.debug("Exiting app context manager")
+
 
     def _build_url(self, method: str) -> str:
         return f"https://api.telegram.org/bot{self.config.token}/{method}"

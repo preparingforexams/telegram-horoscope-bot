@@ -5,8 +5,12 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import cast
 
-import httpx
-from openai import BadRequestError, OpenAI, OpenAIError
+from openai import (
+    AsyncOpenAI,
+    BadRequestError,
+    DefaultAsyncHttpxClient,
+    OpenAIError,
+)
 from openai.types.chat import ChatCompletionMessageParam
 from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor
 
@@ -86,11 +90,11 @@ class WeeklyOpenAiHoroscope(Horoscope):
         self._image_moderation_level = config.image_moderation_level
         self._image_model_name = config.image_model_name
         self._image_quality = config.image_quality
-        self._http_client = httpx.Client(timeout=20)
+        self._http_client = DefaultAsyncHttpxClient(timeout=20)
         HTTPXClientInstrumentor().instrument_client(self._http_client)
-        self._open_ai = OpenAI(api_key=config.token, http_client=self._http_client)
+        self._open_ai = AsyncOpenAI(api_key=config.token, http_client=self._http_client)
 
-    def provide_horoscope(
+    async def provide_horoscope(
         self,
         dice: int,
         context_id: int,
@@ -99,9 +103,9 @@ class WeeklyOpenAiHoroscope(Horoscope):
         message_time: datetime,
     ) -> list[HoroscopeResult]:
         slots = SLOT_MACHINE_VALUES[dice]
-        return self._create_horoscope(user_id, slots, message_time)
+        return await self._create_horoscope(user_id, slots, message_time)
 
-    def _create_horoscope(
+    async def _create_horoscope(
         self,
         user_id: int,
         slots: tuple[Slot, Slot, Slot],
@@ -110,7 +114,7 @@ class WeeklyOpenAiHoroscope(Horoscope):
         if self._debug_mode:
             return [HoroscopeResult(message="debug mode is turned on")]
 
-        geggo = self._make_geggo(user_id, time)
+        geggo = await self._make_geggo(user_id, time)
         if geggo and geggo.add_real_horoscope:
             result = geggo.messages
         elif geggo and not geggo.add_real_horoscope:
@@ -120,12 +124,12 @@ class WeeklyOpenAiHoroscope(Horoscope):
 
         variant = _VARIANT_BY_FIRST_SLOT[slots[0]]
         prompt = variant.build_prompt(slots[1], slots[2])
-        completion = self._create_completion(user_id, prompt)
+        completion = await self._create_completion(user_id, prompt)
         result.append(completion)
 
         return result
 
-    def _make_geggo(self, user_id: int, time: datetime) -> Geggo | None:
+    async def _make_geggo(self, user_id: int, time: datetime) -> Geggo | None:
         if time.month == 1 and time.day == 1:
             prompt = (
                 "Sag mir den Verlauf meines Jahres voraus. Es ist egal, ob die"
@@ -138,7 +142,7 @@ class WeeklyOpenAiHoroscope(Horoscope):
             )
             return Geggo(
                 messages=[
-                    self._create_completion(
+                    await self._create_completion(
                         user_id,
                         prompt,
                         temperature=1.1,
@@ -152,7 +156,7 @@ class WeeklyOpenAiHoroscope(Horoscope):
 
         if user_id == 167930454 and time.month == 5 and time.day > 25:
             message = "Du musst Steuern sparen."
-            image = self._create_image(
+            image = await self._create_image(
                 [
                     dict(role="user", content="Gib Horoskop."),
                     dict(
@@ -175,7 +179,7 @@ class WeeklyOpenAiHoroscope(Horoscope):
 
         return None
 
-    def _create_completion(
+    async def _create_completion(
         self,
         user_id: int,
         prompt: str,
@@ -186,7 +190,7 @@ class WeeklyOpenAiHoroscope(Horoscope):
     ) -> HoroscopeResult:
         _LOG.info("Requesting chat completion")
         messages: list[ChatCompletionMessageParam] = [dict(role="user", content=prompt)]
-        response = self._open_ai.chat.completions.create(
+        response = await self._open_ai.chat.completions.create(
             model=self._model_name,
             max_tokens=max_tokens,
             frequency_penalty=frequency_penalty,
@@ -196,7 +200,7 @@ class WeeklyOpenAiHoroscope(Horoscope):
             messages=messages,
         )
         message = response.choices[0].message
-        image = self._create_image(
+        image = await self._create_image(
             [
                 *messages,
                 dict(role=message.role, content=message.content),
@@ -207,13 +211,13 @@ class WeeklyOpenAiHoroscope(Horoscope):
             image=image,
         )
 
-    def _improve_image_prompt(
+    async def _improve_image_prompt(
         self,
         messages: Sequence[ChatCompletionMessageParam],
     ) -> ChatCompletionMessageParam | None:
         _LOG.info("Improving image prompt")
         try:
-            response = self._open_ai.chat.completions.create(
+            response = await self._open_ai.chat.completions.create(
                 model=self._model_name,
                 messages=[
                     *messages,
@@ -231,14 +235,16 @@ class WeeklyOpenAiHoroscope(Horoscope):
             _LOG.error("Could not improve image generation prompt", exc_info=e)
             return None
 
-    def _create_image(
+    async def _create_image(
         self,
         messages: list[ChatCompletionMessageParam],
         *,
         improve_prompt: bool = True,
     ) -> bytes | None:
         if improve_prompt:
-            improvement_message = self._improve_image_prompt(messages) or messages[-1]
+            improvement_message = (
+                await self._improve_image_prompt(messages) or messages[-1]
+            )
         else:
             improvement_message = messages[-1]
 
@@ -253,7 +259,7 @@ class WeeklyOpenAiHoroscope(Horoscope):
 
         _LOG.info("Requesting image with prompt %s", prompt)
         try:
-            ai_response = self._open_ai.images.generate(
+            ai_response = await self._open_ai.images.generate(
                 model=self._image_model_name,
                 quality=self._image_quality,
                 moderation=self._image_moderation_level,

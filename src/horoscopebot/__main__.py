@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, tzinfo
 from zoneinfo import ZoneInfo
 
 import sentry_sdk
+import uvloop
 from bs_config import Env
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from rate_limiter import (
@@ -63,7 +64,7 @@ class _StubRateLimitPolicy(RateLimitingPolicy):
     def requested_history(self) -> int:
         return 0
 
-    def get_offending_usage(
+    async def get_offending_usage(
         self,
         at_time: datetime,
         last_usages: list[Usage],
@@ -71,7 +72,7 @@ class _StubRateLimitPolicy(RateLimitingPolicy):
         return None
 
 
-def _load_rate_limiter(
+async def _load_rate_limiter(
     timezone: tzinfo,
     config: RateLimitConfig,
     is_weekly: bool,
@@ -90,7 +91,7 @@ def _load_rate_limiter(
         _LOG.warning("Using in-memory rate limiting repo")
         repository = repo.InMemoryRateLimitingRepo()
     else:
-        repository = repo.PostgresRateLimitingRepo.connect(
+        repository = await repo.PostgresRateLimitingRepo.connect(
             host=db_config.db_host,
             database=db_config.db_name,
             username=db_config.db_user,
@@ -129,7 +130,7 @@ def _load_rate_limiter(
     ), dementia_responder
 
 
-def main():
+async def main():
     _setup_logging()
 
     config = Config.from_env(Env.load(include_default_dotenv=True))
@@ -139,14 +140,14 @@ def main():
     timezone = ZoneInfo("Europe/Berlin")
 
     horoscope = _load_horoscope(config.horoscope)
-    rate_limiter, dementia_responder = _load_rate_limiter(
+    rate_limiter, dementia_responder = await _load_rate_limiter(
         timezone,
         config.rate_limit,
         is_weekly=config.horoscope.mode == HoroscopeMode.OpenAiWeekly,
     )
 
     _LOG.info("Doing housekeeping of rate limiter DB")
-    rate_limiter.do_housekeeping()
+    await rate_limiter.do_housekeeping()
 
     _LOG.info("Launching bot")
     bot = Bot(
@@ -156,8 +157,8 @@ def main():
         dementia_responder=dementia_responder,
         timezone=timezone,
     )
-    bot.run()
+    await bot.run()
 
 
 if __name__ == "__main__":
-    main()
+    uvloop.run(main())

@@ -18,7 +18,7 @@ class WeeklyLimitPolicy(RateLimitingPolicy):
     def requested_history(self) -> int:
         return self._limit
 
-    def get_offending_usage(
+    async def get_offending_usage(
         self,
         *,
         at_time: datetime,
@@ -60,7 +60,7 @@ class UserPassPolicy(RateLimitingPolicy):
     def requested_history(self) -> int:
         return self.fallback.requested_history
 
-    def get_offending_usage(
+    async def get_offending_usage(
         self,
         *,
         at_time: datetime,
@@ -77,7 +77,7 @@ class UserPassPolicy(RateLimitingPolicy):
         else:
             _LOG.info("INDECISION: No usages found. Falling back.")
 
-        return self.fallback.get_offending_usage(
+        return await self.fallback.get_offending_usage(
             at_time=at_time,
             last_usages=last_usages,
         )

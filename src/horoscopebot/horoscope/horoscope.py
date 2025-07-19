@@ -23,7 +23,7 @@ class HoroscopeResult:
 
 class Horoscope(abc.ABC):
     @abc.abstractmethod
-    def provide_horoscope(
+    async def provide_horoscope(
         self,
         dice: int,
         context_id: int,

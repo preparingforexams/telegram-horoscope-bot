@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 from datetime import tzinfo
 from typing import Any, cast
 
+from bs_nats_updater import NatsConfig, create_updater
 from opentelemetry import trace
 from rate_limiter import RateLimiter
 from telegram import Chat, Message, ReplyParameters, Update
@@ -14,9 +15,7 @@ from telegram.error import BadRequest
 from telegram.ext import (
     Application,
     ContextTypes,
-    ExtBot,
     MessageHandler,
-    Updater,
     filters,
 )
 
@@ -62,12 +61,14 @@ class Bot:
     def __init__(
         self,
         config: TelegramConfig,
+        nats_config: NatsConfig,
         horoscope: Horoscope,
         rate_limiter: RateLimiter,
         dementia_responder: DementiaResponder,
         timezone: tzinfo,
     ):
         self.config = config
+        self._nats_config = nats_config
         self.horoscope = horoscope
         self._rate_limiter = rate_limiter
         self._timezone = timezone
@@ -79,12 +80,11 @@ class Bot:
         await self._rate_limiter.close()
 
     async def run(self) -> None:
-        bot = ExtBot(token=self.config.token)
-        updater = Updater(bot, asyncio.Queue())
+        updater = create_updater(self.config.token, self._nats_config)
 
         app: Application = (
             Application.builder()
-            .updater(updater)  # type: ignore[arg-type]
+            .updater(updater)
             .post_shutdown(self.__post_shutdown)
             .build()
         )

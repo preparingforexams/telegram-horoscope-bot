@@ -11,6 +11,7 @@ classifiers = [
 
 dependencies = [
     "bs-config[dotenv] ==1.1.1",
+    "bs-nats-updater ==2.0.4",
     "Deprecated >=1.0.0, <2.0.0",
     "httpx ==0.28.*",
     "openai ==1.97.*",
@@ -44,6 +45,7 @@ explicit = true
 
 [tool.uv.sources]
 bs-config = { index = "internal" }
+bs-nats-updater = { index = "internal" }
 prep-rate-limiter = { index = "internal" }
 
 [build-system]

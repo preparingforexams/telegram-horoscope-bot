@@ -4,6 +4,7 @@ from enum import Enum
 from typing import Literal, Self, cast
 
 from bs_config import Env
+from bs_nats_updater import NatsConfig
 
 _LOG = logging.getLogger(__name__)
 
@@ -136,6 +137,7 @@ class Config:
     enable_telemetry: bool
     timezone_name: str
     horoscope: HoroscopeConfig
+    nats: NatsConfig
     rate_limit: RateLimitConfig
     sentry_dsn: str | None
     telegram: TelegramConfig
@@ -156,6 +158,7 @@ class Config:
                 default="Europe/Berlin",
             ),
             horoscope=HoroscopeConfig.from_env(env),
+            nats=NatsConfig.from_env(env),
             rate_limit=RateLimitConfig.from_env(env),
             sentry_dsn=env.get_string("SENTRY_DSN"),
             telegram=TelegramConfig.from_env(env),

@@ -158,7 +158,7 @@ class Config:
                 default="Europe/Berlin",
             ),
             horoscope=HoroscopeConfig.from_env(env),
-            nats=NatsConfig.from_env(env),
+            nats=NatsConfig.from_env(env.scoped("NATS_")),
             rate_limit=RateLimitConfig.from_env(env),
             sentry_dsn=env.get_string("SENTRY_DSN"),
             telegram=TelegramConfig.from_env(env),

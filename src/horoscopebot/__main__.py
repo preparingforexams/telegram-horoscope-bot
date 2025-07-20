@@ -130,7 +130,7 @@ async def _load_rate_limiter(
     ), dementia_responder
 
 
-async def main():
+async def main() -> None:
     _setup_logging()
 
     config = Config.from_env(Env.load(include_default_dotenv=True))

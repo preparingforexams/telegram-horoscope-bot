@@ -8,11 +8,9 @@ from typing import cast
 from openai import (
     AsyncOpenAI,
     BadRequestError,
-    DefaultAsyncHttpxClient,
     OpenAIError,
 )
 from openai.types.chat import ChatCompletionMessageParam
-from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor
 
 from horoscopebot.config import OpenAiConfig
 
@@ -90,9 +88,7 @@ class WeeklyOpenAiHoroscope(Horoscope):
         self._image_moderation_level = config.image_moderation_level
         self._image_model_name = config.image_model_name
         self._image_quality = config.image_quality
-        self._http_client = DefaultAsyncHttpxClient(timeout=20)
-        HTTPXClientInstrumentor().instrument_client(self._http_client)
-        self._open_ai = AsyncOpenAI(api_key=config.token, http_client=self._http_client)
+        self._open_ai = AsyncOpenAI(api_key=config.token)
 
     async def provide_horoscope(
         self,

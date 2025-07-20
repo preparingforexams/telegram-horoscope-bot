@@ -53,11 +53,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.mypy]
+check_untyped_defs = true
 namespace_packages = true
-
-[[tool.mypy.overrides]]
-module = "google.cloud.*"
-ignore_missing_imports = true
+warn_unused_ignores = true
 
 [tool.ruff.lint]
 select = [

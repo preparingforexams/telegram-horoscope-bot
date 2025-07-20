@@ -35,12 +35,12 @@ from horoscopebot.telemetry import setup_telemetry
 _LOG = logging.getLogger(__package__)
 
 
-def _setup_logging():
+def _setup_logging() -> None:
     LoggingInstrumentor().instrument(set_logging_format=True)
     _LOG.level = logging.INFO
 
 
-def _setup_sentry(dsn: str | None, release: str):
+def _setup_sentry(dsn: str | None, release: str) -> None:
     if not dsn:
         _LOG.warning("Sentry DSN not found")
         return

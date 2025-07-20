@@ -82,7 +82,7 @@ class Bot:
     async def run(self) -> None:
         updater = create_updater(self.config.token, self._nats_config)
 
-        app: Application = (
+        app = (
             Application.builder()
             .updater(updater)
             .post_shutdown(self.__post_shutdown)
@@ -195,7 +195,7 @@ class Bot:
     def _is_lemons(dice: int) -> bool:
         return dice == 43
 
-    async def _handle_message(self, update: Update, ctx: TelegramContext):
+    async def _handle_message(self, update: Update, ctx: TelegramContext) -> None:
         async with telegram_span(update=update, name="handle_message"):
             message = cast(Message, update.message)
             chat = message.chat

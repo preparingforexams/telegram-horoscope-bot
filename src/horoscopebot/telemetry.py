@@ -16,7 +16,7 @@ from opentelemetry.sdk.trace.sampling import Decision, StaticSampler
 from horoscopebot.config import Config
 
 
-def setup_telemetry(config: Config):
+def setup_telemetry(config: Config) -> None:
     resource = Resource(attributes={SERVICE_NAME: "telegram-horoscope-bot"})
 
     trace_provider = TracerProvider(

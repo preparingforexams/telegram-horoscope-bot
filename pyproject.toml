@@ -23,7 +23,7 @@ dependencies = [
     "opentelemetry-instrumentation-logging",
     "opentelemetry-instrumentation-openai",
     "prep-rate-limiter[postgres,opentelemetry-postgres] ==8.0.0",
-    "python-telegram-bot ==22.2",
+    "python-telegram-bot ==22.3",
     "sentry-sdk >=2.0.0, <3.0.0",
     "tzdata ==2025.2",
     "uvloop ==0.21.*",

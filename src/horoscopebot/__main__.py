@@ -152,6 +152,7 @@ async def main():
     _LOG.info("Launching bot")
     bot = Bot(
         config.telegram,
+        config.nats,
         horoscope=horoscope,
         rate_limiter=rate_limiter,
         dementia_responder=dementia_responder,

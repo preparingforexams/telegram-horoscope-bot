@@ -179,6 +179,7 @@ class WeeklyOpenAiHoroscope(Horoscope):
         self,
         user_id: int,
         prompt: str,
+        temperature: float = 1.1,
         max_tokens: int = 350,
         frequency_penalty: float = 0.35,
         presence_penalty: float = 0.75,
@@ -190,7 +191,6 @@ class WeeklyOpenAiHoroscope(Horoscope):
             max_completion_tokens=max_tokens,
             frequency_penalty=frequency_penalty,
             presence_penalty=presence_penalty,
-            temperature=temperature,
             user=str(user_id),
             messages=messages,
         )
@@ -221,8 +221,7 @@ class WeeklyOpenAiHoroscope(Horoscope):
                         content=_IMAGE_IMPROVEMENT_PROMPT,
                     ),
                 ],
-                max_tokens=128,
-                temperature=1.4,
+                max_completion_tokens=128,
             )
             message = response.choices[0].message
             return dict(role=message.role, content=message.content)

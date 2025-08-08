@@ -179,7 +179,6 @@ class WeeklyOpenAiHoroscope(Horoscope):
         self,
         user_id: int,
         prompt: str,
-        temperature: float = 1.1,
         max_tokens: int = 350,
         frequency_penalty: float = 0.35,
         presence_penalty: float = 0.75,

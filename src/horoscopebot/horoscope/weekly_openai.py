@@ -19,7 +19,7 @@ from .horoscope import SLOT_MACHINE_VALUES, Horoscope, HoroscopeResult, Slot
 _LOG = logging.getLogger(__name__)
 
 _BASE_PROMPT = (
-    "Sag mir den Verlauf meiner Woche voraus. Es ist egal, ob die"
+    "Sag mir den Verlauf meines Jahres voraus. Es ist egal, ob die"
     " Vorhersage realistisch oder akkurat ist, Hauptsache sie ist"
     " unterhaltsam und liest sich nicht wie ein übliches Horoskop."
     " Vermeide die Wörter"
@@ -33,18 +33,18 @@ _IMAGE_IMPROVEMENT_PROMPT = (
 )
 
 _REFINEMENT_BY_SECOND_SLOT = {
-    Slot.GRAPE: "Die Ereignisse sollten im Verlauf der Woche chaotischer werden.",
-    Slot.LEMON: "In der Mitte der Woche sollten negative Ereignisse auftauchen.",
-    Slot.SEVEN: "In der Mitte der Woche sollten positive Ereignisse auftauchen.",
-    Slot.BAR: "In der Mitte der Woche sollte Alkohol ins Spiel kommen.",
+    Slot.GRAPE: "Die Ereignisse sollten im Verlauf des Jahres chaotischer werden.",
+    Slot.LEMON: "In der Mitte des Jahres sollten negative Ereignisse auftauchen.",
+    Slot.SEVEN: "In der Mitte des Jahres sollten positive Ereignisse auftauchen.",
+    Slot.BAR: "In der Mitte des Jahres sollte Alkohol ins Spiel kommen.",
 }
 
 
 _REFINEMENT_BY_THIRD_SLOT = {
-    Slot.GRAPE: "Die Woche sollte im absoluten Chaos enden.",
-    Slot.LEMON: "Die Woche sollte sehr unvorteilhaft enden.",
-    Slot.SEVEN: "Die Woche sollte sehr vorteilhaft enden.",
-    Slot.BAR: "Die Woche sollte im Alkoholexzess enden.",
+    Slot.GRAPE: "Das Jahr sollte im absoluten Chaos enden.",
+    Slot.LEMON: "Das Jahr sollte sehr unvorteilhaft enden.",
+    Slot.SEVEN: "Das Jahr sollte sehr vorteilhaft enden.",
+    Slot.BAR: "Das Jahr sollte im Alkoholexzess enden.",
 }
 
 
@@ -73,10 +73,10 @@ _VARIANT_BY_FIRST_SLOT: dict[Slot, Variant] = {
         base_prompt=(f"{_BASE_PROMPT}\n\nDie Vorhersage sollte chaotisch wirken."),
     ),
     Slot.LEMON: Variant(
-        base_prompt=f"{_BASE_PROMPT}\n\nDu solltest einen eher negativen Wochenverlauf vorhersagen.",
+        base_prompt=f"{_BASE_PROMPT}\n\nDu solltest einen eher negativen Jahresverlauf vorhersagen.",
     ),
     Slot.SEVEN: Variant(
-        base_prompt=f"{_BASE_PROMPT}\n\nDu solltest einen eher positiven Wochenverlauf vorhersagen.",
+        base_prompt=f"{_BASE_PROMPT}\n\nDu solltest einen eher positiven Jahresverlauf vorhersagen.",
     ),
 }
 

@@ -113,11 +113,11 @@ class Bot:
             await finish_line.wait()
             _LOG.info("Exit signal received.")
 
-            _LOG.debug("Stopping updater")
+            _LOG.info("Stopping updater")
             await updater.stop()
-            _LOG.debug("Stopping application")
+            _LOG.info("Stopping application")
             await app.stop()
-            _LOG.debug("Exiting app context manager")
+            _LOG.info("Exiting app context manager")
 
     @staticmethod
     def _split_text(text: str, first_limit: int) -> list[str]:

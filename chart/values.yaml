@@ -2,7 +2,7 @@ appVersion: "latest"
 image:
   app: ghcr.io/preparingforexams/telegram-horoscope-bot
 openai:
-  gptModel: gpt-4.1-2025-04-14
+  gptModel: gpt-5-2025-08-07
   imageModel: gpt-image-1
 telegram:
   enabledChats:

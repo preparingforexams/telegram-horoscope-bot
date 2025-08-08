@@ -221,7 +221,9 @@ class WeeklyOpenAiHoroscope(Horoscope):
                 ],
                 max_completion_tokens=128,
             )
-            message = response.choices[0].message
+            choices = response.choices
+            _LOG.info("Finished because of %s", choices[0].finish_reason)
+            message = choices[0].message
             if not message.content:
                 raise ValueError("Did not receive a message")
             return dict(role=message.role, content=message.content)

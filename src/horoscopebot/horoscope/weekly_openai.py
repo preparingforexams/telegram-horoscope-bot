@@ -188,7 +188,6 @@ class WeeklyOpenAiHoroscope(Horoscope):
         messages: list[ChatCompletionMessageParam] = [dict(role="user", content=prompt)]
         response = await self._open_ai.chat.completions.create(
             model=self._model_name,
-            max_completion_tokens=max_tokens,
             user=str(user_id),
             messages=messages,
         )
@@ -219,7 +218,6 @@ class WeeklyOpenAiHoroscope(Horoscope):
                         content=_IMAGE_IMPROVEMENT_PROMPT,
                     ),
                 ],
-                max_completion_tokens=128,
             )
             choices = response.choices
             _LOG.info("Finished because of %s", choices[0].finish_reason)

@@ -180,7 +180,7 @@ class WeeklyOpenAiHoroscope(Horoscope):
         user_id: int,
         prompt: str,
         temperature: float = 1.1,
-        max_tokens: int = 300,
+        max_tokens: int = 350,
         frequency_penalty: float = 0.35,
         presence_penalty: float = 0.75,
     ) -> HoroscopeResult:
@@ -188,7 +188,7 @@ class WeeklyOpenAiHoroscope(Horoscope):
         messages: list[ChatCompletionMessageParam] = [dict(role="user", content=prompt)]
         response = await self._open_ai.chat.completions.create(
             model=self._model_name,
-            max_tokens=max_tokens,
+            max_completion_tokens=max_tokens,
             frequency_penalty=frequency_penalty,
             presence_penalty=presence_penalty,
             temperature=temperature,

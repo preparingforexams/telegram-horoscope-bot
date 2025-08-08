@@ -126,7 +126,7 @@ async def _load_rate_limiter(
         policy=rate_policy,
         repo=repository,
         timezone=timezone,
-        retention_time=timedelta(days=14),
+        retention_time=timedelta(hours=1),
     ), dementia_responder
 
 

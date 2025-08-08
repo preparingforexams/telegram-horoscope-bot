@@ -189,8 +189,6 @@ class WeeklyOpenAiHoroscope(Horoscope):
         response = await self._open_ai.chat.completions.create(
             model=self._model_name,
             max_completion_tokens=max_tokens,
-            frequency_penalty=frequency_penalty,
-            presence_penalty=presence_penalty,
             user=str(user_id),
             messages=messages,
         )

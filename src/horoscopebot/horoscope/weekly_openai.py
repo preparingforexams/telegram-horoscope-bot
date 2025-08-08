@@ -222,6 +222,8 @@ class WeeklyOpenAiHoroscope(Horoscope):
                 max_completion_tokens=128,
             )
             message = response.choices[0].message
+            if not message.content:
+                raise ValueError("Did not receive a message")
             return dict(role=message.role, content=message.content)
         except OpenAIError as e:
             _LOG.error("Could not improve image generation prompt", exc_info=e)

@@ -3,6 +3,7 @@
   "extends": [
     "github>preparingforexams/renovate-config"
   ],
+  "enabled": false,
   "packageRules": [
     {
       "matchPackageNames": [
